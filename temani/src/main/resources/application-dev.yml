@@ -1,0 +1,9 @@
+spring:
+  config:
+    import: optional:file:.env[.properties]
+  application:
+    name: temani
+  datasource:
+    url : ${DATABASE_URL_DEV}
+    username: ${DATABASE_USERNAME_DEV}
+    password: ${DATABASE_PASSWORD_DEV}
