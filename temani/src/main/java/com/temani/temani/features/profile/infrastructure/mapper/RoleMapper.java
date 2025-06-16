@@ -1,0 +1,12 @@
+package com.temani.temani.features.profile.infrastructure.mapper;
+
+import org.mapstruct.Mapper;
+
+import com.temani.temani.features.profile.domain.model.Role;
+import com.temani.temani.features.profile.infrastructure.persistence.RoleEntity;
+
+@Mapper(componentModel = "spring")
+public interface RoleMapper {
+    RoleEntity toEntity(Role role);
+    Role toDomain(RoleEntity entity);
+}
