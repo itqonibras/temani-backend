@@ -39,9 +39,10 @@ public class TemaniApplication {
                         "dummy_penyandang",
                         "penyandang@email.com",
                         "081231214123",
-                        "penyandang",
+                        hashPassword.hash("penyandang"),
                         null,
                         null,
+                        false,
                         Set.of(userRole, penyandangRole));
                 userRepository.save(user);
             }

@@ -2,9 +2,12 @@ package com.temani.temani.common.security;
 
 import java.util.Date;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import com.temani.temani.features.profile.domain.model.Role;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -32,11 +35,12 @@ public class JwtUtils {
         return claims.getSubject();
     }
 
-    public String generateJwtToken(String username, String userId, Set<String> roles) {
+    public String generateJwtToken(String username, String userId, Set<Role> roles) {
+        Set<String> rolesNames = roles.stream().map(Role::getName).collect(Collectors.toSet());
         return Jwts.builder()
                 .subject(username)
                 .claim("id", userId)
-                .claim("roles", roles)
+                .claim("roles", rolesNames)
                 .issuedAt(new Date())
                 .expiration(new Date((new Date()).getTime() + jwtExpirationMs))
                 .signWith(Keys.hmacShaKeyFor(jwtSecret.getBytes()))

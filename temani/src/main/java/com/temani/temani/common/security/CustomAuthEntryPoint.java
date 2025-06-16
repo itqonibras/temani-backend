@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.temani.temani.common.presentation.dto.response.BaseResponseDTO;
+import com.temani.temani.common.presentation.dto.response.BaseResponse;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,13 +22,13 @@ public class CustomAuthEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
             AuthenticationException authException) throws IOException, ServletException {
-        var baseResponseDTO = new BaseResponseDTO<>();
-        baseResponseDTO.setStatus(HttpStatus.UNAUTHORIZED.value());
-        baseResponseDTO.setMessage("Unauthorized");
-        baseResponseDTO.setTimestamp(new Date());
+        var baseResponse = new BaseResponse<>();
+        baseResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
+        baseResponse.setMessage("Unauthorized");
+        baseResponse.setTimestamp(new Date());
 
         ObjectMapper mapper = new ObjectMapper();
-        String jsonString = mapper.writeValueAsString(baseResponseDTO);
+        String jsonString = mapper.writeValueAsString(baseResponse);
 
         response.setContentType("application/json");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

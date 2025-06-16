@@ -17,7 +17,7 @@ public class User {
     private final Set<Role> roles;
 
     public User(UUID id, String name, String username, String email, String phone,
-            String password, Date createdAt, Date updatedAt, Set<Role> roles) {
+            String password, Date createdAt, Date updatedAt, boolean isVerified, Set<Role> roles) {
         this.id = id;
         this.name = name;
         this.username = username;
@@ -27,7 +27,7 @@ public class User {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.roles = roles;
-        this.isVerified = false;
+        this.isVerified = isVerified;
     }
 
     public UUID getId() {
@@ -62,7 +62,7 @@ public class User {
         return updatedAt;
     }
 
-    public boolean getIsVerified() {
+    public boolean isVerified() {
         return isVerified;
     }
 

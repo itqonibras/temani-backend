@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Builder
-public class BaseResponseDTO<T> {
+public class BaseResponse<T> {
     private int status;
 
     private String message;
