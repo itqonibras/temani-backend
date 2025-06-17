@@ -1,6 +1,6 @@
 package com.temani.temani.common.presentation.dto.response;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -14,13 +14,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Builder
-public class BaseResponseDTO<T> {
+public class BaseResponse<T> {
     private int status;
 
     private String message;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING)
-    private Date timestamp;
+    private LocalDateTime timestamp;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private T data;
