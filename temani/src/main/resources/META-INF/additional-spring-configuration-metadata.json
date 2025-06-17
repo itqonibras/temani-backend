@@ -1,0 +1,17 @@
+{"properties": [
+  {
+    "name": "temani.app.jwt-secret",
+    "type": "java.lang.String",
+    "description": "A description for 'temani.app.jwt-secret'"
+  },
+  {
+    "name": "temani.app.jwtExpirationMs",
+    "type": "java.lang.String",
+    "description": "A description for 'temani.app.jwtExpirationMs'"
+  },
+  {
+    "name": "cors.allowed-origins",
+    "type": "java.lang.String",
+    "description": "A description for 'cors.allowed-origins'"
+  }
+]}

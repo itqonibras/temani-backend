@@ -2,9 +2,9 @@ package com.temani.temani.common.presentation.controller;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.temani.temani.common.presentation.dto.response.BaseResponseDTO;
+import com.temani.temani.common.presentation.dto.response.BaseResponse;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,12 +12,22 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @RestController
 public class BaseController {
+
     @GetMapping("/")
     public ResponseEntity<?> home() {
-        var baseResponseDTO = new BaseResponseDTO<>();
-        baseResponseDTO.setStatus(HttpStatus.OK.value());
-        baseResponseDTO.setMessage("Temani Backend Service");
-        baseResponseDTO.setTimestamp(new Date());
-        return new ResponseEntity<>(baseResponseDTO, HttpStatus.OK);
-    }   
+        var baseResponse = new BaseResponse<>();
+        baseResponse.setStatus(HttpStatus.OK.value());
+        baseResponse.setMessage("Temani Backend Service");
+        baseResponse.setTimestamp(LocalDateTime.now());
+        return new ResponseEntity<>(baseResponse, HttpStatus.OK);
+    }
+
+    @GetMapping("/token-test")
+    public ResponseEntity<?> tokenTest() {
+        var baseResponse = new BaseResponse<>();
+        baseResponse.setStatus(HttpStatus.OK.value());
+        baseResponse.setMessage("Token valid!");
+        baseResponse.setTimestamp(LocalDateTime.now());
+        return new ResponseEntity<>(baseResponse, HttpStatus.OK);
+    }
 }
