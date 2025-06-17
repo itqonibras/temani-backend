@@ -6,17 +6,20 @@ import java.util.Set;
 import java.util.UUID;
 
 public class User {
-    private final UUID id;
-    private final String name;
-    private final String username;
-    private final LocalDate dateOfBirth;
-    private final String email;
-    private final String phone;
-    private final String password;
-    private final LocalDateTime createdAt;
-    private final LocalDateTime updatedAt;
-    private final boolean verified;
-    private final Set<Role> roles;
+    private UUID id;
+    private String name;
+    private String username;
+    private LocalDate dateOfBirth;
+    private String email;
+    private String phone;
+    private String password;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private boolean verified;
+    private Set<Role> roles;
+    private ClientProfile clientProfile;
+    private CaregiverProfile caregiverProfile;
+    private PeerProfile peerProfile;
 
     public User(
             UUID id,
@@ -29,7 +32,10 @@ public class User {
             LocalDateTime createdAt,
             LocalDateTime updatedAt,
             boolean verified,
-            Set<Role> roles) {
+            Set<Role> roles,
+            ClientProfile clientProfile,
+            CaregiverProfile caregiverProfile,
+            PeerProfile peerProfile) {
         this.id = id;
         this.name = name;
         this.username = username;
@@ -41,6 +47,9 @@ public class User {
         this.updatedAt = updatedAt;
         this.verified = verified;
         this.roles = roles;
+        this.clientProfile = clientProfile;
+        this.caregiverProfile = caregiverProfile;
+        this.peerProfile = peerProfile;
     }
 
     public UUID getId() {
@@ -85,5 +94,17 @@ public class User {
 
     public Set<Role> getRoles() {
         return roles;
+    }
+
+    public ClientProfile getClientProfile() {
+        return clientProfile;
+    }
+
+    public CaregiverProfile getCaregiverProfile() {
+        return caregiverProfile;
+    }
+
+    public PeerProfile getPeerProfile() {
+        return peerProfile;
     }
 }

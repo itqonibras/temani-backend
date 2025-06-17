@@ -19,7 +19,9 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User save(User user) {
+        // System.out.println(user.getCaregiverProfile());
         UserEntity savedEntity = jpa.save(mapper.toEntity(user));
+        // System.out.println(savedEntity.getCaregiverProfileEntity());
         return mapper.toDomain(savedEntity);
     }
 
