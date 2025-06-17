@@ -1,6 +1,7 @@
 package com.temani.temani.features.profile.domain.model;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
@@ -8,26 +9,38 @@ public class User {
     private final UUID id;
     private final String name;
     private final String username;
+    private final LocalDate dateOfBirth;
     private final String email;
     private final String phone;
     private final String password;
-    private final Date createdAt;
-    private final Date updatedAt;
-    private final boolean isVerified;
+    private final LocalDateTime createdAt;
+    private final LocalDateTime updatedAt;
+    private final boolean verified;
     private final Set<Role> roles;
 
-    public User(UUID id, String name, String username, String email, String phone,
-            String password, Date createdAt, Date updatedAt, boolean isVerified, Set<Role> roles) {
+    public User(
+            UUID id,
+            String name,
+            String username,
+            LocalDate dateOfBirth,
+            String email,
+            String phone,
+            String password,
+            LocalDateTime createdAt,
+            LocalDateTime updatedAt,
+            boolean verified,
+            Set<Role> roles) {
         this.id = id;
         this.name = name;
         this.username = username;
+        this.dateOfBirth = dateOfBirth;
         this.email = email;
         this.phone = phone;
         this.password = password;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.verified = verified;
         this.roles = roles;
-        this.isVerified = isVerified;
     }
 
     public UUID getId() {
@@ -42,6 +55,10 @@ public class User {
         return username;
     }
 
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth;
+    }
+
     public String getEmail() {
         return email;
     }
@@ -54,16 +71,16 @@ public class User {
         return password;
     }
 
-    public Date getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public Date getUpdatedAt() {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
     public boolean isVerified() {
-        return isVerified;
+        return verified;
     }
 
     public Set<Role> getRoles() {

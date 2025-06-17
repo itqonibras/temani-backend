@@ -1,7 +1,7 @@
 package com.temani.temani.common.security;
 
 import java.io.IOException;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
@@ -25,7 +25,7 @@ public class CustomAuthEntryPoint implements AuthenticationEntryPoint {
         var baseResponse = new BaseResponse<>();
         baseResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
         baseResponse.setMessage("Unauthorized");
-        baseResponse.setTimestamp(new Date());
+        baseResponse.setTimestamp(LocalDateTime.now());
 
         ObjectMapper mapper = new ObjectMapper();
         String jsonString = mapper.writeValueAsString(baseResponse);

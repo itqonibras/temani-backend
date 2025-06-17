@@ -1,6 +1,6 @@
 package com.temani.temani.common.presentation.dto.response;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -20,7 +20,7 @@ public class BaseResponse<T> {
     private String message;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING)
-    private Date timestamp;
+    private LocalDateTime timestamp;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private T data;

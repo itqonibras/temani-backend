@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import com.temani.temani.features.profile.domain.model.Role;
 import com.temani.temani.features.profile.domain.repository.RoleRepository;
-import com.temani.temani.features.profile.infrastructure.mapper.RoleMapper;
+import com.temani.temani.features.profile.infrastructure.mapper.RoleEntityMapper;
 
 import lombok.RequiredArgsConstructor;
 
@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 public class RoleRepositoryImpl implements RoleRepository {
     
     private final RoleJpaRepository jpa;
-    private final RoleMapper mapper;
+    private final RoleEntityMapper mapper;
 
     @Override
     public Role save(Role role) {

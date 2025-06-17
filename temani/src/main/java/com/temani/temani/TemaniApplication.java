@@ -1,17 +1,12 @@
 package com.temani.temani;
 
-import java.util.Set;
-
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
-import com.temani.temani.features.authentication.usecase.HashPasswordUseCase;
 import com.temani.temani.features.profile.domain.model.Role;
-import com.temani.temani.features.profile.domain.model.User;
 import com.temani.temani.features.profile.domain.repository.RoleRepository;
-import com.temani.temani.features.profile.domain.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -24,27 +19,19 @@ public class TemaniApplication {
 
     @Bean
     @Transactional
-    CommandLineRunner initData(RoleRepository roleRepository, UserRepository userRepository,
-            HashPasswordUseCase hashPassword) {
+    CommandLineRunner initData(RoleRepository roleRepository) {
         return args -> {
-            Role userRole = roleRepository.findByName("USER")
-                    .orElseGet(() -> roleRepository.save(new Role(null, "USER")));
-            Role penyandangRole = roleRepository.findByName("PENYANDANG")
-                    .orElseGet(() -> roleRepository.save(new Role(null, "PENYANDANG")));
-
-            if (userRepository.findByUsername("dummy_penyandang").isEmpty()) {
-                User user = new User(
-                        null,
-                        "Dummy Penyandang",
-                        "dummy_penyandang",
-                        "penyandang@email.com",
-                        "081231214123",
-                        hashPassword.hash("penyandang"),
-                        null,
-                        null,
-                        false,
-                        Set.of(userRole, penyandangRole));
-                userRepository.save(user);
+            if (roleRepository.findByName("USER").isEmpty()) {
+                roleRepository.save(new Role(null, "USER"));
+            }
+            if (roleRepository.findByName("CLIENT").isEmpty()) {
+                roleRepository.save(new Role(null, "CLIENT"));
+            }
+            if (roleRepository.findByName("CAREGIVER").isEmpty()) {
+                roleRepository.save(new Role(null, "CAREGIVER"));
+            }
+            if (roleRepository.findByName("PEER").isEmpty()) {
+                roleRepository.save(new Role(null, "PEER"));
             }
         };
     }

@@ -1,6 +1,7 @@
 package com.temani.temani.features.profile.presentation.dto.response;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
@@ -15,11 +16,11 @@ public class UserResponse {
     private UUID id;
     private String name;
     private String username;
+    private LocalDate dateOfBirth;
     private String email;
     private String phone;
-    private String password;
-    private Date createdAt;
-    private Date updatedAt;
-    private boolean isVerified;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private boolean verified;
     private Set<Role> roles;
 }

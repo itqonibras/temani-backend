@@ -6,7 +6,7 @@ import com.temani.temani.features.profile.domain.model.Role;
 import com.temani.temani.features.profile.infrastructure.persistence.RoleEntity;
 
 @Mapper(componentModel = "spring")
-public interface RoleMapper {
+public interface RoleEntityMapper {
     RoleEntity toEntity(Role role);
     Role toDomain(RoleEntity entity);
 }

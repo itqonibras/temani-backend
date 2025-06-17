@@ -1,7 +1,7 @@
 package com.temani.temani.common.security;
 
 import java.io.IOException;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
@@ -26,7 +26,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
         BaseResponse<Object> responseDTO = new BaseResponse<>();
         responseDTO.setStatus(HttpServletResponse.SC_FORBIDDEN);
         responseDTO.setMessage("You don't have access to this endpoint!");
-        responseDTO.setTimestamp(new Date());
+        responseDTO.setTimestamp(LocalDateTime.now());
 
         String jsonResponse = objectMapper.writeValueAsString(responseDTO);
         response.getWriter().write(jsonResponse);

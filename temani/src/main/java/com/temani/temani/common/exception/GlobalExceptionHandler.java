@@ -1,6 +1,6 @@
 package com.temani.temani.common.exception;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,7 +25,7 @@ public class GlobalExceptionHandler {
         BaseResponse<Map<String, String>> response = BaseResponse.<Map<String, String>>builder()
                 .status(HttpStatus.BAD_REQUEST.value())
                 .message("Validasi gagal")
-                .timestamp(new Date())
+                .timestamp(LocalDateTime.now())
                 .data(errorMap)
                 .build();
 

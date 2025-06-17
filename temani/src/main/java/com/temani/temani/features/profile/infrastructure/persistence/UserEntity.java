@@ -1,6 +1,7 @@
 package com.temani.temani.features.profile.infrastructure.persistence;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
@@ -16,8 +17,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.NotNull;
 
 import lombok.AllArgsConstructor;
@@ -44,6 +43,10 @@ public class UserEntity {
     private String username;
 
     @NotNull
+    @Column(name = "date_of_birth", nullable = false)
+    private LocalDate dateOfBirth;
+
+    @NotNull
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
@@ -56,18 +59,16 @@ public class UserEntity {
     private String password;
 
     @CreationTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at", updatable = false, nullable = false)
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "updated_at", nullable = false)
-    private Date updatedAt;
+    private LocalDateTime updatedAt;
 
     @NotNull
-    @Column(name = "is_verified", nullable = false)
-    private boolean isVerified;
+    @Column(name = "verified", nullable = false)
+    private boolean verified;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
