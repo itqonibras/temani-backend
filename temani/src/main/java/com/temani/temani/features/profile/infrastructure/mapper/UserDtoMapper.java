@@ -20,7 +20,7 @@ import com.temani.temani.features.profile.presentation.dto.response.UserResponse
 public interface UserDtoMapper {
 
     @Mapping(source = "roles", target = "roles")
-    UserResponse toResponse(User domain);
+    UserResponse toDto(User domain);
 
     default Set<String> map(Set<Role> roles) {
         return roles.stream().map(Role::getName).collect(Collectors.toSet());

@@ -18,6 +18,11 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @Component
 public class CustomAuthEntryPoint implements AuthenticationEntryPoint {
+    private final ObjectMapper objectMapper;
+
+    public CustomAuthEntryPoint(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
@@ -27,9 +32,7 @@ public class CustomAuthEntryPoint implements AuthenticationEntryPoint {
         baseResponse.setMessage("Unauthorized");
         baseResponse.setTimestamp(LocalDateTime.now());
 
-        ObjectMapper mapper = new ObjectMapper();
-        String jsonString = mapper.writeValueAsString(baseResponse);
-
+        String jsonString = objectMapper.writeValueAsString(baseResponse);
         response.setContentType("application/json");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.getWriter().write(jsonString);
