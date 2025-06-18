@@ -37,7 +37,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/", "/get-token").permitAll()
                 .requestMatchers("/auth/**").permitAll()
-                .requestMatchers("/token-test").hasAnyAuthority("ROLE_PENYANDANG")
+                .requestMatchers("/journals/**").hasAnyAuthority("ROLE_CLIENT")
                 .anyRequest().authenticated()
             )
             .sessionManagement(sess -> sess

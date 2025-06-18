@@ -4,7 +4,7 @@ import org.springframework.stereotype.Repository;
 
 import com.temani.temani.features.profile.domain.model.CaregiverProfile;
 import com.temani.temani.features.profile.domain.repository.CaregiverProfileRepository;
-import com.temani.temani.features.profile.infrastructure.mapper.CaregiverProfileEntityMapperImpl;
+import com.temani.temani.features.profile.infrastructure.mapper.CaregiverProfileEntityMapper;
 
 import lombok.RequiredArgsConstructor;
 
@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 public class CaregiverProfileRepositoryImpl implements CaregiverProfileRepository {
     
     private final CaregiverProfileJpaRepository jpa;
-    private final CaregiverProfileEntityMapperImpl mapper;
+    private final CaregiverProfileEntityMapper mapper;
 
     @Override
     public CaregiverProfile save(CaregiverProfile caregiverProfile) {
