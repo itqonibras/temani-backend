@@ -64,7 +64,7 @@ public class RegisterUseCaseImpl implements RegisterUseCase {
 
         User savedUser = userRepository.save(user);
 
-        return userMapper.toResponse(savedUser);
+        return userMapper.toDto(savedUser);
     }
 
     private boolean containsRole(Set<Role> roles, String roleName) {
