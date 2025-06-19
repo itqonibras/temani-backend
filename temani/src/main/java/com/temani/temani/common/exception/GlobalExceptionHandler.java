@@ -24,7 +24,7 @@ public class GlobalExceptionHandler {
 
         BaseResponse<Map<String, String>> response = BaseResponse.<Map<String, String>>builder()
                 .status(HttpStatus.BAD_REQUEST.value())
-                .message("Validasi gagal")
+                .message("Validation error!")
                 .timestamp(LocalDateTime.now())
                 .data(errorMap)
                 .build();

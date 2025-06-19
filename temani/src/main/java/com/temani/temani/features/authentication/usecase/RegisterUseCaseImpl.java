@@ -32,6 +32,18 @@ public class RegisterUseCaseImpl implements RegisterUseCase {
     @Transactional
     @Override
     public UserResponse execute(RegisterRequest request) {
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new IllegalArgumentException("Email is already registered");
+        }
+
+        if (userRepository.existsByUsername(request.getUsername())) {
+            throw new IllegalArgumentException("Username is already taken");
+        }
+
+        if (userRepository.existsByPhone(request.getPhone())) {
+            throw new IllegalArgumentException("Phone number is already registered");
+        }
+
         LocalDate dateOfBirth = LocalDate.parse(request.getDateOfBirth());
 
         Set<Role> roles = request.getRoles().stream()
@@ -40,11 +52,14 @@ public class RegisterUseCaseImpl implements RegisterUseCase {
                 .collect(Collectors.toSet());
 
         ClientProfile clientProfile = containsRole(roles, "CLIENT")
-            ? new ClientProfile(null, null , null) : null;
+                ? new ClientProfile(null, null, null)
+                : null;
         CaregiverProfile caregiverProfile = containsRole(roles, "CAREGIVER")
-            ? new CaregiverProfile(null) : null;
+                ? new CaregiverProfile(null)
+                : null;
         PeerProfile peerProfile = containsRole(roles, "PEER")
-            ? new PeerProfile(null) : null;
+                ? new PeerProfile(null)
+                : null;
 
         User user = new User(
                 null,
