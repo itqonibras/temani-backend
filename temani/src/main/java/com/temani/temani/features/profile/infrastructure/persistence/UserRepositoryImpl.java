@@ -41,4 +41,20 @@ public class UserRepositoryImpl implements UserRepository {
         }
         return user;
     }
+
+    @Override
+    public boolean existsByUsername(String username) {
+        return jpa.existsByUsername(username);
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return jpa.existsByEmail(email);
+    }
+
+    @Override
+    public boolean existsByPhone(String phone) {
+        return jpa.existsByPhone(phone);
+    }
+    
 }
