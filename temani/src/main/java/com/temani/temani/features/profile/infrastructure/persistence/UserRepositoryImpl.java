@@ -1,6 +1,7 @@
 package com.temani.temani.features.profile.infrastructure.persistence;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.stereotype.Repository;
 
@@ -21,6 +22,11 @@ public class UserRepositoryImpl implements UserRepository {
     public User save(User user) {
         UserEntity savedEntity = jpa.save(mapper.toEntity(user));
         return mapper.toDomain(savedEntity);
+    }
+
+    @Override
+    public Optional<User> findById(UUID id) {
+        return jpa.findById(id).map(mapper::toDomain);
     }
 
     @Override
