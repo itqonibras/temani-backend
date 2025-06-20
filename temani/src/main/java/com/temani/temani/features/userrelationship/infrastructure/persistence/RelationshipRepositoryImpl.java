@@ -44,7 +44,7 @@ public class RelationshipRepositoryImpl implements RelationshipRepository {
     }
 
     @Override
-    public List<Relationship> findPendingReceivedByUserId(UUID userId) {
+    public List<Relationship> findPendingSentByUserId(UUID userId) {
         return jpa.findAllByInitiatorIdAndAccepted(userId, false)
                 .stream()
                 .map(mapper::toDomain)
@@ -52,7 +52,7 @@ public class RelationshipRepositoryImpl implements RelationshipRepository {
     }
 
     @Override
-    public List<Relationship> findPendingSentByUserId(UUID userId) {
+    public List<Relationship> findPendingReceivedByUserId(UUID userId) {
         return jpa.findPendingReceivedByUserId(userId)
                 .stream()
                 .map(mapper::toDomain)
