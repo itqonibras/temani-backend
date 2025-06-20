@@ -19,6 +19,8 @@ import com.temani.temani.features.userrelationship.presentation.dto.request.Rela
 import com.temani.temani.features.userrelationship.presentation.dto.response.RelationshipResponse;
 import com.temani.temani.features.userrelationship.usecase.CreateRelationshipUseCase;
 import com.temani.temani.features.userrelationship.usecase.GetAcceptedRelationshipsUseCase;
+import com.temani.temani.features.userrelationship.usecase.GetPendingReceivedRelationshipsUseCase;
+import com.temani.temani.features.userrelationship.usecase.GetPendingSentRelationshipsUseCase;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,6 +31,8 @@ public class RelationshipController {
 
     private final CreateRelationshipUseCase createRelationshipUseCase;
     private final GetAcceptedRelationshipsUseCase getAcceptedRelationshipsUseCase;
+    private final GetPendingSentRelationshipsUseCase getPendingSentRelationshipsUseCase;
+    private final GetPendingReceivedRelationshipsUseCase getPendingReceivedRelationshipsUseCase;
 
     @PostMapping("")
     public ResponseEntity<?> createRelationship(@RequestBody RelationshipRequest request,
@@ -66,6 +70,48 @@ public class RelationshipController {
         var baseResponse = new BaseResponse<>();
         try {
             List<RelationshipResponse> relationships = getAcceptedRelationshipsUseCase.execute(user.getId());
+            baseResponse.setStatus(HttpStatus.OK.value());
+            baseResponse.setMessage("Relationships received successfully!");
+            baseResponse.setTimestamp(LocalDateTime.now());
+            baseResponse.setData(relationships);
+            return new ResponseEntity<>(baseResponse, HttpStatus.OK);
+        } catch (Error e) {
+            baseResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            baseResponse.setMessage(e.getMessage());
+            baseResponse.setTimestamp(LocalDateTime.now());
+            return new ResponseEntity<>(baseResponse, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/pending/sent")
+    public ResponseEntity<?> getPendingSentRelationships(Authentication auth) {
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+        User user = userDetails.getUser();
+
+        var baseResponse = new BaseResponse<>();
+        try {
+            List<RelationshipResponse> relationships = getPendingSentRelationshipsUseCase.execute(user.getId());
+            baseResponse.setStatus(HttpStatus.OK.value());
+            baseResponse.setMessage("Relationships received successfully!");
+            baseResponse.setTimestamp(LocalDateTime.now());
+            baseResponse.setData(relationships);
+            return new ResponseEntity<>(baseResponse, HttpStatus.OK);
+        } catch (Error e) {
+            baseResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            baseResponse.setMessage(e.getMessage());
+            baseResponse.setTimestamp(LocalDateTime.now());
+            return new ResponseEntity<>(baseResponse, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/pending/received")
+    public ResponseEntity<?> getPendingReceivedRelationships(Authentication auth) {
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+        User user = userDetails.getUser();
+
+        var baseResponse = new BaseResponse<>();
+        try {
+            List<RelationshipResponse> relationships = getPendingReceivedRelationshipsUseCase.execute(user.getId());
             baseResponse.setStatus(HttpStatus.OK.value());
             baseResponse.setMessage("Relationships received successfully!");
             baseResponse.setTimestamp(LocalDateTime.now());
