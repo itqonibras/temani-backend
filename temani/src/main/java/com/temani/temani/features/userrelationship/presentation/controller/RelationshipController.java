@@ -1,10 +1,12 @@
 package com.temani.temani.features.userrelationship.presentation.controller;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +18,7 @@ import com.temani.temani.features.profile.domain.model.User;
 import com.temani.temani.features.userrelationship.presentation.dto.request.RelationshipRequest;
 import com.temani.temani.features.userrelationship.presentation.dto.response.RelationshipResponse;
 import com.temani.temani.features.userrelationship.usecase.CreateRelationshipUseCase;
+import com.temani.temani.features.userrelationship.usecase.GetAcceptedRelationshipUseCase;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,9 +28,10 @@ import lombok.RequiredArgsConstructor;
 public class RelationshipController {
 
     private final CreateRelationshipUseCase createRelationshipUseCase;
+    private final GetAcceptedRelationshipUseCase getAcceptedRelationshipUseCase;
 
     @PostMapping("")
-    public ResponseEntity<?> createRelation(@RequestBody RelationshipRequest request,
+    public ResponseEntity<?> createRelationship(@RequestBody RelationshipRequest request,
             Authentication auth) {
         CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
         User user = userDetails.getUser();
@@ -47,6 +51,27 @@ public class RelationshipController {
             baseResponse.setTimestamp(LocalDateTime.now());
             return new ResponseEntity<>(baseResponse, HttpStatus.BAD_REQUEST);
         } catch (IllegalStateException e) {
+            baseResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            baseResponse.setMessage(e.getMessage());
+            baseResponse.setTimestamp(LocalDateTime.now());
+            return new ResponseEntity<>(baseResponse, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/accepted")
+    public ResponseEntity<?> getAcceptedRelationship(Authentication auth) {
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+        User user = userDetails.getUser();
+
+        var baseResponse = new BaseResponse<>();
+        try {
+            List<RelationshipResponse> relationships = getAcceptedRelationshipUseCase.execute(user.getId());
+            baseResponse.setStatus(HttpStatus.OK.value());
+            baseResponse.setMessage("Relationships received successfully!");
+            baseResponse.setTimestamp(LocalDateTime.now());
+            baseResponse.setData(relationships);
+            return new ResponseEntity<>(baseResponse, HttpStatus.OK);
+        } catch (Error e) {
             baseResponse.setStatus(HttpStatus.BAD_REQUEST.value());
             baseResponse.setMessage(e.getMessage());
             baseResponse.setTimestamp(LocalDateTime.now());
