@@ -18,7 +18,7 @@ import com.temani.temani.features.profile.domain.model.User;
 import com.temani.temani.features.userrelationship.presentation.dto.request.RelationshipRequest;
 import com.temani.temani.features.userrelationship.presentation.dto.response.RelationshipResponse;
 import com.temani.temani.features.userrelationship.usecase.CreateRelationshipUseCase;
-import com.temani.temani.features.userrelationship.usecase.GetAcceptedRelationshipUseCase;
+import com.temani.temani.features.userrelationship.usecase.GetAcceptedRelationshipsUseCase;
 
 import lombok.RequiredArgsConstructor;
 
@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
 public class RelationshipController {
 
     private final CreateRelationshipUseCase createRelationshipUseCase;
-    private final GetAcceptedRelationshipUseCase getAcceptedRelationshipUseCase;
+    private final GetAcceptedRelationshipsUseCase getAcceptedRelationshipsUseCase;
 
     @PostMapping("")
     public ResponseEntity<?> createRelationship(@RequestBody RelationshipRequest request,
@@ -59,13 +59,13 @@ public class RelationshipController {
     }
 
     @GetMapping("/accepted")
-    public ResponseEntity<?> getAcceptedRelationship(Authentication auth) {
+    public ResponseEntity<?> getAcceptedRelationships(Authentication auth) {
         CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
         User user = userDetails.getUser();
 
         var baseResponse = new BaseResponse<>();
         try {
-            List<RelationshipResponse> relationships = getAcceptedRelationshipUseCase.execute(user.getId());
+            List<RelationshipResponse> relationships = getAcceptedRelationshipsUseCase.execute(user.getId());
             baseResponse.setStatus(HttpStatus.OK.value());
             baseResponse.setMessage("Relationships received successfully!");
             baseResponse.setTimestamp(LocalDateTime.now());
