@@ -23,6 +23,7 @@ public class Relationship {
         this.id = id;
         this.clientId = clientId;
         this.caregiverId = caregiverId;
+        this.initiatorId = initiatorId;
         this.accepted = accepted;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
