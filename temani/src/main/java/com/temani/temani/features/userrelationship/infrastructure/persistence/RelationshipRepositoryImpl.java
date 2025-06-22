@@ -27,6 +27,11 @@ public class RelationshipRepositoryImpl implements RelationshipRepository {
     }
 
     @Override
+    public void delete(Relationship relationship) {
+        jpa.delete(mapper.toEntity(relationship));
+    }
+
+    @Override
     public boolean existsByClientId(UUID clientId) {
         return jpa.existsByClientId(clientId);
     }

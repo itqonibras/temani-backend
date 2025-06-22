@@ -23,10 +23,12 @@ import com.temani.temani.features.userrelationship.presentation.dto.request.Rela
 import com.temani.temani.features.userrelationship.presentation.dto.request.UpdateRelationshipStatusRequest;
 import com.temani.temani.features.userrelationship.presentation.dto.response.RelationshipResponse;
 import com.temani.temani.features.userrelationship.usecase.AcceptRelationshipUseCase;
+import com.temani.temani.features.userrelationship.usecase.CancelRelationshipUseCase;
 import com.temani.temani.features.userrelationship.usecase.CreateRelationshipUseCase;
 import com.temani.temani.features.userrelationship.usecase.GetAcceptedRelationshipsUseCase;
 import com.temani.temani.features.userrelationship.usecase.GetPendingReceivedRelationshipsUseCase;
 import com.temani.temani.features.userrelationship.usecase.GetPendingSentRelationshipsUseCase;
+import com.temani.temani.features.userrelationship.usecase.RejectRelationshipUseCase;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +43,8 @@ public class RelationshipController {
     private final GetPendingSentRelationshipsUseCase getPendingSentRelationshipsUseCase;
     private final GetPendingReceivedRelationshipsUseCase getPendingReceivedRelationshipsUseCase;
     private final AcceptRelationshipUseCase acceptRelationshipUseCase;
+    private final RejectRelationshipUseCase rejectRelationshipUseCase;
+    private final CancelRelationshipUseCase cancelRelationshipUseCase;
 
     @PostMapping("")
     public ResponseEntity<?> createRelationship(@RequestBody RelationshipRequest request,
@@ -119,14 +123,27 @@ public class RelationshipController {
 
         var baseResponse = new BaseResponse<>();
         try {
-            RelationshipResponse relationship = switch (request.getStatus().toLowerCase()) {
-                case "accept" -> acceptRelationshipUseCase.execute(request, id, user);
-                default -> throw new IllegalArgumentException();
-            };
+            RelationshipResponse relationship = null;
+
+            switch (request.getStatus().toLowerCase()) {
+                case "accept" -> {
+                    relationship = acceptRelationshipUseCase.execute(request, id, user);
+                    baseResponse.setData(relationship);
+                    baseResponse.setMessage("Relationship updated successfully!");
+                }
+                case "reject" -> {
+                    rejectRelationshipUseCase.execute(request, id, user);
+                    baseResponse.setMessage(String.format("Relationship with id %s rejected successfully!", id));
+                }
+                case "cancel" -> {
+                    cancelRelationshipUseCase.execute(request, id, user);
+                    baseResponse.setMessage(String.format("Relationship with id %s canceled successfully!", id));
+                }
+                default -> throw new IllegalArgumentException("Invalid status: " + request.getStatus());
+            }
+
             baseResponse.setStatus(HttpStatus.OK.value());
-            baseResponse.setMessage("Relationships updated successfully!");
             baseResponse.setTimestamp(LocalDateTime.now());
-            baseResponse.setData(relationship);
             return new ResponseEntity<>(baseResponse, HttpStatus.OK);
         } catch (Exception e) {
             baseResponse.setStatus(HttpStatus.BAD_REQUEST.value());
