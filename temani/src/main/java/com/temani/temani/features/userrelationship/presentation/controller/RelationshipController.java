@@ -21,10 +21,12 @@ import com.temani.temani.common.security.CustomUserDetails;
 import com.temani.temani.features.profile.domain.model.User;
 import com.temani.temani.features.userrelationship.presentation.dto.request.RelationshipRequest;
 import com.temani.temani.features.userrelationship.presentation.dto.request.UpdateRelationshipStatusRequest;
+import com.temani.temani.features.userrelationship.presentation.dto.response.PotentialRelationshipResponse;
 import com.temani.temani.features.userrelationship.presentation.dto.response.RelationshipResponse;
 import com.temani.temani.features.userrelationship.usecase.AcceptRelationshipUseCase;
 import com.temani.temani.features.userrelationship.usecase.CancelRelationshipUseCase;
 import com.temani.temani.features.userrelationship.usecase.CreateRelationshipUseCase;
+import com.temani.temani.features.userrelationship.usecase.FindPotentialRelationshipUseCase;
 import com.temani.temani.features.userrelationship.usecase.GetAcceptedRelationshipsUseCase;
 import com.temani.temani.features.userrelationship.usecase.GetPendingReceivedRelationshipsUseCase;
 import com.temani.temani.features.userrelationship.usecase.GetPendingSentRelationshipsUseCase;
@@ -45,6 +47,7 @@ public class RelationshipController {
     private final AcceptRelationshipUseCase acceptRelationshipUseCase;
     private final RejectRelationshipUseCase rejectRelationshipUseCase;
     private final CancelRelationshipUseCase cancelRelationshipUseCase;
+    private final FindPotentialRelationshipUseCase findPotentialRelationshipUseCase;
 
     @PostMapping("")
     public ResponseEntity<?> createRelationship(@RequestBody RelationshipRequest request,
@@ -144,6 +147,32 @@ public class RelationshipController {
 
             baseResponse.setStatus(HttpStatus.OK.value());
             baseResponse.setTimestamp(LocalDateTime.now());
+            return new ResponseEntity<>(baseResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            baseResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            baseResponse.setMessage(e.getMessage());
+            baseResponse.setTimestamp(LocalDateTime.now());
+            return new ResponseEntity<>(baseResponse, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<?> searchPotentialRelationship(
+            @RequestParam String role,
+            @RequestParam(required = false) String keyword,
+            Authentication auth) {
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+        User user = userDetails.getUser();
+
+        var baseResponse = new BaseResponse<>();
+
+        try {
+            List<PotentialRelationshipResponse> results = findPotentialRelationshipUseCase.execute(role, keyword,
+                    user.getId());
+            baseResponse.setStatus(HttpStatus.OK.value());
+            baseResponse.setMessage("Users fetched successfully.");
+            baseResponse.setTimestamp(LocalDateTime.now());
+            baseResponse.setData(results);
             return new ResponseEntity<>(baseResponse, HttpStatus.OK);
         } catch (Exception e) {
             baseResponse.setStatus(HttpStatus.BAD_REQUEST.value());

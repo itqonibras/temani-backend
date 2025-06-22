@@ -13,7 +13,11 @@ public interface RelationshipJpaRepository extends JpaRepository<RelationshipEnt
 
     boolean existsByCaregiverId(UUID caregiverId);
 
+    boolean existsByCaregiverIdAndClientIdNot(UUID targetId, UUID currentUserId);
+
     Optional<RelationshipEntity> findById(UUID id);
+
+    Optional<RelationshipEntity> findByClientIdAndCaregiverId(UUID clientId, UUID caregiverId);
 
     @Query("""
         SELECT r FROM RelationshipEntity r

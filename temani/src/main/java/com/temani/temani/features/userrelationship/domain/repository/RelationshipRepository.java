@@ -15,7 +15,11 @@ public interface RelationshipRepository {
 
     boolean existsByCaregiverId(UUID caregiverId);
 
+    boolean existsByCaregiverIdAndClientIdNot(UUID targetId, UUID currentUserId);
+
     Optional<Relationship> findById(UUID id);
+
+    Optional<Relationship> findByClientIdAndCaregiverId(UUID clientId, UUID caregiverId);
 
     List<Relationship> findAcceptedByUserId(UUID userId);
 

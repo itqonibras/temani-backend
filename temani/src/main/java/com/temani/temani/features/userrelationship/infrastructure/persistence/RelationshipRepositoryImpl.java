@@ -42,8 +42,18 @@ public class RelationshipRepositoryImpl implements RelationshipRepository {
     }
 
     @Override
+    public boolean existsByCaregiverIdAndClientIdNot(UUID targetId, UUID currentUserId) {
+        return jpa.existsByCaregiverIdAndClientIdNot(targetId, currentUserId);
+    }
+
+    @Override
     public Optional<Relationship> findById(UUID id) {
         return jpa.findById(id).map(mapper::toDomain);
+    }
+
+    @Override
+    public Optional<Relationship> findByClientIdAndCaregiverId(UUID clientId, UUID caregiverId) {
+        return jpa.findByClientIdAndCaregiverId(clientId, caregiverId).map(mapper::toDomain);
     }
 
     @Override
