@@ -2,7 +2,6 @@ package com.temani.temani.features.journal.usecase;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -24,6 +23,6 @@ public class GetAllJournalUseCaseImpl implements GetAllJournalsUseCase{
         return journalRepository.findAllByUserId(userId)
         .stream()
         .map(mapper::toDto)
-        .collect(Collectors.toList());
+        .toList();
     }
 }

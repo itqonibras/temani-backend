@@ -2,7 +2,6 @@ package com.temani.temani.features.userrelationship.usecase;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -25,7 +24,7 @@ public class GetPendingSentRelationshipsUseCaseImpl implements GetPendingSentRel
         List<Relationship> relationships = relationshipRepository.findPendingSentByUserId(userId);
         return relationships.stream()
                 .map(mapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
 }

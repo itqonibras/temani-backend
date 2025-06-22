@@ -3,7 +3,6 @@ package com.temani.temani.features.userrelationship.infrastructure.persistence;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Repository;
 
@@ -61,7 +60,7 @@ public class RelationshipRepositoryImpl implements RelationshipRepository {
         return jpa.findAcceptedByUserId(userId)
                 .stream()
                 .map(mapper::toDomain)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -69,7 +68,7 @@ public class RelationshipRepositoryImpl implements RelationshipRepository {
         return jpa.findAllByInitiatorIdAndAccepted(userId, false)
                 .stream()
                 .map(mapper::toDomain)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -77,7 +76,7 @@ public class RelationshipRepositoryImpl implements RelationshipRepository {
         return jpa.findPendingReceivedByUserId(userId)
                 .stream()
                 .map(mapper::toDomain)
-                .collect(Collectors.toList());
+                .toList();
     }
 
 }
