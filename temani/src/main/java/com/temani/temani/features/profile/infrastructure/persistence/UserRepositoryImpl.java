@@ -1,6 +1,9 @@
 package com.temani.temani.features.profile.infrastructure.persistence;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Repository;
 
@@ -24,6 +27,11 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public Optional<User> findById(UUID id) {
+        return jpa.findById(id).map(mapper::toDomain);
+    }
+
+    @Override
     public Optional<User> findByUsername(String username) {
         return jpa.findByUsername(username).map(mapper::toDomain);
     }
@@ -43,6 +51,14 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public List<User> findAllByRoleAndKeyword(String role, String keyword, UUID currentUserId) {
+        return jpa.findAllByRoleAndKeyword(role, keyword, currentUserId)
+                .stream()
+                .map(mapper::toDomain)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public boolean existsByUsername(String username) {
         return jpa.existsByUsername(username);
     }
@@ -56,5 +72,5 @@ public class UserRepositoryImpl implements UserRepository {
     public boolean existsByPhone(String phone) {
         return jpa.existsByPhone(phone);
     }
-    
+
 }
