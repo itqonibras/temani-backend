@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,6 +27,7 @@ import com.temani.temani.features.userrelationship.presentation.dto.response.Rel
 import com.temani.temani.features.userrelationship.usecase.AcceptRelationshipUseCase;
 import com.temani.temani.features.userrelationship.usecase.CancelRelationshipUseCase;
 import com.temani.temani.features.userrelationship.usecase.CreateRelationshipUseCase;
+import com.temani.temani.features.userrelationship.usecase.DeleteRelationshipUseCase;
 import com.temani.temani.features.userrelationship.usecase.FindPotentialRelationshipUseCase;
 import com.temani.temani.features.userrelationship.usecase.GetAcceptedRelationshipsUseCase;
 import com.temani.temani.features.userrelationship.usecase.GetPendingReceivedRelationshipsUseCase;
@@ -48,6 +50,7 @@ public class RelationshipController {
     private final RejectRelationshipUseCase rejectRelationshipUseCase;
     private final CancelRelationshipUseCase cancelRelationshipUseCase;
     private final FindPotentialRelationshipUseCase findPotentialRelationshipUseCase;
+    private final DeleteRelationshipUseCase deleteRelationshipUseCase;
 
     @PostMapping("")
     public ResponseEntity<?> createRelationship(@RequestBody RelationshipRequest request,
@@ -173,6 +176,28 @@ public class RelationshipController {
             baseResponse.setMessage("Users fetched successfully.");
             baseResponse.setTimestamp(LocalDateTime.now());
             baseResponse.setData(results);
+            return new ResponseEntity<>(baseResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            baseResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            baseResponse.setMessage(e.getMessage());
+            baseResponse.setTimestamp(LocalDateTime.now());
+            return new ResponseEntity<>(baseResponse, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteRelationship(
+            @PathVariable UUID id,
+            Authentication auth) {
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+        User user = userDetails.getUser();
+
+        var baseResponse = new BaseResponse<>();
+        try {
+            deleteRelationshipUseCase.execute(id, user);
+            baseResponse.setStatus(HttpStatus.OK.value());
+            baseResponse.setMessage(String.format("Relationship with id %s deleted successfully!", id));
+            baseResponse.setTimestamp(LocalDateTime.now());
             return new ResponseEntity<>(baseResponse, HttpStatus.OK);
         } catch (Exception e) {
             baseResponse.setStatus(HttpStatus.BAD_REQUEST.value());
