@@ -38,6 +38,7 @@ public class SecurityConfig {
                 .requestMatchers("/", "/get-token").permitAll()
                 .requestMatchers("/auth/**").permitAll()
                 .requestMatchers("/journals/**").hasAnyAuthority("ROLE_CLIENT")
+                .requestMatchers("/relationships/**").hasAnyAuthority("ROLE_CLIENT", "ROLE_CAREGIVER")
                 .anyRequest().authenticated()
             )
             .sessionManagement(sess -> sess
