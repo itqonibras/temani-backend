@@ -2,11 +2,14 @@ package com.temani.temani.features.userrelationship.presentation.controller;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,12 +20,15 @@ import com.temani.temani.common.presentation.dto.response.BaseResponse;
 import com.temani.temani.common.security.CustomUserDetails;
 import com.temani.temani.features.profile.domain.model.User;
 import com.temani.temani.features.userrelationship.presentation.dto.request.RelationshipRequest;
+import com.temani.temani.features.userrelationship.presentation.dto.request.UpdateRelationshipStatusRequest;
 import com.temani.temani.features.userrelationship.presentation.dto.response.RelationshipResponse;
+import com.temani.temani.features.userrelationship.usecase.AcceptRelationshipUseCase;
 import com.temani.temani.features.userrelationship.usecase.CreateRelationshipUseCase;
 import com.temani.temani.features.userrelationship.usecase.GetAcceptedRelationshipsUseCase;
 import com.temani.temani.features.userrelationship.usecase.GetPendingReceivedRelationshipsUseCase;
 import com.temani.temani.features.userrelationship.usecase.GetPendingSentRelationshipsUseCase;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -34,6 +40,7 @@ public class RelationshipController {
     private final GetAcceptedRelationshipsUseCase getAcceptedRelationshipsUseCase;
     private final GetPendingSentRelationshipsUseCase getPendingSentRelationshipsUseCase;
     private final GetPendingReceivedRelationshipsUseCase getPendingReceivedRelationshipsUseCase;
+    private final AcceptRelationshipUseCase acceptRelationshipUseCase;
 
     @PostMapping("")
     public ResponseEntity<?> createRelationship(@RequestBody RelationshipRequest request,
@@ -94,6 +101,33 @@ public class RelationshipController {
             baseResponse.setData(relationships);
             return new ResponseEntity<>(baseResponse, HttpStatus.OK);
 
+        } catch (Exception e) {
+            baseResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            baseResponse.setMessage(e.getMessage());
+            baseResponse.setTimestamp(LocalDateTime.now());
+            return new ResponseEntity<>(baseResponse, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<?> acceptRelationship(
+            @PathVariable UUID id,
+            @RequestBody @Valid UpdateRelationshipStatusRequest request,
+            Authentication auth) {
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+        User user = userDetails.getUser();
+
+        var baseResponse = new BaseResponse<>();
+        try {
+            RelationshipResponse relationship = switch (request.getStatus().toLowerCase()) {
+                case "accept" -> acceptRelationshipUseCase.execute(request, id, user);
+                default -> throw new IllegalArgumentException();
+            };
+            baseResponse.setStatus(HttpStatus.OK.value());
+            baseResponse.setMessage("Relationships updated successfully!");
+            baseResponse.setTimestamp(LocalDateTime.now());
+            baseResponse.setData(relationship);
+            return new ResponseEntity<>(baseResponse, HttpStatus.OK);
         } catch (Exception e) {
             baseResponse.setStatus(HttpStatus.BAD_REQUEST.value());
             baseResponse.setMessage(e.getMessage());

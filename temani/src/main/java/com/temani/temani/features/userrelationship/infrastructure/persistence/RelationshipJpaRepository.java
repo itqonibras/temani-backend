@@ -1,6 +1,7 @@
 package com.temani.temani.features.userrelationship.infrastructure.persistence;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,6 +12,8 @@ public interface RelationshipJpaRepository extends JpaRepository<RelationshipEnt
     boolean existsByClientId(UUID clientId);
 
     boolean existsByCaregiverId(UUID caregiverId);
+
+    Optional<RelationshipEntity> findById(UUID id);
 
     @Query("""
         SELECT r FROM RelationshipEntity r

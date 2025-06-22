@@ -1,6 +1,7 @@
 package com.temani.temani.features.userrelationship.domain.repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import com.temani.temani.features.userrelationship.domain.model.Relationship;
@@ -11,6 +12,8 @@ public interface RelationshipRepository {
     boolean existsByClientId(UUID clientId);
 
     boolean existsByCaregiverId(UUID caregiverId);
+
+    Optional<Relationship> findById(UUID id);
 
     List<Relationship> findAcceptedByUserId(UUID userId);
 

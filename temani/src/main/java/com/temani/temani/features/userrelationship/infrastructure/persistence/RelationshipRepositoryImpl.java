@@ -1,6 +1,7 @@
 package com.temani.temani.features.userrelationship.infrastructure.persistence;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -33,6 +34,11 @@ public class RelationshipRepositoryImpl implements RelationshipRepository {
     @Override
     public boolean existsByCaregiverId(UUID caregiverId) {
         return jpa.existsByCaregiverId(caregiverId);
+    }
+
+    @Override
+    public Optional<Relationship> findById(UUID id) {
+        return jpa.findById(id).map(mapper::toDomain);
     }
 
     @Override
