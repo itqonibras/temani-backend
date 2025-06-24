@@ -41,7 +41,7 @@ public class JournalController {
 
 	private final DeleteJournalUseCase deleteJournalUseCase;
 
-	@GetMapping("")
+	@GetMapping
 	public ResponseEntity<?> getJournals(Authentication auth) {
 		CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
 		User user = userDetails.getUser();
@@ -54,7 +54,7 @@ public class JournalController {
 		}
 	}
 
-	@PostMapping("")
+	@PostMapping
 	public ResponseEntity<?> createJournal(@RequestBody @Valid JournalRequest request, Authentication auth) {
 		CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
 		User user = userDetails.getUser();

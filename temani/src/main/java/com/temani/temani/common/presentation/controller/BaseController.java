@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @RestController
 public class BaseController {
 
-	@GetMapping("/")
+	@GetMapping
 	public ResponseEntity<?> home() {
 		return ResponseEntity.ok(BaseResponse.success("Temani Backend Service"));
 	}
