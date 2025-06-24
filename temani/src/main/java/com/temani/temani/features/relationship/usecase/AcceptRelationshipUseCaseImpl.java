@@ -32,7 +32,7 @@ public class AcceptRelationshipUseCaseImpl implements AcceptRelationshipUseCase 
         boolean isCaregiver = userId.equals(existingRelationship.getCaregiverId());
 
         if (!isClient && !isCaregiver) {
-            throw new IllegalAccessError("You are not part of this relationship!");
+            throw new IllegalStateException("You are not part of this relationship!");
         }
 
         if (userId.equals(initiatorId)) {
