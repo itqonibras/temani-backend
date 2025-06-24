@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class HashPasswordUseCaseImpl implements HashPasswordUseCase {
+public class PasswordEncoderUseCaseImpl implements PasswordEncoderUseCase {
 
     private final BCryptPasswordEncoder passwordEncoder;
     

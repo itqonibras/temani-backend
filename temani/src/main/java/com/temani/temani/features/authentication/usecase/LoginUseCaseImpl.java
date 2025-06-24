@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 public class LoginUseCaseImpl implements LoginUseCase {
 
     private final UserRepository userRepository;
-    private final HashPasswordUseCase hashPasswordUseCase;
+    private final PasswordEncoderUseCase passwordEncoderUseCase;
     private final JwtUtils jwtUtils;
 
     @Override
@@ -24,7 +24,7 @@ public class LoginUseCaseImpl implements LoginUseCase {
         User user = userRepository.findByEmailOrUsername(request.getEmailOrUsername())
                 .orElseThrow(() -> new IllegalArgumentException(CommonMessages.USER_NOT_FOUND));
 
-        if (!hashPasswordUseCase.matches(request.getPassword(), user.getPassword())) {
+        if (!passwordEncoderUseCase.matches(request.getPassword(), user.getPassword())) {
             throw new IllegalArgumentException(AuthMessages.INCORRECT_PASSWORD);
         }
 

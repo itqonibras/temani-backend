@@ -10,7 +10,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
-import com.temani.temani.features.authentication.usecase.HashPasswordUseCase;
+import com.temani.temani.features.authentication.usecase.PasswordEncoderUseCase;
 import com.temani.temani.features.profile.infrastructure.persistence.CaregiverProfileEntity;
 import com.temani.temani.features.profile.infrastructure.persistence.ClientProfileEntity;
 import com.temani.temani.features.profile.infrastructure.persistence.PeerProfileEntity;
@@ -31,7 +31,7 @@ public class TemaniApplication {
     @Bean
     @Transactional
     CommandLineRunner initData(RoleJpaRepository roleJpaRepository, UserJpaRepository userJpaRepository,
-            HashPasswordUseCase hashPasswordUseCase) {
+            PasswordEncoderUseCase passwordEncoderUseCase) {
         return args -> {
             RoleEntity userRole = roleJpaRepository.findByName("USER")
                     .orElseGet(() -> roleJpaRepository.save(new RoleEntity(null, "USER")));
@@ -50,7 +50,7 @@ public class TemaniApplication {
                 user.setEmail("penyandang@email.com");
                 user.setPhone("081280080001");
                 user.setDateOfBirth(LocalDate.parse("2002-02-02"));
-                user.setPassword(hashPasswordUseCase.hash("penyandang"));
+                user.setPassword(passwordEncoderUseCase.hash("penyandang"));
                 user.setRoles(Set.of(userRole, clientRole));
                 user.setVerified(true);
                 user.setCreatedAt(LocalDateTime.now());
@@ -71,7 +71,7 @@ public class TemaniApplication {
                 user.setEmail("pendamping@email.com");
                 user.setPhone("081280080002");
                 user.setDateOfBirth(LocalDate.parse("2002-02-02"));
-                user.setPassword(hashPasswordUseCase.hash("pendamping"));
+                user.setPassword(passwordEncoderUseCase.hash("pendamping"));
                 user.setRoles(Set.of(userRole, caregiverRole));
                 user.setVerified(true);
                 user.setCreatedAt(LocalDateTime.now());
@@ -92,7 +92,7 @@ public class TemaniApplication {
                 user.setEmail("pendamping2@email.com");
                 user.setPhone("081280080003");
                 user.setDateOfBirth(LocalDate.parse("2002-02-02"));
-                user.setPassword(hashPasswordUseCase.hash("pendamping"));
+                user.setPassword(passwordEncoderUseCase.hash("pendamping"));
                 user.setRoles(Set.of(userRole, caregiverRole));
                 user.setVerified(true);
                 user.setCreatedAt(LocalDateTime.now());
@@ -113,7 +113,7 @@ public class TemaniApplication {
                 user.setEmail("peer.konselor@email.com");
                 user.setPhone("081280080004");
                 user.setDateOfBirth(LocalDate.parse("2002-02-02"));
-                user.setPassword(hashPasswordUseCase.hash("peer.konselor"));
+                user.setPassword(passwordEncoderUseCase.hash("peer.konselor"));
                 user.setRoles(Set.of(userRole, peerRole));
                 user.setVerified(true);
                 user.setCreatedAt(LocalDateTime.now());

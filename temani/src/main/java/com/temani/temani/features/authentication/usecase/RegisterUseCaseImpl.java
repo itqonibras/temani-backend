@@ -26,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class RegisterUseCaseImpl implements RegisterUseCase {
 
-    private final HashPasswordUseCase hashPasswordUseCase;
+    private final PasswordEncoderUseCase passwordEncoderUseCase;
     private final RoleRepository roleRepository;
     private final UserRepository userRepository;
     private final UserDtoMapper userMapper;
@@ -70,7 +70,7 @@ public class RegisterUseCaseImpl implements RegisterUseCase {
                 dateOfBirth,
                 request.getEmail(),
                 request.getPhone(),
-                hashPasswordUseCase.hash(request.getPassword()),
+                passwordEncoderUseCase.hash(request.getPassword()),
                 null,
                 null,
                 false,
