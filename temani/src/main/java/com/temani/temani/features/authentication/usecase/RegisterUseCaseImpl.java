@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.temani.temani.common.util.RoleUtils;
 import com.temani.temani.features.authentication.presentation.dto.request.RegisterRequest;
 import com.temani.temani.features.profile.domain.model.CaregiverProfile;
 import com.temani.temani.features.profile.domain.model.ClientProfile;
@@ -51,13 +52,13 @@ public class RegisterUseCaseImpl implements RegisterUseCase {
                         .orElseThrow(() -> new IllegalArgumentException("Role not found: " + roleName)))
                 .collect(Collectors.toSet());
 
-        ClientProfile clientProfile = containsRole(roles, "CLIENT")
+        ClientProfile clientProfile = RoleUtils.hasRole(roles, "CLIENT")
                 ? new ClientProfile(null, null, null)
                 : null;
-        CaregiverProfile caregiverProfile = containsRole(roles, "CAREGIVER")
+        CaregiverProfile caregiverProfile = RoleUtils.hasRole(roles, "CAREGIVER")
                 ? new CaregiverProfile(null)
                 : null;
-        PeerProfile peerProfile = containsRole(roles, "PEER")
+        PeerProfile peerProfile = RoleUtils.hasRole(roles, "PEER")
                 ? new PeerProfile(null)
                 : null;
 
@@ -82,7 +83,4 @@ public class RegisterUseCaseImpl implements RegisterUseCase {
         return userMapper.toDto(savedUser);
     }
 
-    private boolean containsRole(Set<Role> roles, String roleName) {
-        return roles.stream().anyMatch(role -> role.getName().equalsIgnoreCase(roleName));
-    }
 }
