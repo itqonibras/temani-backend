@@ -19,12 +19,12 @@ import lombok.NoArgsConstructor;
 @Table(name = "caregiver_profiles")
 public class CaregiverProfileEntity {
 
-    @Id
-    @GeneratedValue(generator = "UUID")
-    private UUID id;
+	@Id
+	@GeneratedValue(generator = "UUID")
+	private UUID id;
 
-    @OneToOne
-    @JoinColumn(name = "user_id", nullable = false, unique = true)
-    private UserEntity user;
-    
+	@OneToOne
+	@JoinColumn(name = "user_id", nullable = false, unique = true)
+	private UserEntity user;
+
 }

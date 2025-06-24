@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.temani.temani.common.constants.AuthMessages;
+import com.temani.temani.common.util.RoleUtils;
 import com.temani.temani.features.authentication.presentation.dto.request.RegisterRequest;
 import com.temani.temani.features.profile.domain.model.CaregiverProfile;
 import com.temani.temani.features.profile.domain.model.ClientProfile;
@@ -24,65 +26,48 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class RegisterUseCaseImpl implements RegisterUseCase {
 
-    private final HashPasswordUseCase hashPasswordUseCase;
-    private final RoleRepository roleRepository;
-    private final UserRepository userRepository;
-    private final UserDtoMapper userMapper;
+	private final PasswordEncoderUseCase passwordEncoderUseCase;
 
-    @Transactional
-    @Override
-    public UserResponse execute(RegisterRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new IllegalArgumentException("Email is already registered");
-        }
+	private final RoleRepository roleRepository;
 
-        if (userRepository.existsByUsername(request.getUsername())) {
-            throw new IllegalArgumentException("Username is already taken");
-        }
+	private final UserRepository userRepository;
 
-        if (userRepository.existsByPhone(request.getPhone())) {
-            throw new IllegalArgumentException("Phone number is already registered");
-        }
+	private final UserDtoMapper userMapper;
 
-        LocalDate dateOfBirth = LocalDate.parse(request.getDateOfBirth());
+	@Transactional
+	@Override
+	public UserResponse execute(RegisterRequest request) {
+		if (userRepository.existsByEmail(request.getEmail())) {
+			throw new IllegalArgumentException(AuthMessages.EMAIL_ALREADY_REGISTERED);
+		}
 
-        Set<Role> roles = request.getRoles().stream()
-                .map(roleName -> roleRepository.findByName(roleName)
-                        .orElseThrow(() -> new IllegalArgumentException("Role not found: " + roleName)))
-                .collect(Collectors.toSet());
+		if (userRepository.existsByUsername(request.getUsername())) {
+			throw new IllegalArgumentException(AuthMessages.USERNAME_ALREADY_TAKEN);
+		}
 
-        ClientProfile clientProfile = containsRole(roles, "CLIENT")
-                ? new ClientProfile(null, null, null)
-                : null;
-        CaregiverProfile caregiverProfile = containsRole(roles, "CAREGIVER")
-                ? new CaregiverProfile(null)
-                : null;
-        PeerProfile peerProfile = containsRole(roles, "PEER")
-                ? new PeerProfile(null)
-                : null;
+		if (userRepository.existsByPhone(request.getPhone())) {
+			throw new IllegalArgumentException(AuthMessages.PHONE_ALREADY_REGISTERED);
+		}
 
-        User user = new User(
-                null,
-                request.getName(),
-                request.getUsername(),
-                dateOfBirth,
-                request.getEmail(),
-                request.getPhone(),
-                hashPasswordUseCase.hash(request.getPassword()),
-                null,
-                null,
-                false,
-                roles,
-                clientProfile,
-                caregiverProfile,
-                peerProfile);
+		LocalDate dateOfBirth = LocalDate.parse(request.getDateOfBirth());
 
-        User savedUser = userRepository.save(user);
+		Set<Role> roles = request.getRoles()
+			.stream()
+			.map(roleName -> roleRepository.findByName(roleName)
+				.orElseThrow(() -> new IllegalArgumentException(AuthMessages.PHONE_ALREADY_REGISTERED)))
+			.collect(Collectors.toSet());
 
-        return userMapper.toDto(savedUser);
-    }
+		ClientProfile clientProfile = RoleUtils.hasRole(roles, "CLIENT") ? new ClientProfile(null, null, null) : null;
+		CaregiverProfile caregiverProfile = RoleUtils.hasRole(roles, "CAREGIVER") ? new CaregiverProfile(null) : null;
+		PeerProfile peerProfile = RoleUtils.hasRole(roles, "PEER") ? new PeerProfile(null) : null;
 
-    private boolean containsRole(Set<Role> roles, String roleName) {
-        return roles.stream().anyMatch(role -> role.getName().equalsIgnoreCase(roleName));
-    }
+		User user = new User(null, request.getName(), request.getUsername(), dateOfBirth, request.getEmail(),
+				request.getPhone(), passwordEncoderUseCase.hash(request.getPassword()), null, null, false, roles,
+				clientProfile, caregiverProfile, peerProfile);
+
+		User savedUser = userRepository.save(user);
+
+		return userMapper.toDto(savedUser);
+	}
+
 }

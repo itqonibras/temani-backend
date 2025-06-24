@@ -4,5 +4,7 @@ import com.temani.temani.features.authentication.presentation.dto.request.Regist
 import com.temani.temani.features.profile.presentation.dto.response.UserResponse;
 
 public interface RegisterUseCase {
-    UserResponse execute(RegisterRequest request);
+
+	UserResponse execute(RegisterRequest request);
+
 }

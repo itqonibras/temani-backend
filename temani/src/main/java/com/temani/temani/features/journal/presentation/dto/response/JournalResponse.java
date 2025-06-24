@@ -11,10 +11,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class JournalResponse {
-    private UUID id;
-    private UUID userId;
-    private String title;
-    private String content;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+
+	private UUID id;
+
+	private UUID userId;
+
+	private String title;
+
+	private String content;
+
+	private LocalDateTime createdAt;
+
+	private LocalDateTime updatedAt;
+
 }

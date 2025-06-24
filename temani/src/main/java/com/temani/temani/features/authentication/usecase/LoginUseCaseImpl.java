@@ -2,6 +2,8 @@ package com.temani.temani.features.authentication.usecase;
 
 import org.springframework.stereotype.Service;
 
+import com.temani.temani.common.constants.AuthMessages;
+import com.temani.temani.common.constants.CommonMessages;
 import com.temani.temani.common.security.JwtUtils;
 import com.temani.temani.features.authentication.presentation.dto.request.LoginRequest;
 import com.temani.temani.features.profile.domain.model.User;
@@ -13,22 +15,24 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class LoginUseCaseImpl implements LoginUseCase {
 
-    private final UserRepository userRepository;
-    private final HashPasswordUseCase hashPasswordUseCase;
-    private final JwtUtils jwtUtils;
+	private final UserRepository userRepository;
 
-    @Override
-    public String execute(LoginRequest request) {
-        User user = userRepository.findByEmailOrUsername(request.getEmailOrUsername())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+	private final PasswordEncoderUseCase passwordEncoderUseCase;
 
-        if (!hashPasswordUseCase.matches(request.getPassword(), user.getPassword())) {
-            throw new IllegalArgumentException("Incorrect password!");
-        }
+	private final JwtUtils jwtUtils;
 
-        String token = jwtUtils.generateJwtToken(user.getUsername(), user.getId().toString(), user.getRoles());
+	@Override
+	public String execute(LoginRequest request) {
+		User user = userRepository.findByEmailOrUsername(request.getEmailOrUsername())
+			.orElseThrow(() -> new IllegalArgumentException(CommonMessages.USER_NOT_FOUND));
 
-        return token;
-    }
+		if (!passwordEncoderUseCase.matches(request.getPassword(), user.getPassword())) {
+			throw new IllegalArgumentException(AuthMessages.INCORRECT_PASSWORD);
+		}
+
+		String token = jwtUtils.generateJwtToken(user.getUsername(), user.getId().toString(), user.getRoles());
+
+		return token;
+	}
 
 }

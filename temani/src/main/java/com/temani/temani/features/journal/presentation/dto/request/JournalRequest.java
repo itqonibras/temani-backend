@@ -9,11 +9,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class JournalRequest {
-    
-    @NotBlank(message = "Title can't be empty!")
-    private String title;
 
-    @NotBlank(message = "Content can't be empty!")
-    private String content;
-    
+	@NotBlank(message = "Title can't be empty!")
+	private String title;
+
+	@NotBlank(message = "Content can't be empty!")
+	private String content;
+
 }

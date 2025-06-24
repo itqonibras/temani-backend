@@ -15,21 +15,23 @@ import com.temani.temani.common.presentation.dto.response.BaseResponse;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<BaseResponse<Map<String, String>>> handleValidationException(MethodArgumentNotValidException ex) {
-        Map<String, String> errorMap = new HashMap<>();
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public ResponseEntity<BaseResponse<Map<String, String>>> handleValidationException(
+			MethodArgumentNotValidException ex) {
+		Map<String, String> errorMap = new HashMap<>();
 
-        ex.getBindingResult().getFieldErrors().forEach(error ->
-                errorMap.put(error.getField(), error.getDefaultMessage()));
+		ex.getBindingResult()
+			.getFieldErrors()
+			.forEach(error -> errorMap.put(error.getField(), error.getDefaultMessage()));
 
-        BaseResponse<Map<String, String>> response = BaseResponse.<Map<String, String>>builder()
-                .status(HttpStatus.BAD_REQUEST.value())
-                .message("Validation error!")
-                .timestamp(LocalDateTime.now())
-                .data(errorMap)
-                .build();
+		BaseResponse<Map<String, String>> response = BaseResponse.<Map<String, String>>builder()
+			.status(HttpStatus.BAD_REQUEST.value())
+			.message("Validation error!")
+			.timestamp(LocalDateTime.now())
+			.data(errorMap)
+			.build();
 
-        return ResponseEntity.badRequest().body(response);
-    }
-    
+		return ResponseEntity.badRequest().body(response);
+	}
+
 }

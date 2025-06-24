@@ -26,27 +26,27 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "journals")
 public class JournalEntity {
-    
-    @Id
-    @GeneratedValue(generator = "UUID")
-    private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id")
-    private UserEntity user;
+	@Id
+	@GeneratedValue(generator = "UUID")
+	private UUID id;
 
-    @Column(name = "title", nullable = false)
-    private String title;
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "user_id")
+	private UserEntity user;
 
-    @Column(name = "content", nullable = false)
-    private String content;
-    
-    @CreationTimestamp
-    @Column(name = "created_at", updatable = false, nullable = false)
-    private LocalDateTime createdAt;
+	@Column(name = "title", nullable = false)
+	private String title;
 
-    @UpdateTimestamp
-    @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
+	@Column(name = "content", nullable = false)
+	private String content;
+
+	@CreationTimestamp
+	@Column(name = "created_at", updatable = false, nullable = false)
+	private LocalDateTime createdAt;
+
+	@UpdateTimestamp
+	@Column(name = "updated_at", nullable = false)
+	private LocalDateTime updatedAt;
 
 }

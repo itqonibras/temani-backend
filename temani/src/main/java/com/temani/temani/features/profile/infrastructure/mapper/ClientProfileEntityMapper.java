@@ -8,8 +8,10 @@ import com.temani.temani.features.profile.infrastructure.persistence.ClientProfi
 
 @Mapper(componentModel = "spring")
 public interface ClientProfileEntityMapper {
-    @Mapping(target = "user", ignore = true)
-    ClientProfileEntity toEntity(ClientProfile domain);
 
-    ClientProfile toDomain(ClientProfileEntity entity);
+	@Mapping(target = "user", ignore = true)
+	ClientProfileEntity toEntity(ClientProfile domain);
+
+	ClientProfile toDomain(ClientProfileEntity entity);
+
 }

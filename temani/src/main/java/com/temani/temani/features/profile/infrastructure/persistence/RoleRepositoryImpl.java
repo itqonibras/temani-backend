@@ -13,19 +13,21 @@ import lombok.RequiredArgsConstructor;
 @Repository
 @RequiredArgsConstructor
 public class RoleRepositoryImpl implements RoleRepository {
-    
-    private final RoleJpaRepository jpa;
-    private final RoleEntityMapper mapper;
 
-    @Override
-    public Role save(Role role) {
-        RoleEntity entity = mapper.toEntity(role);
-        RoleEntity saved = jpa.save(entity);
-        return mapper.toDomain(saved);
-    }
+	private final RoleJpaRepository jpa;
 
-    @Override
-    public Optional<Role> findByName(String name) {
-        return jpa.findByName(name).map(mapper::toDomain);
-    }
+	private final RoleEntityMapper mapper;
+
+	@Override
+	public Role save(Role role) {
+		RoleEntity entity = mapper.toEntity(role);
+		RoleEntity saved = jpa.save(entity);
+		return mapper.toDomain(saved);
+	}
+
+	@Override
+	public Optional<Role> findByName(String name) {
+		return jpa.findByName(name).map(mapper::toDomain);
+	}
+
 }

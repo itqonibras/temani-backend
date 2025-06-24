@@ -8,8 +8,10 @@ import com.temani.temani.features.profile.infrastructure.persistence.CaregiverPr
 
 @Mapper(componentModel = "spring")
 public interface CaregiverProfileEntityMapper {
-    @Mapping(target = "user", ignore = true)
-    CaregiverProfileEntity toEntity(CaregiverProfile domain);
 
-    CaregiverProfile toDomain(CaregiverProfileEntity entity);
+	@Mapping(target = "user", ignore = true)
+	CaregiverProfileEntity toEntity(CaregiverProfile domain);
+
+	CaregiverProfile toDomain(CaregiverProfileEntity entity);
+
 }

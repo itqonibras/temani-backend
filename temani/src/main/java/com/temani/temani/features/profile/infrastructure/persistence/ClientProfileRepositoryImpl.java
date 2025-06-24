@@ -11,14 +11,15 @@ import lombok.RequiredArgsConstructor;
 @Repository
 @RequiredArgsConstructor
 public class ClientProfileRepositoryImpl implements ClientProfileRepository {
-    
-    private final ClientProfileJpaRepository jpa;
-    private final ClientProfileEntityMapper mapper;
 
-    @Override
-    public ClientProfile save(ClientProfile clientProfile) {
-        ClientProfileEntity savedEntity = jpa.save(mapper.toEntity(clientProfile));
-        return mapper.toDomain(savedEntity);
-    }
-    
+	private final ClientProfileJpaRepository jpa;
+
+	private final ClientProfileEntityMapper mapper;
+
+	@Override
+	public ClientProfile save(ClientProfile clientProfile) {
+		ClientProfileEntity savedEntity = jpa.save(mapper.toEntity(clientProfile));
+		return mapper.toDomain(savedEntity);
+	}
+
 }

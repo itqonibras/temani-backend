@@ -3,19 +3,22 @@ package com.temani.temani.features.profile.domain.model;
 import java.util.UUID;
 
 public class Role {
-    private UUID id;
-    private String name;
 
-    public Role(UUID id, String name) {
-        this.id = id;
-        this.name = name;
-    }
+	private UUID id;
 
-    public UUID getId() {
-        return id;
-    }
+	private String name;
 
-    public String getName() {
-        return name;
-    }
+	public Role(UUID id, String name) {
+		this.id = id;
+		this.name = name;
+	}
+
+	public UUID getId() {
+		return id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
 }

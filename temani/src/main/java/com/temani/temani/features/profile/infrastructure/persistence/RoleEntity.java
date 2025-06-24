@@ -18,10 +18,12 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "roles")
 public class RoleEntity {
-    @Id
-    @GeneratedValue
-    private UUID id;
 
-    @Column(name = "name", nullable = false, unique = true)
-    private String name;
+	@Id
+	@GeneratedValue
+	private UUID id;
+
+	@Column(name = "name", nullable = false, unique = true)
+	private String name;
+
 }

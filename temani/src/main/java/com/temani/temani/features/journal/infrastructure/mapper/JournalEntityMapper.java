@@ -13,17 +13,19 @@ import com.temani.temani.features.profile.infrastructure.persistence.UserEntity;
 @Mapper(componentModel = "spring")
 public interface JournalEntityMapper {
 
-    @Mapping(target = "user", source = "userId", qualifiedByName = "mapUserIdToUserEntity")
-    JournalEntity toEntity(Journal domain);
+	@Mapping(target = "user", source = "userId", qualifiedByName = "mapUserIdToUserEntity")
+	JournalEntity toEntity(Journal domain);
 
-    @Named("mapUserIdToUserEntity")
-    static UserEntity mapUserIdToUserEntity(UUID userId) {
-        if (userId == null) return null;
-        var user = new UserEntity();
-        user.setId(userId);
-        return user;
-    }
+	@Named("mapUserIdToUserEntity")
+	static UserEntity mapUserIdToUserEntity(UUID userId) {
+		if (userId == null)
+			return null;
+		var user = new UserEntity();
+		user.setId(userId);
+		return user;
+	}
 
-    @Mapping(source = "user.id", target = "userId")
-    Journal toDomain(JournalEntity entity);
+	@Mapping(source = "user.id", target = "userId")
+	Journal toDomain(JournalEntity entity);
+
 }

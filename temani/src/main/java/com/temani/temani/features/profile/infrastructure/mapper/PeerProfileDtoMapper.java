@@ -7,5 +7,7 @@ import com.temani.temani.features.profile.presentation.dto.response.PeerProfileR
 
 @Mapper(componentModel = "spring")
 public interface PeerProfileDtoMapper {
-    PeerProfileResponse toDto(PeerProfile domain);
+
+	PeerProfileResponse toDto(PeerProfile domain);
+
 }

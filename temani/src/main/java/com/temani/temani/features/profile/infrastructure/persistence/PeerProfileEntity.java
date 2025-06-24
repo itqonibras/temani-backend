@@ -18,13 +18,13 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "peer_profiles")
 public class PeerProfileEntity {
-    
-    @Id
-    @GeneratedValue(generator = "UUID")
-    private UUID id;
 
-    @OneToOne
-    @JoinColumn(name = "user_id", nullable = false, unique = true)
-    private UserEntity user;
-    
+	@Id
+	@GeneratedValue(generator = "UUID")
+	private UUID id;
+
+	@OneToOne
+	@JoinColumn(name = "user_id", nullable = false, unique = true)
+	private UserEntity user;
+
 }

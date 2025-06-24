@@ -11,14 +11,15 @@ import lombok.RequiredArgsConstructor;
 @Repository
 @RequiredArgsConstructor
 public class PeerProfileRepositoryImpl implements PeerProfileRepository {
-    
-    private final PeerProfileJpaRepository jpa;
-    private final PeerProfileEntityMapper mapper;
 
-    @Override
-    public PeerProfile save(PeerProfile peerProfile) {
-        PeerProfileEntity savedEntity = jpa.save(mapper.toEntity(peerProfile));
-        return mapper.toDomain(savedEntity);
-    }
+	private final PeerProfileJpaRepository jpa;
+
+	private final PeerProfileEntityMapper mapper;
+
+	@Override
+	public PeerProfile save(PeerProfile peerProfile) {
+		PeerProfileEntity savedEntity = jpa.save(mapper.toEntity(peerProfile));
+		return mapper.toDomain(savedEntity);
+	}
 
 }

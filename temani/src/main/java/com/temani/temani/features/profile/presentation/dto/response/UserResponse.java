@@ -15,17 +15,31 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserResponse {
-    private UUID id;
-    private String name;
-    private String username;
-    private LocalDate dateOfBirth;
-    private String email;
-    private String phone;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private boolean verified;
-    private Set<Role> roles;
-    private ClientProfileResponse clientProfile;
-    private CaregiverProfileResponse caregiverProfile;
-    private PeerProfileResponse peerProfile;
+
+	private UUID id;
+
+	private String name;
+
+	private String username;
+
+	private LocalDate dateOfBirth;
+
+	private String email;
+
+	private String phone;
+
+	private LocalDateTime createdAt;
+
+	private LocalDateTime updatedAt;
+
+	private boolean verified;
+
+	private Set<Role> roles;
+
+	private ClientProfileResponse clientProfile;
+
+	private CaregiverProfileResponse caregiverProfile;
+
+	private PeerProfileResponse peerProfile;
+
 }

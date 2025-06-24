@@ -10,7 +10,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ClientProfileResponse {
-    private UUID id;
-    private String condition;
-    private String aboutMe;
+
+	private UUID id;
+
+	private String condition;
+
+	private String aboutMe;
+
 }

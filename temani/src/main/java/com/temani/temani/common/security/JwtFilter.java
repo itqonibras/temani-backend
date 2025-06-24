@@ -18,21 +18,22 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
 
-    private final JwtUtils jwtUtils;
-    private final CustomUserDetailsService userDetailsService;
+	private final JwtUtils jwtUtils;
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain) throws ServletException, IOException {
-        String token = jwtUtils.resolveToken(request);
-        if (token != null && jwtUtils.validateToken(token)) {
-            String username = jwtUtils.getUsername(token);
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-            UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-                    userDetails, null, userDetails.getAuthorities());
-            SecurityContextHolder.getContext().setAuthentication(auth);
-        }
-        filterChain.doFilter(request, response);
-    }
+	private final CustomUserDetailsService userDetailsService;
+
+	@Override
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+			throws ServletException, IOException {
+		String token = jwtUtils.resolveToken(request);
+		if (token != null && jwtUtils.validateToken(token)) {
+			String username = jwtUtils.getUsername(token);
+			UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+			UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userDetails, null,
+					userDetails.getAuthorities());
+			SecurityContextHolder.getContext().setAuthentication(auth);
+		}
+		filterChain.doFilter(request, response);
+	}
+
 }

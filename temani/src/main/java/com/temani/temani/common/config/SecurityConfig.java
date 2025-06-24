@@ -25,49 +25,49 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtFilter jwtFilter;
-    private final CustomAuthEntryPoint authEntryPoint;
-    private final CustomAccessDeniedHandler accessDeniedHandler;
+	private final JwtFilter jwtFilter;
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-            .cors(Customizer.withDefaults())
-            .csrf(AbstractHttpConfigurer::disable)
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/get-token").permitAll()
-                .requestMatchers("/auth/**").permitAll()
-                .requestMatchers("/journals/**").hasAnyAuthority("ROLE_CLIENT")
-                .requestMatchers("/relationships/**").hasAnyAuthority("ROLE_CLIENT", "ROLE_CAREGIVER")
-                .anyRequest().authenticated()
-            )
-            .sessionManagement(sess -> sess
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            )
-            .exceptionHandling(ex -> ex
-                .authenticationEntryPoint(authEntryPoint)
-                .accessDeniedHandler(accessDeniedHandler)
-            )
-            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-        return http.build();
-    }
+	private final CustomAuthEntryPoint authEntryPoint;
 
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of("*"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowCredentials(true);
+	private final CustomAccessDeniedHandler accessDeniedHandler;
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
+	@Bean
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+		http.cors(Customizer.withDefaults())
+			.csrf(AbstractHttpConfigurer::disable)
+			.authorizeHttpRequests(auth -> auth.requestMatchers("/", "/get-token")
+				.permitAll()
+				.requestMatchers("/auth/**")
+				.permitAll()
+				.requestMatchers("/journals/**")
+				.hasAnyAuthority("ROLE_CLIENT")
+				.requestMatchers("/relationships/**")
+				.hasAnyAuthority("ROLE_CLIENT", "ROLE_CAREGIVER")
+				.anyRequest()
+				.authenticated())
+			.sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+			.exceptionHandling(
+					ex -> ex.authenticationEntryPoint(authEntryPoint).accessDeniedHandler(accessDeniedHandler))
+			.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+		return http.build();
+	}
 
-    @Bean
-    public BCryptPasswordEncoder encoder() {
-        return new BCryptPasswordEncoder();
-    }
+	@Bean
+	public CorsConfigurationSource corsConfigurationSource() {
+		CorsConfiguration configuration = new CorsConfiguration();
+		configuration.setAllowedOriginPatterns(List.of("*"));
+		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+		configuration.setAllowedHeaders(List.of("*"));
+		configuration.setAllowCredentials(true);
+
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", configuration);
+		return source;
+	}
+
+	@Bean
+	public BCryptPasswordEncoder encoder() {
+		return new BCryptPasswordEncoder();
+	}
 
 }
