@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RelationshipRequest {
-    
-    @NotBlank(message = "Target ID can't be empty!")
-    private UUID targetId;
+
+	@NotBlank(message = "Target ID can't be empty!")
+	private UUID targetId;
 
 }

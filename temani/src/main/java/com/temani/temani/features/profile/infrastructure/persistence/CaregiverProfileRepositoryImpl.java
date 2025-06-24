@@ -11,14 +11,15 @@ import lombok.RequiredArgsConstructor;
 @Repository
 @RequiredArgsConstructor
 public class CaregiverProfileRepositoryImpl implements CaregiverProfileRepository {
-    
-    private final CaregiverProfileJpaRepository jpa;
-    private final CaregiverProfileEntityMapper mapper;
 
-    @Override
-    public CaregiverProfile save(CaregiverProfile caregiverProfile) {
-        CaregiverProfileEntity savedEntity = jpa.save(mapper.toEntity(caregiverProfile));
-        return mapper.toDomain(savedEntity);
-    }
+	private final CaregiverProfileJpaRepository jpa;
+
+	private final CaregiverProfileEntityMapper mapper;
+
+	@Override
+	public CaregiverProfile save(CaregiverProfile caregiverProfile) {
+		CaregiverProfileEntity savedEntity = jpa.save(mapper.toEntity(caregiverProfile));
+		return mapper.toDomain(savedEntity);
+	}
 
 }

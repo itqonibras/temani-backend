@@ -15,33 +15,33 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class RejectRelationshipUseCaseImpl implements RejectRelationshipUseCase {
-    
-    private final RelationshipRepository relationshipRepository;
 
-    @Override
-    public void execute(UpdateRelationshipStatusRequest request, UUID relationId, User user) {
-        Relationship existingRelationship = relationshipRepository.findById(relationId)
-                .orElseThrow(() -> new IllegalArgumentException(RelationshipMessages.RELATIONSHIP_NOT_FOUND));
+	private final RelationshipRepository relationshipRepository;
 
-        UUID userId = user.getId();
-        UUID initiatorId = existingRelationship.getInitiatorId();
+	@Override
+	public void execute(UpdateRelationshipStatusRequest request, UUID relationId, User user) {
+		Relationship existingRelationship = relationshipRepository.findById(relationId)
+			.orElseThrow(() -> new IllegalArgumentException(RelationshipMessages.RELATIONSHIP_NOT_FOUND));
 
-        boolean isClient = userId.equals(existingRelationship.getClientId());
-        boolean isCaregiver = userId.equals(existingRelationship.getCaregiverId());
+		UUID userId = user.getId();
+		UUID initiatorId = existingRelationship.getInitiatorId();
 
-        if (!isClient && !isCaregiver) {
-            throw new IllegalStateException(RelationshipMessages.NOT_PART_OF_RELATIONSHIP);
-        }
+		boolean isClient = userId.equals(existingRelationship.getClientId());
+		boolean isCaregiver = userId.equals(existingRelationship.getCaregiverId());
 
-        if (existingRelationship.isAccepted()) {
-            throw new IllegalStateException(RelationshipMessages.NOT_ALLOWED_REJECT_ACCEPTED);
-        }
+		if (!isClient && !isCaregiver) {
+			throw new IllegalStateException(RelationshipMessages.NOT_PART_OF_RELATIONSHIP);
+		}
 
-        if (userId.equals(initiatorId)) {
-            throw new IllegalStateException(RelationshipMessages.CANNOT_REJECT_OWN_REQUEST);
-        }
+		if (existingRelationship.isAccepted()) {
+			throw new IllegalStateException(RelationshipMessages.NOT_ALLOWED_REJECT_ACCEPTED);
+		}
 
-        relationshipRepository.delete(existingRelationship);
-    }
+		if (userId.equals(initiatorId)) {
+			throw new IllegalStateException(RelationshipMessages.CANNOT_REJECT_OWN_REQUEST);
+		}
+
+		relationshipRepository.delete(existingRelationship);
+	}
 
 }

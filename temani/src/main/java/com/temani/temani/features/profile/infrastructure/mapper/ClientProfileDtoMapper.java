@@ -7,5 +7,7 @@ import com.temani.temani.features.profile.presentation.dto.response.ClientProfil
 
 @Mapper(componentModel = "spring")
 public interface ClientProfileDtoMapper {
-    ClientProfileResponse toDto(ClientProfile domain);
+
+	ClientProfileResponse toDto(ClientProfile domain);
+
 }

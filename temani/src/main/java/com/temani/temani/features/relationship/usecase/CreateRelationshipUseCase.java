@@ -8,5 +8,7 @@ import com.temani.temani.features.relationship.presentation.dto.request.Relation
 import com.temani.temani.features.relationship.presentation.dto.response.RelationshipResponse;
 
 public interface CreateRelationshipUseCase {
-    RelationshipResponse execute(RelationshipRequest request, UUID userId, Set<Role> roles);
+
+	RelationshipResponse execute(RelationshipRequest request, UUID userId, Set<Role> roles);
+
 }

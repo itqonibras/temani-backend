@@ -6,5 +6,7 @@ import com.temani.temani.features.profile.domain.model.User;
 import com.temani.temani.features.relationship.presentation.dto.request.UpdateRelationshipStatusRequest;
 
 public interface RejectRelationshipUseCase {
-    void execute(UpdateRelationshipStatusRequest request, UUID relationId, User user);
+
+	void execute(UpdateRelationshipStatusRequest request, UUID relationId, User user);
+
 }

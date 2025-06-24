@@ -15,16 +15,15 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class FindPendingReceivedRelationshipsUseCaseImpl implements FindPendingReceivedRelationshipsUseCase {
-    
-    private final RelationshipRepository relationshipRepository;
-    private final RelationshipDtoMapper mapper;
 
-    @Override
-    public List<RelationshipResponse> execute(UUID userId) {
-        List<Relationship> relationships = relationshipRepository.findPendingReceivedByUserId(userId);
-        return relationships.stream()
-                .map(mapper::toDto)
-                .toList();
-    }
+	private final RelationshipRepository relationshipRepository;
+
+	private final RelationshipDtoMapper mapper;
+
+	@Override
+	public List<RelationshipResponse> execute(UUID userId) {
+		List<Relationship> relationships = relationshipRepository.findPendingReceivedByUserId(userId);
+		return relationships.stream().map(mapper::toDto).toList();
+	}
 
 }

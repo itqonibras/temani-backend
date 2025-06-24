@@ -9,28 +9,30 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface RelationshipJpaRepository extends JpaRepository<RelationshipEntity, UUID> {
-    boolean existsByClientId(UUID clientId);
 
-    boolean existsByCaregiverId(UUID caregiverId);
+	boolean existsByClientId(UUID clientId);
 
-    boolean existsByCaregiverIdAndClientIdNot(UUID targetId, UUID currentUserId);
+	boolean existsByCaregiverId(UUID caregiverId);
 
-    Optional<RelationshipEntity> findById(UUID id);
+	boolean existsByCaregiverIdAndClientIdNot(UUID targetId, UUID currentUserId);
 
-    Optional<RelationshipEntity> findByClientIdAndCaregiverId(UUID clientId, UUID caregiverId);
+	Optional<RelationshipEntity> findById(UUID id);
 
-    @Query("""
-        SELECT r FROM RelationshipEntity r
-        WHERE r.accepted = true AND (r.clientId = :userId OR r.caregiverId = :userId)
-    """)
-    List<RelationshipEntity> findAcceptedByUserId(@Param("userId") UUID userId);
+	Optional<RelationshipEntity> findByClientIdAndCaregiverId(UUID clientId, UUID caregiverId);
 
-    List<RelationshipEntity> findAllByInitiatorIdAndAccepted(UUID initiatorId, boolean accepted);
+	@Query("""
+			    SELECT r FROM RelationshipEntity r
+			    WHERE r.accepted = true AND (r.clientId = :userId OR r.caregiverId = :userId)
+			""")
+	List<RelationshipEntity> findAcceptedByUserId(@Param("userId") UUID userId);
 
-    @Query("""
-        SELECT r FROM RelationshipEntity r
-        WHERE r.accepted = false AND r.initiatorId <> :userId
-          AND (r.clientId = :userId OR r.caregiverId = :userId)
-    """)
-    List<RelationshipEntity> findPendingReceivedByUserId(@Param("userId") UUID userId);
+	List<RelationshipEntity> findAllByInitiatorIdAndAccepted(UUID initiatorId, boolean accepted);
+
+	@Query("""
+			    SELECT r FROM RelationshipEntity r
+			    WHERE r.accepted = false AND r.initiatorId <> :userId
+			      AND (r.clientId = :userId OR r.caregiverId = :userId)
+			""")
+	List<RelationshipEntity> findPendingReceivedByUserId(@Param("userId") UUID userId);
+
 }

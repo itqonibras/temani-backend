@@ -15,22 +15,24 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class LoginUseCaseImpl implements LoginUseCase {
 
-    private final UserRepository userRepository;
-    private final PasswordEncoderUseCase passwordEncoderUseCase;
-    private final JwtUtils jwtUtils;
+	private final UserRepository userRepository;
 
-    @Override
-    public String execute(LoginRequest request) {
-        User user = userRepository.findByEmailOrUsername(request.getEmailOrUsername())
-                .orElseThrow(() -> new IllegalArgumentException(CommonMessages.USER_NOT_FOUND));
+	private final PasswordEncoderUseCase passwordEncoderUseCase;
 
-        if (!passwordEncoderUseCase.matches(request.getPassword(), user.getPassword())) {
-            throw new IllegalArgumentException(AuthMessages.INCORRECT_PASSWORD);
-        }
+	private final JwtUtils jwtUtils;
 
-        String token = jwtUtils.generateJwtToken(user.getUsername(), user.getId().toString(), user.getRoles());
+	@Override
+	public String execute(LoginRequest request) {
+		User user = userRepository.findByEmailOrUsername(request.getEmailOrUsername())
+			.orElseThrow(() -> new IllegalArgumentException(CommonMessages.USER_NOT_FOUND));
 
-        return token;
-    }
+		if (!passwordEncoderUseCase.matches(request.getPassword(), user.getPassword())) {
+			throw new IllegalArgumentException(AuthMessages.INCORRECT_PASSWORD);
+		}
+
+		String token = jwtUtils.generateJwtToken(user.getUsername(), user.getId().toString(), user.getRoles());
+
+		return token;
+	}
 
 }

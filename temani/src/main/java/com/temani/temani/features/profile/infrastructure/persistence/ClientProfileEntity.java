@@ -19,19 +19,19 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "client_profiles")
 public class ClientProfileEntity {
-    
-    @Id
-    @GeneratedValue(generator = "UUID")
-    private UUID id;
 
-    @OneToOne
-    @JoinColumn(name = "user_id", nullable = false, unique = true)
-    private UserEntity user;
+	@Id
+	@GeneratedValue(generator = "UUID")
+	private UUID id;
 
-    @Column(name = "condition")
-    private String condition;
+	@OneToOne
+	@JoinColumn(name = "user_id", nullable = false, unique = true)
+	private UserEntity user;
 
-    @Column(name = "about_me")
-    private String aboutMe;
+	@Column(name = "condition")
+	private String condition;
+
+	@Column(name = "about_me")
+	private String aboutMe;
 
 }

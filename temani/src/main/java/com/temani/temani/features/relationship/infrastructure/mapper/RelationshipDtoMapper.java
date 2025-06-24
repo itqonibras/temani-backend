@@ -7,5 +7,7 @@ import com.temani.temani.features.relationship.presentation.dto.response.Relatio
 
 @Mapper(componentModel = "spring")
 public interface RelationshipDtoMapper {
-    RelationshipResponse toDto(Relationship domain);
+
+	RelationshipResponse toDto(Relationship domain);
+
 }

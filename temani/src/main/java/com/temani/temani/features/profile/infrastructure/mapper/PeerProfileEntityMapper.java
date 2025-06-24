@@ -8,8 +8,10 @@ import com.temani.temani.features.profile.infrastructure.persistence.PeerProfile
 
 @Mapper(componentModel = "spring")
 public interface PeerProfileEntityMapper {
-    @Mapping(target = "user", ignore = true)
-    PeerProfileEntity toEntity(PeerProfile domain);
 
-    PeerProfile toDomain(PeerProfileEntity entity);
+	@Mapping(target = "user", ignore = true)
+	PeerProfileEntity toEntity(PeerProfile domain);
+
+	PeerProfile toDomain(PeerProfileEntity entity);
+
 }

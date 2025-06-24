@@ -13,9 +13,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PotentialRelationshipResponse {
-    private UUID userId;
-    private String name;
-    private String username;
-    private Set<Role> roles;
-    private String relationshipStatus;
+
+	private UUID userId;
+
+	private String name;
+
+	private String username;
+
+	private Set<Role> roles;
+
+	private String relationshipStatus;
+
 }

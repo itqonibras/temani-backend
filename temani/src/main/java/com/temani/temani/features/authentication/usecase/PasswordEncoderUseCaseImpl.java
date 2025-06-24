@@ -9,16 +9,16 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PasswordEncoderUseCaseImpl implements PasswordEncoderUseCase {
 
-    private final BCryptPasswordEncoder passwordEncoder;
-    
-    @Override
-    public String hash(String password) {
-        return passwordEncoder.encode(password);
-    }
+	private final BCryptPasswordEncoder passwordEncoder;
 
-    @Override
-    public boolean matches(String rawPassword, String hashedPassword) {
-        return passwordEncoder.matches(rawPassword, hashedPassword);
-    }
+	@Override
+	public String hash(String password) {
+		return passwordEncoder.encode(password);
+	}
+
+	@Override
+	public boolean matches(String rawPassword, String hashedPassword) {
+		return passwordEncoder.matches(rawPassword, hashedPassword);
+	}
 
 }

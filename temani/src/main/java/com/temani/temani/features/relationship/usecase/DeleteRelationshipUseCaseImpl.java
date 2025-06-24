@@ -15,22 +15,22 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class DeleteRelationshipUseCaseImpl implements DeleteRelationshipUseCase {
 
-    private final RelationshipRepository relationshipRepository;
+	private final RelationshipRepository relationshipRepository;
 
-    @Override
-    public void execute(UUID relationId, User user) {
-        Relationship relationship = relationshipRepository.findById(relationId)
-                .orElseThrow(() -> new IllegalArgumentException(RelationshipMessages.RELATIONSHIP_NOT_FOUND));
+	@Override
+	public void execute(UUID relationId, User user) {
+		Relationship relationship = relationshipRepository.findById(relationId)
+			.orElseThrow(() -> new IllegalArgumentException(RelationshipMessages.RELATIONSHIP_NOT_FOUND));
 
-        UUID userId = user.getId();
+		UUID userId = user.getId();
 
-        boolean isCaregiver = userId.equals(relationship.getCaregiverId());
+		boolean isCaregiver = userId.equals(relationship.getCaregiverId());
 
-        if (!isCaregiver) {
-            throw new IllegalStateException(RelationshipMessages.NOT_ALLOWED_DELETE);
-        }
+		if (!isCaregiver) {
+			throw new IllegalStateException(RelationshipMessages.NOT_ALLOWED_DELETE);
+		}
 
-        relationshipRepository.delete(relationship);
-    }
+		relationshipRepository.delete(relationship);
+	}
 
 }

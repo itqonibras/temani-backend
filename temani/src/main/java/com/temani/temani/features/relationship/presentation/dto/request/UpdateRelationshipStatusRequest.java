@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateRelationshipStatusRequest {
-    
-    @NotBlank(message = "Status can't be empty!")
-    private String status;
+
+	@NotBlank(message = "Status can't be empty!")
+	private String status;
 
 }

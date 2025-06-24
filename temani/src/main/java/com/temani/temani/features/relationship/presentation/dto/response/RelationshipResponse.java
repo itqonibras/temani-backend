@@ -11,11 +11,19 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RelationshipResponse {
-    private UUID id;
-    private UUID clientId;
-    private UUID caregiverId;
-    private UUID initiatorId;
-    private boolean accepted;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+
+	private UUID id;
+
+	private UUID clientId;
+
+	private UUID caregiverId;
+
+	private UUID initiatorId;
+
+	private boolean accepted;
+
+	private LocalDateTime createdAt;
+
+	private LocalDateTime updatedAt;
+
 }

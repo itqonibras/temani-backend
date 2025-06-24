@@ -6,5 +6,7 @@ import java.util.UUID;
 import com.temani.temani.features.journal.presentation.dto.response.JournalResponse;
 
 public interface GetAllJournalsUseCase {
-    List<JournalResponse> execute(UUID userId);
+
+	List<JournalResponse> execute(UUID userId);
+
 }

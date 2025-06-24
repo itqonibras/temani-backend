@@ -7,6 +7,9 @@ import com.temani.temani.features.relationship.infrastructure.persistence.Relati
 
 @Mapper(componentModel = "spring")
 public interface RelationshipEntityMapper {
-    RelationshipEntity toEntity(Relationship domain);
-    Relationship toDomain(RelationshipEntity entity);
+
+	RelationshipEntity toEntity(Relationship domain);
+
+	Relationship toDomain(RelationshipEntity entity);
+
 }

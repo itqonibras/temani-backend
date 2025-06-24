@@ -18,39 +18,36 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AcceptRelationshipUseCaseImpl implements AcceptRelationshipUseCase {
 
-    private final RelationshipRepository relationshipRepository;
-    private final RelationshipDtoMapper mapper;
+	private final RelationshipRepository relationshipRepository;
 
-    @Override
-    public RelationshipResponse execute(UpdateRelationshipStatusRequest request, UUID relationId, User user) {
-        Relationship existingRelationship = relationshipRepository.findById(relationId)
-                .orElseThrow(() -> new IllegalArgumentException(RelationshipMessages.RELATIONSHIP_NOT_FOUND));
+	private final RelationshipDtoMapper mapper;
 
-        UUID userId = user.getId();
-        UUID initiatorId = existingRelationship.getInitiatorId();
+	@Override
+	public RelationshipResponse execute(UpdateRelationshipStatusRequest request, UUID relationId, User user) {
+		Relationship existingRelationship = relationshipRepository.findById(relationId)
+			.orElseThrow(() -> new IllegalArgumentException(RelationshipMessages.RELATIONSHIP_NOT_FOUND));
 
-        boolean isClient = userId.equals(existingRelationship.getClientId());
-        boolean isCaregiver = userId.equals(existingRelationship.getCaregiverId());
+		UUID userId = user.getId();
+		UUID initiatorId = existingRelationship.getInitiatorId();
 
-        if (!isClient && !isCaregiver) {
-            throw new IllegalStateException(RelationshipMessages.NOT_PART_OF_RELATIONSHIP);
-        }
+		boolean isClient = userId.equals(existingRelationship.getClientId());
+		boolean isCaregiver = userId.equals(existingRelationship.getCaregiverId());
 
-        if (userId.equals(initiatorId)) {
-            throw new IllegalStateException(RelationshipMessages.CANNOT_ACCEPT_OWN_REQUEST);
-        }
+		if (!isClient && !isCaregiver) {
+			throw new IllegalStateException(RelationshipMessages.NOT_PART_OF_RELATIONSHIP);
+		}
 
-        Relationship updatedRelationship = new Relationship(
-                existingRelationship.getId(),
-                existingRelationship.getClientId(),
-                existingRelationship.getCaregiverId(),
-                existingRelationship.getInitiatorId(),
-                true,
-                existingRelationship.getCreatedAt(),
-                existingRelationship.getUpdatedAt());
+		if (userId.equals(initiatorId)) {
+			throw new IllegalStateException(RelationshipMessages.CANNOT_ACCEPT_OWN_REQUEST);
+		}
 
-        Relationship savedRelationship = relationshipRepository.save(updatedRelationship);
-        return mapper.toDto(savedRelationship);
-    }
+		Relationship updatedRelationship = new Relationship(existingRelationship.getId(),
+				existingRelationship.getClientId(), existingRelationship.getCaregiverId(),
+				existingRelationship.getInitiatorId(), true, existingRelationship.getCreatedAt(),
+				existingRelationship.getUpdatedAt());
+
+		Relationship savedRelationship = relationshipRepository.save(updatedRelationship);
+		return mapper.toDto(savedRelationship);
+	}
 
 }

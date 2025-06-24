@@ -13,16 +13,15 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class GetAllJournalUseCaseImpl implements GetAllJournalsUseCase{
-    
-    private final JournalRepository journalRepository;
-    private final JournalDtoMapper mapper;
+public class GetAllJournalUseCaseImpl implements GetAllJournalsUseCase {
 
-    @Override
-    public List<JournalResponse> execute(UUID userId) {
-        return journalRepository.findAllByUserId(userId)
-        .stream()
-        .map(mapper::toDto)
-        .toList();
-    }
+	private final JournalRepository journalRepository;
+
+	private final JournalDtoMapper mapper;
+
+	@Override
+	public List<JournalResponse> execute(UUID userId) {
+		return journalRepository.findAllByUserId(userId).stream().map(mapper::toDto).toList();
+	}
+
 }

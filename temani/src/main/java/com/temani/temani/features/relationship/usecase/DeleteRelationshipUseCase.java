@@ -5,5 +5,7 @@ import java.util.UUID;
 import com.temani.temani.features.profile.domain.model.User;
 
 public interface DeleteRelationshipUseCase {
-    void execute(UUID relationId, User user);
+
+	void execute(UUID relationId, User user);
+
 }

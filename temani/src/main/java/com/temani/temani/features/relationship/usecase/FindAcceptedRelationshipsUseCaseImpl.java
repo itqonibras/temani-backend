@@ -16,15 +16,14 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class FindAcceptedRelationshipsUseCaseImpl implements FindAcceptedRelationshipsUseCase {
 
-    private final RelationshipRepository relationshipRepository;
-    private final RelationshipDtoMapper mapper;
+	private final RelationshipRepository relationshipRepository;
 
-    @Override
-    public List<RelationshipResponse> execute(UUID userId) {
-        List<Relationship> relationships = relationshipRepository.findAcceptedByUserId(userId);
-        return relationships.stream()
-                .map(mapper::toDto)
-                .toList();
-    }
+	private final RelationshipDtoMapper mapper;
+
+	@Override
+	public List<RelationshipResponse> execute(UUID userId) {
+		List<Relationship> relationships = relationshipRepository.findAcceptedByUserId(userId);
+		return relationships.stream().map(mapper::toDto).toList();
+	}
 
 }

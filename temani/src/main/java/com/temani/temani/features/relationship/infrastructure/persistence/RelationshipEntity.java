@@ -23,29 +23,29 @@ import lombok.NoArgsConstructor;
 @Table(name = "user_relationship")
 public class RelationshipEntity {
 
-    @Id
-    @GeneratedValue(generator = "UUID")
-    private UUID id;
+	@Id
+	@GeneratedValue(generator = "UUID")
+	private UUID id;
 
-    @Column(name = "client_id", nullable = false)
-    private UUID clientId;
+	@Column(name = "client_id", nullable = false)
+	private UUID clientId;
 
-    @Column(name = "caregiver_id", nullable = false, unique = true)
-    private UUID caregiverId;
+	@Column(name = "caregiver_id", nullable = false, unique = true)
+	private UUID caregiverId;
 
-    @Column(name = "initiator_id", nullable = false)
-    private UUID initiatorId;
+	@Column(name = "initiator_id", nullable = false)
+	private UUID initiatorId;
 
-    @NotNull
-    @Column(name = "accepted", nullable = false)
-    private boolean accepted;
+	@NotNull
+	@Column(name = "accepted", nullable = false)
+	private boolean accepted;
 
-    @CreationTimestamp
-    @Column(name = "created_at", updatable = false, nullable = false)
-    private LocalDateTime createdAt;
+	@CreationTimestamp
+	@Column(name = "created_at", updatable = false, nullable = false)
+	private LocalDateTime createdAt;
 
-    @UpdateTimestamp
-    @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
+	@UpdateTimestamp
+	@Column(name = "updated_at", nullable = false)
+	private LocalDateTime updatedAt;
 
 }

@@ -16,31 +16,30 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class JournalRepositoryImpl implements JournalRepository {
 
-    private final JournalJpaRepository jpa;
-    private final JournalEntityMapper mapper;
+	private final JournalJpaRepository jpa;
 
-    @Override
-    public Journal save(Journal journal) {
-        JournalEntity savedEntity = jpa.save(mapper.toEntity(journal));
-        return mapper.toDomain(savedEntity);
-    }
+	private final JournalEntityMapper mapper;
 
-    @Override
-    public void delete(Journal journal) {
-        jpa.delete(mapper.toEntity(journal));
-    }
+	@Override
+	public Journal save(Journal journal) {
+		JournalEntity savedEntity = jpa.save(mapper.toEntity(journal));
+		return mapper.toDomain(savedEntity);
+	}
 
-    @Override
-    public Optional<Journal> findById(UUID id) {
-        return jpa.findById(id).map(mapper::toDomain);
-    }
+	@Override
+	public void delete(Journal journal) {
+		jpa.delete(mapper.toEntity(journal));
+	}
 
-    @Override
-    public List<Journal> findAllByUserId(UUID userId) {
-        List<JournalEntity> entities = jpa.findAllByUserId(userId);
-        return entities.stream()
-                .map(mapper::toDomain)
-                .toList();
-    }
+	@Override
+	public Optional<Journal> findById(UUID id) {
+		return jpa.findById(id).map(mapper::toDomain);
+	}
+
+	@Override
+	public List<Journal> findAllByUserId(UUID userId) {
+		List<JournalEntity> entities = jpa.findAllByUserId(userId);
+		return entities.stream().map(mapper::toDomain).toList();
+	}
 
 }

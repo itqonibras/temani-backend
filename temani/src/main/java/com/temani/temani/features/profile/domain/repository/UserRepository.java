@@ -8,22 +8,22 @@ import com.temani.temani.features.profile.domain.model.User;
 
 public interface UserRepository {
 
-    User save(User user);
+	User save(User user);
 
-    Optional<User> findById(UUID id);
+	Optional<User> findById(UUID id);
 
-    Optional<User> findByUsername(String username);
+	Optional<User> findByUsername(String username);
 
-    Optional<User> findByEmail(String email);
+	Optional<User> findByEmail(String email);
 
-    Optional<User> findByEmailOrUsername(String emailOrUsername);
+	Optional<User> findByEmailOrUsername(String emailOrUsername);
 
-    List<User> findAllByRoleAndKeyword(String role, String keyword, UUID currentUserId);
+	List<User> findAllByRoleAndKeyword(String role, String keyword, UUID currentUserId);
 
-    boolean existsByUsername(String username);
+	boolean existsByUsername(String username);
 
-    boolean existsByEmail(String email);
+	boolean existsByEmail(String email);
 
-    boolean existsByPhone(String phone);
-    
+	boolean existsByPhone(String phone);
+
 }

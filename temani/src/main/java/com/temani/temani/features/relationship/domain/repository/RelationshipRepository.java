@@ -7,23 +7,25 @@ import java.util.UUID;
 import com.temani.temani.features.relationship.domain.model.Relationship;
 
 public interface RelationshipRepository {
-    Relationship save(Relationship relationship);
 
-    void delete(Relationship relationship);
+	Relationship save(Relationship relationship);
 
-    boolean existsByClientId(UUID clientId);
+	void delete(Relationship relationship);
 
-    boolean existsByCaregiverId(UUID caregiverId);
+	boolean existsByClientId(UUID clientId);
 
-    boolean existsByCaregiverIdAndClientIdNot(UUID targetId, UUID currentUserId);
+	boolean existsByCaregiverId(UUID caregiverId);
 
-    Optional<Relationship> findById(UUID id);
+	boolean existsByCaregiverIdAndClientIdNot(UUID targetId, UUID currentUserId);
 
-    Optional<Relationship> findByClientIdAndCaregiverId(UUID clientId, UUID caregiverId);
+	Optional<Relationship> findById(UUID id);
 
-    List<Relationship> findAcceptedByUserId(UUID userId);
+	Optional<Relationship> findByClientIdAndCaregiverId(UUID clientId, UUID caregiverId);
 
-    List<Relationship> findPendingSentByUserId(UUID userId);
+	List<Relationship> findAcceptedByUserId(UUID userId);
 
-    List<Relationship> findPendingReceivedByUserId(UUID userId);
+	List<Relationship> findPendingSentByUserId(UUID userId);
+
+	List<Relationship> findPendingReceivedByUserId(UUID userId);
+
 }

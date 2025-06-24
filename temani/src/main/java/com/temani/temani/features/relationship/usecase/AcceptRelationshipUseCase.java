@@ -7,5 +7,7 @@ import com.temani.temani.features.relationship.presentation.dto.request.UpdateRe
 import com.temani.temani.features.relationship.presentation.dto.response.RelationshipResponse;
 
 public interface AcceptRelationshipUseCase {
-    RelationshipResponse execute(UpdateRelationshipStatusRequest request, UUID relationId, User user);
+
+	RelationshipResponse execute(UpdateRelationshipStatusRequest request, UUID relationId, User user);
+
 }
