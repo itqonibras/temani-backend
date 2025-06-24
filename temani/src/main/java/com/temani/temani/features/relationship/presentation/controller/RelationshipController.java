@@ -27,9 +27,9 @@ import com.temani.temani.features.relationship.usecase.CancelRelationshipUseCase
 import com.temani.temani.features.relationship.usecase.CreateRelationshipUseCase;
 import com.temani.temani.features.relationship.usecase.DeleteRelationshipUseCase;
 import com.temani.temani.features.relationship.usecase.FindPotentialRelationshipUseCase;
-import com.temani.temani.features.relationship.usecase.GetAcceptedRelationshipsUseCase;
-import com.temani.temani.features.relationship.usecase.GetPendingReceivedRelationshipsUseCase;
-import com.temani.temani.features.relationship.usecase.GetPendingSentRelationshipsUseCase;
+import com.temani.temani.features.relationship.usecase.FindAcceptedRelationshipsUseCase;
+import com.temani.temani.features.relationship.usecase.FindPendingReceivedRelationshipsUseCase;
+import com.temani.temani.features.relationship.usecase.FindPendingSentRelationshipsUseCase;
 import com.temani.temani.features.relationship.usecase.RejectRelationshipUseCase;
 
 import jakarta.validation.Valid;
@@ -42,11 +42,11 @@ public class RelationshipController {
 
 	private final CreateRelationshipUseCase createRelationshipUseCase;
 
-	private final GetAcceptedRelationshipsUseCase getAcceptedRelationshipsUseCase;
+	private final FindAcceptedRelationshipsUseCase findAcceptedRelationshipsUseCase;
 
-	private final GetPendingSentRelationshipsUseCase getPendingSentRelationshipsUseCase;
+	private final FindPendingSentRelationshipsUseCase findPendingSentRelationshipsUseCase;
 
-	private final GetPendingReceivedRelationshipsUseCase getPendingReceivedRelationshipsUseCase;
+	private final FindPendingReceivedRelationshipsUseCase findPendingReceivedRelationshipsUseCase;
 
 	private final AcceptRelationshipUseCase acceptRelationshipUseCase;
 
@@ -81,14 +81,14 @@ public class RelationshipController {
 		try {
 			List<RelationshipResponse> relationships = switch (status.toLowerCase()) {
 				case "accepted" -> {
-					yield getAcceptedRelationshipsUseCase.execute(user.getId());
+					yield findAcceptedRelationshipsUseCase.execute(user.getId());
 				}
 				case "pending" -> {
 					if ("sent".equalsIgnoreCase(direction)) {
-						yield getPendingSentRelationshipsUseCase.execute(user.getId());
+						yield findPendingSentRelationshipsUseCase.execute(user.getId());
 					}
 					else if ("received".equalsIgnoreCase(direction)) {
-						yield getPendingReceivedRelationshipsUseCase.execute(user.getId());
+						yield findPendingReceivedRelationshipsUseCase.execute(user.getId());
 					}
 					else {
 						throw new IllegalArgumentException(

@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class GetPendingSentRelationshipsUseCaseImpl implements GetPendingSentRelationshipsUseCase {
+public class FindPendingSentRelationshipsUseCaseImpl implements FindPendingSentRelationshipsUseCase {
     
     private final RelationshipRepository relationshipRepository;
     private final RelationshipDtoMapper mapper;

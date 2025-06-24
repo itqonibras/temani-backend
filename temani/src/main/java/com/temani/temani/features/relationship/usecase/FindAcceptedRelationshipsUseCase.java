@@ -5,6 +5,6 @@ import java.util.UUID;
 
 import com.temani.temani.features.relationship.presentation.dto.response.RelationshipResponse;
 
-public interface GetPendingSentRelationshipsUseCase {
+public interface FindAcceptedRelationshipsUseCase {
     List<RelationshipResponse> execute(UUID userId);
 }
