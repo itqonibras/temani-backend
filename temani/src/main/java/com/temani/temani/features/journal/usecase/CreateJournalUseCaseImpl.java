@@ -16,20 +16,15 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CreateJournalUseCaseImpl implements CreateJournalUseCase {
 
-    private final JournalRepository journalRepository;
-    private final JournalDtoMapper mapper;
-    
-    @Override
-    public JournalResponse execute(JournalRequest request, UUID userId) {
-        Journal journal = new Journal(
-            null,
-            userId,
-            request.getTitle(),
-            request.getContent(),
-            null,
-            null);
-        Journal savedJournal = journalRepository.save(journal);
-        return mapper.toDto(savedJournal);
-    }
+	private final JournalRepository journalRepository;
+
+	private final JournalDtoMapper mapper;
+
+	@Override
+	public JournalResponse execute(JournalRequest request, UUID userId) {
+		Journal journal = new Journal(null, userId, request.getTitle(), request.getContent(), null, null);
+		Journal savedJournal = journalRepository.save(journal);
+		return mapper.toDto(savedJournal);
+	}
 
 }

@@ -7,5 +7,7 @@ import com.temani.temani.features.journal.presentation.dto.response.JournalRespo
 
 @Mapper(componentModel = "spring")
 public interface JournalDtoMapper {
-    JournalResponse toDto(Journal journal);
+
+	JournalResponse toDto(Journal journal);
+
 }

@@ -6,5 +6,7 @@ import com.temani.temani.features.journal.presentation.dto.request.JournalReques
 import com.temani.temani.features.journal.presentation.dto.response.JournalResponse;
 
 public interface CreateJournalUseCase {
-    JournalResponse execute(JournalRequest request, UUID userId);
+
+	JournalResponse execute(JournalRequest request, UUID userId);
+
 }

@@ -6,5 +6,7 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface JournalJpaRepository extends JpaRepository<JournalEntity, UUID> {
-    List<JournalEntity> findAllByUserId(UUID userId);
+
+	List<JournalEntity> findAllByUserId(UUID userId);
+
 }

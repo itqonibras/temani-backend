@@ -7,5 +7,7 @@ import com.temani.temani.features.profile.presentation.dto.response.CaregiverPro
 
 @Mapper(componentModel = "spring")
 public interface CaregiverProfileDtoMapper {
-    CaregiverProfileResponse toDto(CaregiverProfile domain);
+
+	CaregiverProfileResponse toDto(CaregiverProfile domain);
+
 }

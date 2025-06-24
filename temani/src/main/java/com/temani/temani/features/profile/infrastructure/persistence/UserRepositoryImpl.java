@@ -3,7 +3,6 @@ package com.temani.temani.features.profile.infrastructure.persistence;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Repository;
 
@@ -17,60 +16,58 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserRepositoryImpl implements UserRepository {
 
-    private final UserJpaRepository jpa;
-    private final UserEntityMapper mapper;
+	private final UserJpaRepository jpa;
 
-    @Override
-    public User save(User user) {
-        UserEntity savedEntity = jpa.save(mapper.toEntity(user));
-        return mapper.toDomain(savedEntity);
-    }
+	private final UserEntityMapper mapper;
 
-    @Override
-    public Optional<User> findById(UUID id) {
-        return jpa.findById(id).map(mapper::toDomain);
-    }
+	@Override
+	public User save(User user) {
+		UserEntity savedEntity = jpa.save(mapper.toEntity(user));
+		return mapper.toDomain(savedEntity);
+	}
 
-    @Override
-    public Optional<User> findByUsername(String username) {
-        return jpa.findByUsername(username).map(mapper::toDomain);
-    }
+	@Override
+	public Optional<User> findById(UUID id) {
+		return jpa.findById(id).map(mapper::toDomain);
+	}
 
-    @Override
-    public Optional<User> findByEmail(String email) {
-        return jpa.findByEmail(email).map(mapper::toDomain);
-    }
+	@Override
+	public Optional<User> findByUsername(String username) {
+		return jpa.findByUsername(username).map(mapper::toDomain);
+	}
 
-    @Override
-    public Optional<User> findByEmailOrUsername(String emailOrUsername) {
-        Optional<User> user = jpa.findByEmail(emailOrUsername).map(mapper::toDomain);
-        if (user.isEmpty()) {
-            user = jpa.findByUsername(emailOrUsername).map(mapper::toDomain);
-        }
-        return user;
-    }
+	@Override
+	public Optional<User> findByEmail(String email) {
+		return jpa.findByEmail(email).map(mapper::toDomain);
+	}
 
-    @Override
-    public List<User> findAllByRoleAndKeyword(String role, String keyword, UUID currentUserId) {
-        return jpa.findAllByRoleAndKeyword(role, keyword, currentUserId)
-                .stream()
-                .map(mapper::toDomain)
-                .collect(Collectors.toList());
-    }
+	@Override
+	public Optional<User> findByEmailOrUsername(String emailOrUsername) {
+		Optional<User> user = jpa.findByEmail(emailOrUsername).map(mapper::toDomain);
+		if (user.isEmpty()) {
+			user = jpa.findByUsername(emailOrUsername).map(mapper::toDomain);
+		}
+		return user;
+	}
 
-    @Override
-    public boolean existsByUsername(String username) {
-        return jpa.existsByUsername(username);
-    }
+	@Override
+	public List<User> findAllByRoleAndKeyword(String role, String keyword, UUID currentUserId) {
+		return jpa.findAllByRoleAndKeyword(role, keyword, currentUserId).stream().map(mapper::toDomain).toList();
+	}
 
-    @Override
-    public boolean existsByEmail(String email) {
-        return jpa.existsByEmail(email);
-    }
+	@Override
+	public boolean existsByUsername(String username) {
+		return jpa.existsByUsername(username);
+	}
 
-    @Override
-    public boolean existsByPhone(String phone) {
-        return jpa.existsByPhone(phone);
-    }
+	@Override
+	public boolean existsByEmail(String email) {
+		return jpa.existsByEmail(email);
+	}
+
+	@Override
+	public boolean existsByPhone(String phone) {
+		return jpa.existsByPhone(phone);
+	}
 
 }
