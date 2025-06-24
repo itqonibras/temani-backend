@@ -3,6 +3,7 @@ package com.temani.temani.features.authentication.presentation.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.temani.temani.common.constants.AuthMessages;
 import com.temani.temani.common.presentation.dto.response.BaseResponse;
 import com.temani.temani.features.authentication.presentation.dto.request.LoginRequest;
 import com.temani.temani.features.authentication.presentation.dto.request.RegisterRequest;
@@ -30,7 +31,7 @@ public class AuthController {
 	public ResponseEntity<?> userLogin(@RequestBody @Valid LoginRequest request) {
 		try {
 			String token = loginUseCase.execute(request);
-			return ResponseEntity.ok(BaseResponse.success("Login successful!", token));
+			return ResponseEntity.ok(BaseResponse.success(AuthMessages.LOGIN_SUCCESS, token));
 		}
 		catch (Exception e) {
 			return ResponseEntity.badRequest().body(BaseResponse.error(e.getMessage()));
@@ -41,7 +42,7 @@ public class AuthController {
 	public ResponseEntity<?> userRegister(@RequestBody @Valid RegisterRequest request) {
 		try {
 			UserResponse registeredUser = registerUseCase.execute(request);
-			return ResponseEntity.ok(BaseResponse.success("Account registered successfully!", registeredUser));
+			return ResponseEntity.ok(BaseResponse.success(AuthMessages.REGISTER_SUCCESS, registeredUser));
 		}
 		catch (Exception e) {
 			return ResponseEntity.badRequest().body(BaseResponse.error(e.getMessage()));

@@ -3,6 +3,7 @@ package com.temani.temani.features.journal.presentation.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.temani.temani.common.constants.JournalMessages;
 import com.temani.temani.common.presentation.dto.response.BaseResponse;
 import com.temani.temani.common.security.CustomUserDetails;
 import com.temani.temani.features.journal.presentation.dto.request.JournalRequest;
@@ -47,7 +48,7 @@ public class JournalController {
 		User user = userDetails.getUser();
 		try {
 			List<JournalResponse> journals = getAllJournalsUseCase.execute(user.getId());
-			return ResponseEntity.ok(BaseResponse.success("Journals received successfully!", journals));
+			return ResponseEntity.ok(BaseResponse.success(JournalMessages.JOURNALS_RECEIVED_SUCCESS, journals));
 		}
 		catch (Exception e) {
 			return ResponseEntity.badRequest().body(BaseResponse.error(e.getMessage()));
@@ -60,7 +61,7 @@ public class JournalController {
 		User user = userDetails.getUser();
 		try {
 			JournalResponse journal = createJournalUseCase.execute(request, user.getId());
-			return ResponseEntity.ok(BaseResponse.success("Journals created successfully!", journal));
+			return ResponseEntity.ok(BaseResponse.success(JournalMessages.JOURNAL_CREATED_SUCCESS, journal));
 		}
 		catch (Exception e) {
 			return ResponseEntity.badRequest().body(BaseResponse.error(e.getMessage()));
@@ -74,7 +75,7 @@ public class JournalController {
 		User user = userDetails.getUser();
 		try {
 			JournalResponse journal = updateJournalUseCase.execute(request, id, user.getId());
-			return ResponseEntity.ok(BaseResponse.success("Journals created successfully!", journal));
+			return ResponseEntity.ok(BaseResponse.success(JournalMessages.JOURNAL_UPDATED_SUCCESS, journal));
 		}
 		catch (Exception e) {
 			return ResponseEntity.badRequest().body(BaseResponse.error(e.getMessage()));
@@ -87,8 +88,7 @@ public class JournalController {
 		User user = userDetails.getUser();
 		try {
 			deleteJournalUseCase.execute(id, user.getId());
-			return ResponseEntity
-				.ok(BaseResponse.success(String.format("Journal with id %s deleted successfully!", id)));
+			return ResponseEntity.ok(BaseResponse.success(String.format(JournalMessages.JOURNAL_DELETED_SUCCESS, id)));
 		}
 		catch (Exception e) {
 			return ResponseEntity.badRequest().body(BaseResponse.error(e.getMessage()));

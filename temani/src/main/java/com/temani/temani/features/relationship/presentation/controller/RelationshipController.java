@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.temani.temani.common.constants.RelationshipMessages;
 import com.temani.temani.common.presentation.dto.response.BaseResponse;
 import com.temani.temani.common.security.CustomUserDetails;
 import com.temani.temani.features.profile.domain.model.User;
@@ -65,7 +66,7 @@ public class RelationshipController {
 		try {
 			RelationshipResponse relationship = createRelationshipUseCase.execute(request, user.getId(),
 					user.getRoles());
-			return ResponseEntity.ok(BaseResponse.success("Relationship created successfully!", relationship));
+			return ResponseEntity.ok(BaseResponse.success(RelationshipMessages.RELATIONSHIP_CREATED_SUCCESS, relationship));
 		}
 		catch (Exception e) {
 			return ResponseEntity.badRequest().body(BaseResponse.error(e.getMessage()));
@@ -91,16 +92,15 @@ public class RelationshipController {
 						yield findPendingReceivedRelationshipsUseCase.execute(user.getId());
 					}
 					else {
-						throw new IllegalArgumentException(
-								"When status is 'pending', direction must be 'sent' or 'received'");
+						throw new IllegalArgumentException(RelationshipMessages.INVALID_PENDING_DIRECTION);
 					}
 				}
 				default -> {
-					throw new IllegalArgumentException("Status must be 'accepted' or 'pending'");
+					throw new IllegalArgumentException(RelationshipMessages.INVALID_STATUS_PARAMETER);
 				}
 			};
 
-			return ResponseEntity.ok(BaseResponse.success("Relationships received successfully!", relationships));
+			return ResponseEntity.ok(BaseResponse.success(RelationshipMessages.RELATIONSHIPS_RECEIVED_SUCCESS, relationships));
 		}
 		catch (Exception e) {
 			return ResponseEntity.badRequest().body(BaseResponse.error(e.getMessage()));
@@ -120,20 +120,20 @@ public class RelationshipController {
 			switch (request.getStatus().toLowerCase()) {
 				case "accept" -> {
 					relationship = acceptRelationshipUseCase.execute(request, id, user);
-					message = "Relationship updated successfully!";
+					message = RelationshipMessages.RELATIONSHIP_UPDATED_SUCCESS;
 					return ResponseEntity.ok(BaseResponse.success(message, relationship));
 				}
 				case "reject" -> {
 					rejectRelationshipUseCase.execute(request, id, user);
-					message = String.format("Relationship with id %s rejected successfully!", id);
+					message = String.format(RelationshipMessages.RELATIONSHIP_REJECTED_SUCCESS, id);
 					return ResponseEntity.ok(BaseResponse.success(message, null));
 				}
 				case "cancel" -> {
 					cancelRelationshipUseCase.execute(request, id, user);
-					message = String.format("Relationship with id %s canceled successfully!", id);
+					message = String.format(RelationshipMessages.RELATIONSHIP_CANCELED_SUCCESS, id);
 					return ResponseEntity.ok(BaseResponse.success(message, null));
 				}
-				default -> throw new IllegalArgumentException("Invalid status: " + request.getStatus());
+				default -> throw new IllegalArgumentException(String.format(RelationshipMessages.INVALID_STATUS, request.getStatus()));
 			}
 		}
 		catch (Exception e) {
@@ -149,7 +149,7 @@ public class RelationshipController {
 		try {
 			List<PotentialRelationshipResponse> results = findPotentialRelationshipUseCase.execute(role, keyword,
 					user.getId());
-			return ResponseEntity.ok(BaseResponse.success("Users fetched successfully!", results));
+			return ResponseEntity.ok(BaseResponse.success(RelationshipMessages.USERS_RECEIVED_SUCCESS, results));
 		}
 		catch (Exception e) {
 			return ResponseEntity.badRequest().body(BaseResponse.error(e.getMessage()));
@@ -163,7 +163,7 @@ public class RelationshipController {
 		try {
 			deleteRelationshipUseCase.execute(id, user);
 			return ResponseEntity
-				.ok(BaseResponse.success(String.format("Relationship with id %s deleted successfully!", id)));
+				.ok(BaseResponse.success(String.format(RelationshipMessages.RELATIONSHIP_DELETED_SUCCESS, id)));
 		}
 		catch (Exception e) {
 			return ResponseEntity.badRequest().body(BaseResponse.error(e.getMessage()));

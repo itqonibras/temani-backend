@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import com.temani.temani.common.constants.RelationshipMessages;
 import com.temani.temani.features.profile.domain.model.User;
 import com.temani.temani.features.relationship.domain.model.Relationship;
 import com.temani.temani.features.relationship.domain.repository.RelationshipRepository;
@@ -23,7 +24,7 @@ public class AcceptRelationshipUseCaseImpl implements AcceptRelationshipUseCase 
     @Override
     public RelationshipResponse execute(UpdateRelationshipStatusRequest request, UUID relationId, User user) {
         Relationship existingRelationship = relationshipRepository.findById(relationId)
-                .orElseThrow(() -> new IllegalArgumentException("Relationship not found!"));
+                .orElseThrow(() -> new IllegalArgumentException(RelationshipMessages.RELATIONSHIP_NOT_FOUND));
 
         UUID userId = user.getId();
         UUID initiatorId = existingRelationship.getInitiatorId();
@@ -32,11 +33,11 @@ public class AcceptRelationshipUseCaseImpl implements AcceptRelationshipUseCase 
         boolean isCaregiver = userId.equals(existingRelationship.getCaregiverId());
 
         if (!isClient && !isCaregiver) {
-            throw new IllegalStateException("You are not part of this relationship!");
+            throw new IllegalStateException(RelationshipMessages.NOT_PART_OF_RELATIONSHIP);
         }
 
         if (userId.equals(initiatorId)) {
-            throw new IllegalStateException("You cannot accept your own request!");
+            throw new IllegalStateException(RelationshipMessages.CANNOT_ACCEPT_OWN_REQUEST);
         }
 
         Relationship updatedRelationship = new Relationship(

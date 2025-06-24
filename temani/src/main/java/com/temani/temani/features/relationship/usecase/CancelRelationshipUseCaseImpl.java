@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import com.temani.temani.common.constants.RelationshipMessages;
 import com.temani.temani.features.profile.domain.model.User;
 import com.temani.temani.features.relationship.domain.model.Relationship;
 import com.temani.temani.features.relationship.domain.repository.RelationshipRepository;
@@ -20,7 +21,7 @@ public class CancelRelationshipUseCaseImpl implements CancelRelationshipUseCase 
     @Override
     public void execute(UpdateRelationshipStatusRequest request, UUID relationId, User user) {
         Relationship existingRelationship = relationshipRepository.findById(relationId)
-                .orElseThrow(() -> new IllegalArgumentException("Relationship not found!"));
+                .orElseThrow(() -> new IllegalArgumentException(RelationshipMessages.RELATIONSHIP_NOT_FOUND));
 
         UUID userId = user.getId();
         UUID initiatorId = existingRelationship.getInitiatorId();
@@ -29,15 +30,15 @@ public class CancelRelationshipUseCaseImpl implements CancelRelationshipUseCase 
         boolean isCaregiver = userId.equals(existingRelationship.getCaregiverId());
 
         if (!isClient && !isCaregiver) {
-            throw new IllegalStateException("You are not part of this relationship!");
+            throw new IllegalStateException(RelationshipMessages.NOT_PART_OF_RELATIONSHIP);
         }
 
         if (existingRelationship.isAccepted()) {
-            throw new IllegalStateException("You are not allowed to cancel accepted relationship!");
+            throw new IllegalStateException(RelationshipMessages.NOT_ALLOWED_CANCEL_ACCEPTED);
         }
 
         if (!userId.equals(initiatorId)) {
-            throw new IllegalStateException("You are not allowed to cancel this relationship!");
+            throw new IllegalStateException(RelationshipMessages.NOT_ALLOWED_CANCEL);
         }
 
         relationshipRepository.delete(existingRelationship);
