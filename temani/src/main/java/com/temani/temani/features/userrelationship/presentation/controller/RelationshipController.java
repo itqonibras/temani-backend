@@ -1,10 +1,8 @@
 package com.temani.temani.features.userrelationship.presentation.controller;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -42,169 +40,134 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/relationships")
 public class RelationshipController {
 
-    private final CreateRelationshipUseCase createRelationshipUseCase;
-    private final GetAcceptedRelationshipsUseCase getAcceptedRelationshipsUseCase;
-    private final GetPendingSentRelationshipsUseCase getPendingSentRelationshipsUseCase;
-    private final GetPendingReceivedRelationshipsUseCase getPendingReceivedRelationshipsUseCase;
-    private final AcceptRelationshipUseCase acceptRelationshipUseCase;
-    private final RejectRelationshipUseCase rejectRelationshipUseCase;
-    private final CancelRelationshipUseCase cancelRelationshipUseCase;
-    private final FindPotentialRelationshipUseCase findPotentialRelationshipUseCase;
-    private final DeleteRelationshipUseCase deleteRelationshipUseCase;
+	private final CreateRelationshipUseCase createRelationshipUseCase;
 
-    @PostMapping("")
-    public ResponseEntity<?> createRelationship(@RequestBody RelationshipRequest request,
-            Authentication auth) {
-        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
-        User user = userDetails.getUser();
+	private final GetAcceptedRelationshipsUseCase getAcceptedRelationshipsUseCase;
 
-        var baseResponse = new BaseResponse<>();
-        try {
-            RelationshipResponse relationship = createRelationshipUseCase.execute(request, user.getId(),
-                    user.getRoles());
-            baseResponse.setStatus(HttpStatus.OK.value());
-            baseResponse.setMessage("Relationship created successfully!");
-            baseResponse.setTimestamp(LocalDateTime.now());
-            baseResponse.setData(relationship);
-            return new ResponseEntity<>(baseResponse, HttpStatus.OK);
-        } catch (IllegalArgumentException e) {
-            baseResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-            baseResponse.setMessage(e.getMessage());
-            baseResponse.setTimestamp(LocalDateTime.now());
-            return new ResponseEntity<>(baseResponse, HttpStatus.BAD_REQUEST);
-        } catch (IllegalStateException e) {
-            baseResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-            baseResponse.setMessage(e.getMessage());
-            baseResponse.setTimestamp(LocalDateTime.now());
-            return new ResponseEntity<>(baseResponse, HttpStatus.BAD_REQUEST);
-        }
-    }
+	private final GetPendingSentRelationshipsUseCase getPendingSentRelationshipsUseCase;
 
-    @GetMapping
-    public ResponseEntity<?> getRelationships(
-            @RequestParam(defaultValue = "accepted") String status,
-            @RequestParam(required = false) String direction,
-            Authentication auth) {
-        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
-        User user = userDetails.getUser();
+	private final GetPendingReceivedRelationshipsUseCase getPendingReceivedRelationshipsUseCase;
 
-        var baseResponse = new BaseResponse<>();
-        try {
-            List<RelationshipResponse> relationships = switch (status.toLowerCase()) {
-                case "accepted" -> getAcceptedRelationshipsUseCase.execute(user.getId());
-                case "pending" -> {
-                    if ("sent".equalsIgnoreCase(direction)) {
-                        yield getPendingSentRelationshipsUseCase.execute(user.getId());
-                    } else if ("received".equalsIgnoreCase(direction)) {
-                        yield getPendingReceivedRelationshipsUseCase.execute(user.getId());
-                    } else {
-                        throw new IllegalArgumentException(
-                                "When status is 'pending', direction must be 'sent' or 'received'");
-                    }
-                }
-                default -> throw new IllegalArgumentException("Status must be 'accepted' or 'pending'");
-            };
+	private final AcceptRelationshipUseCase acceptRelationshipUseCase;
 
-            baseResponse.setStatus(HttpStatus.OK.value());
-            baseResponse.setMessage("Relationships received successfully!");
-            baseResponse.setTimestamp(LocalDateTime.now());
-            baseResponse.setData(relationships);
-            return new ResponseEntity<>(baseResponse, HttpStatus.OK);
+	private final RejectRelationshipUseCase rejectRelationshipUseCase;
 
-        } catch (Exception e) {
-            baseResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-            baseResponse.setMessage(e.getMessage());
-            baseResponse.setTimestamp(LocalDateTime.now());
-            return new ResponseEntity<>(baseResponse, HttpStatus.BAD_REQUEST);
-        }
-    }
+	private final CancelRelationshipUseCase cancelRelationshipUseCase;
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<?> acceptRelationship(
-            @PathVariable UUID id,
-            @RequestBody @Valid UpdateRelationshipStatusRequest request,
-            Authentication auth) {
-        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
-        User user = userDetails.getUser();
+	private final FindPotentialRelationshipUseCase findPotentialRelationshipUseCase;
 
-        var baseResponse = new BaseResponse<>();
-        try {
-            RelationshipResponse relationship = null;
+	private final DeleteRelationshipUseCase deleteRelationshipUseCase;
 
-            switch (request.getStatus().toLowerCase()) {
-                case "accept" -> {
-                    relationship = acceptRelationshipUseCase.execute(request, id, user);
-                    baseResponse.setData(relationship);
-                    baseResponse.setMessage("Relationship updated successfully!");
-                }
-                case "reject" -> {
-                    rejectRelationshipUseCase.execute(request, id, user);
-                    baseResponse.setMessage(String.format("Relationship with id %s rejected successfully!", id));
-                }
-                case "cancel" -> {
-                    cancelRelationshipUseCase.execute(request, id, user);
-                    baseResponse.setMessage(String.format("Relationship with id %s canceled successfully!", id));
-                }
-                default -> throw new IllegalArgumentException("Invalid status: " + request.getStatus());
-            }
+	@PostMapping("")
+	public ResponseEntity<?> createRelationship(@RequestBody RelationshipRequest request, Authentication auth) {
+		CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+		User user = userDetails.getUser();
+		try {
+			RelationshipResponse relationship = createRelationshipUseCase.execute(request, user.getId(),
+					user.getRoles());
+			return ResponseEntity.ok(BaseResponse.success("Relationship created successfully!", relationship));
+		}
+		catch (Exception e) {
+			return ResponseEntity.badRequest().body(BaseResponse.error(e.getMessage()));
+		}
+	}
 
-            baseResponse.setStatus(HttpStatus.OK.value());
-            baseResponse.setTimestamp(LocalDateTime.now());
-            return new ResponseEntity<>(baseResponse, HttpStatus.OK);
-        } catch (Exception e) {
-            baseResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-            baseResponse.setMessage(e.getMessage());
-            baseResponse.setTimestamp(LocalDateTime.now());
-            return new ResponseEntity<>(baseResponse, HttpStatus.BAD_REQUEST);
-        }
-    }
+	@GetMapping
+	public ResponseEntity<?> getRelationships(@RequestParam(defaultValue = "accepted") String status,
+			@RequestParam(required = false) String direction, Authentication auth) {
+		CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+		User user = userDetails.getUser();
 
-    @GetMapping("/search")
-    public ResponseEntity<?> searchPotentialRelationship(
-            @RequestParam String role,
-            @RequestParam(required = false) String keyword,
-            Authentication auth) {
-        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
-        User user = userDetails.getUser();
+		try {
+			List<RelationshipResponse> relationships = switch (status.toLowerCase()) {
+				case "accepted" -> {
+					yield getAcceptedRelationshipsUseCase.execute(user.getId());
+				}
+				case "pending" -> {
+					if ("sent".equalsIgnoreCase(direction)) {
+						yield getPendingSentRelationshipsUseCase.execute(user.getId());
+					}
+					else if ("received".equalsIgnoreCase(direction)) {
+						yield getPendingReceivedRelationshipsUseCase.execute(user.getId());
+					}
+					else {
+						throw new IllegalArgumentException(
+								"When status is 'pending', direction must be 'sent' or 'received'");
+					}
+				}
+				default -> {
+					throw new IllegalArgumentException("Status must be 'accepted' or 'pending'");
+				}
+			};
 
-        var baseResponse = new BaseResponse<>();
+			return ResponseEntity.ok(BaseResponse.success("Relationships received successfully!", relationships));
+		}
+		catch (Exception e) {
+			return ResponseEntity.badRequest().body(BaseResponse.error(e.getMessage()));
+		}
+	}
 
-        try {
-            List<PotentialRelationshipResponse> results = findPotentialRelationshipUseCase.execute(role, keyword,
-                    user.getId());
-            baseResponse.setStatus(HttpStatus.OK.value());
-            baseResponse.setMessage("Users fetched successfully.");
-            baseResponse.setTimestamp(LocalDateTime.now());
-            baseResponse.setData(results);
-            return new ResponseEntity<>(baseResponse, HttpStatus.OK);
-        } catch (Exception e) {
-            baseResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-            baseResponse.setMessage(e.getMessage());
-            baseResponse.setTimestamp(LocalDateTime.now());
-            return new ResponseEntity<>(baseResponse, HttpStatus.BAD_REQUEST);
-        }
-    }
+	@PatchMapping("/{id}")
+	public ResponseEntity<?> acceptRelationship(@PathVariable UUID id,
+			@RequestBody @Valid UpdateRelationshipStatusRequest request, Authentication auth) {
+		CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+		User user = userDetails.getUser();
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteRelationship(
-            @PathVariable UUID id,
-            Authentication auth) {
-        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
-        User user = userDetails.getUser();
+		try {
+			RelationshipResponse relationship = null;
+			String message;
 
-        var baseResponse = new BaseResponse<>();
-        try {
-            deleteRelationshipUseCase.execute(id, user);
-            baseResponse.setStatus(HttpStatus.OK.value());
-            baseResponse.setMessage(String.format("Relationship with id %s deleted successfully!", id));
-            baseResponse.setTimestamp(LocalDateTime.now());
-            return new ResponseEntity<>(baseResponse, HttpStatus.OK);
-        } catch (Exception e) {
-            baseResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-            baseResponse.setMessage(e.getMessage());
-            baseResponse.setTimestamp(LocalDateTime.now());
-            return new ResponseEntity<>(baseResponse, HttpStatus.BAD_REQUEST);
-        }
-    }
+			switch (request.getStatus().toLowerCase()) {
+				case "accept" -> {
+					relationship = acceptRelationshipUseCase.execute(request, id, user);
+					message = "Relationship updated successfully!";
+					return ResponseEntity.ok(BaseResponse.success(message, relationship));
+				}
+				case "reject" -> {
+					rejectRelationshipUseCase.execute(request, id, user);
+					message = String.format("Relationship with id %s rejected successfully!", id);
+					return ResponseEntity.ok(BaseResponse.success(message, null));
+				}
+				case "cancel" -> {
+					cancelRelationshipUseCase.execute(request, id, user);
+					message = String.format("Relationship with id %s canceled successfully!", id);
+					return ResponseEntity.ok(BaseResponse.success(message, null));
+				}
+				default -> throw new IllegalArgumentException("Invalid status: " + request.getStatus());
+			}
+		}
+		catch (Exception e) {
+			return ResponseEntity.badRequest().body(BaseResponse.error(e.getMessage()));
+		}
+	}
+
+	@GetMapping("/search")
+	public ResponseEntity<?> searchPotentialRelationship(@RequestParam String role,
+			@RequestParam(required = false) String keyword, Authentication auth) {
+		CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+		User user = userDetails.getUser();
+		try {
+			List<PotentialRelationshipResponse> results = findPotentialRelationshipUseCase.execute(role, keyword,
+					user.getId());
+			return ResponseEntity.ok(BaseResponse.success("Users fetched successfully!", results));
+		}
+		catch (Exception e) {
+			return ResponseEntity.badRequest().body(BaseResponse.error(e.getMessage()));
+		}
+	}
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity<?> deleteRelationship(@PathVariable UUID id, Authentication auth) {
+		CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+		User user = userDetails.getUser();
+		try {
+			deleteRelationshipUseCase.execute(id, user);
+			return ResponseEntity
+				.ok(BaseResponse.success(String.format("Relationship with id %s deleted successfully!", id)));
+		}
+		catch (Exception e) {
+			return ResponseEntity.badRequest().body(BaseResponse.error(e.getMessage()));
+		}
+	}
 
 }

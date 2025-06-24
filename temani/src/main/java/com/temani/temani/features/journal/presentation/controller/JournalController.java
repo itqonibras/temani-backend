@@ -16,11 +16,9 @@ import com.temani.temani.features.profile.domain.model.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -35,105 +33,66 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RequestMapping("/journals")
 public class JournalController {
 
-    private final GetAllJournalsUseCase getAllJournalsUseCase;
-    private final CreateJournalUseCase createJournalUseCase;
-    private final UpdateJournalUseCase updateJournalUseCase;
-    private final DeleteJournalUseCase deleteJournalUseCase;
+	private final GetAllJournalsUseCase getAllJournalsUseCase;
 
-    @GetMapping("")
-    public ResponseEntity<?> getJournals(Authentication auth) {
-        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
-        User user = userDetails.getUser();
+	private final CreateJournalUseCase createJournalUseCase;
 
-        var baseResponse = new BaseResponse<>();
-        try {
-            List<JournalResponse> journals = getAllJournalsUseCase.execute(user.getId());
-            baseResponse.setStatus(HttpStatus.OK.value());
-            baseResponse.setMessage("Journals received successfully!");
-            baseResponse.setTimestamp(LocalDateTime.now());
-            baseResponse.setData(journals);
-            return new ResponseEntity<>(baseResponse, HttpStatus.OK);
-        } catch (Error e) {
-            baseResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-            baseResponse.setMessage(e.getMessage());
-            baseResponse.setTimestamp(LocalDateTime.now());
-            return new ResponseEntity<>(baseResponse, HttpStatus.BAD_REQUEST);
-        }
-    }
+	private final UpdateJournalUseCase updateJournalUseCase;
 
-    @PostMapping("")
-    public ResponseEntity<?> createJournal(@RequestBody @Valid JournalRequest request,
-            Authentication auth) {
-        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
-        User user = userDetails.getUser();
+	private final DeleteJournalUseCase deleteJournalUseCase;
 
-        var baseResponse = new BaseResponse<>();
-        try {
-            JournalResponse journal = createJournalUseCase.execute(request, user.getId());
-            baseResponse.setStatus(HttpStatus.OK.value());
-            baseResponse.setMessage("Journal created successfully!");
-            baseResponse.setTimestamp(LocalDateTime.now());
-            baseResponse.setData(journal);
-            return new ResponseEntity<>(baseResponse, HttpStatus.OK);
-        } catch (IllegalArgumentException e) {
-            baseResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-            baseResponse.setMessage(e.getMessage());
-            baseResponse.setTimestamp(LocalDateTime.now());
-            return new ResponseEntity<>(baseResponse, HttpStatus.BAD_REQUEST);
-        }
-    }
+	@GetMapping("")
+	public ResponseEntity<?> getJournals(Authentication auth) {
+		CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+		User user = userDetails.getUser();
+		try {
+			List<JournalResponse> journals = getAllJournalsUseCase.execute(user.getId());
+			return ResponseEntity.ok(BaseResponse.success("Journals received successfully!", journals));
+		}
+		catch (Exception e) {
+			return ResponseEntity.badRequest().body(BaseResponse.error(e.getMessage()));
+		}
+	}
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateJournal(@PathVariable UUID id,
-            @RequestBody @Valid JournalRequest request,
-            Authentication auth) {
-        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
-        User user = userDetails.getUser();
+	@PostMapping("")
+	public ResponseEntity<?> createJournal(@RequestBody @Valid JournalRequest request, Authentication auth) {
+		CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+		User user = userDetails.getUser();
+		try {
+			JournalResponse journal = createJournalUseCase.execute(request, user.getId());
+			return ResponseEntity.ok(BaseResponse.success("Journals created successfully!", journal));
+		}
+		catch (Exception e) {
+			return ResponseEntity.badRequest().body(BaseResponse.error(e.getMessage()));
+		}
+	}
 
-        var baseResponse = new BaseResponse<>();
-        try {
-            JournalResponse updatedJournal = updateJournalUseCase.execute(request, id, user.getId());
-            baseResponse.setStatus(HttpStatus.OK.value());
-            baseResponse.setMessage("Journal updated successfully!");
-            baseResponse.setTimestamp(LocalDateTime.now());
-            baseResponse.setData(updatedJournal);
-            return new ResponseEntity<>(baseResponse, HttpStatus.OK);
-        } catch (IllegalArgumentException e) {
-            baseResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-            baseResponse.setMessage(e.getMessage());
-            baseResponse.setTimestamp(LocalDateTime.now());
-            return new ResponseEntity<>(baseResponse, HttpStatus.BAD_REQUEST);
-        } catch (IllegalStateException e) {
-            baseResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-            baseResponse.setMessage(e.getMessage());
-            baseResponse.setTimestamp(LocalDateTime.now());
-            return new ResponseEntity<>(baseResponse, HttpStatus.BAD_REQUEST);
-        }
-    }
+	@PutMapping("/{id}")
+	public ResponseEntity<?> updateJournal(@PathVariable UUID id, @RequestBody @Valid JournalRequest request,
+			Authentication auth) {
+		CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+		User user = userDetails.getUser();
+		try {
+			JournalResponse journal = updateJournalUseCase.execute(request, id, user.getId());
+			return ResponseEntity.ok(BaseResponse.success("Journals created successfully!", journal));
+		}
+		catch (Exception e) {
+			return ResponseEntity.badRequest().body(BaseResponse.error(e.getMessage()));
+		}
+	}
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteJournal(@PathVariable UUID id, Authentication auth) {
-        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
-        User user = userDetails.getUser();
-
-        var baseResponse = new BaseResponse<>();
-        try {
-            deleteJournalUseCase.execute(id, user.getId());
-            baseResponse.setStatus(HttpStatus.OK.value());
-            baseResponse.setMessage(String.format("Journal with id %s deleted successfully!", id));
-            baseResponse.setTimestamp(LocalDateTime.now());
-            return new ResponseEntity<>(baseResponse, HttpStatus.OK);
-        } catch (IllegalArgumentException e) {
-            baseResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-            baseResponse.setMessage(e.getMessage());
-            baseResponse.setTimestamp(LocalDateTime.now());
-            return new ResponseEntity<>(baseResponse, HttpStatus.BAD_REQUEST);
-        } catch (IllegalStateException e) {
-            baseResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-            baseResponse.setMessage(e.getMessage());
-            baseResponse.setTimestamp(LocalDateTime.now());
-            return new ResponseEntity<>(baseResponse, HttpStatus.BAD_REQUEST);
-        }
-    }
+	@DeleteMapping("/{id}")
+	public ResponseEntity<?> deleteJournal(@PathVariable UUID id, Authentication auth) {
+		CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+		User user = userDetails.getUser();
+		try {
+			deleteJournalUseCase.execute(id, user.getId());
+			return ResponseEntity
+				.ok(BaseResponse.success(String.format("Journal with id %s deleted successfully!", id)));
+		}
+		catch (Exception e) {
+			return ResponseEntity.badRequest().body(BaseResponse.error(e.getMessage()));
+		}
+	}
 
 }
