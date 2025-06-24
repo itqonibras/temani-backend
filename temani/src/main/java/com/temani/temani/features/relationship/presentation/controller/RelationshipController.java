@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.temani.temani.common.constants.RelationshipMessages;
+import com.temani.temani.common.enums.RelationshipDirection;
+import com.temani.temani.common.enums.RelationshipStatus;
 import com.temani.temani.common.presentation.dto.response.BaseResponse;
 import com.temani.temani.common.security.CustomUserDetails;
 import com.temani.temani.features.profile.domain.model.User;
@@ -66,7 +68,8 @@ public class RelationshipController {
 		try {
 			RelationshipResponse relationship = createRelationshipUseCase.execute(request, user.getId(),
 					user.getRoles());
-			return ResponseEntity.ok(BaseResponse.success(RelationshipMessages.RELATIONSHIP_CREATED_SUCCESS, relationship));
+			return ResponseEntity
+				.ok(BaseResponse.success(RelationshipMessages.RELATIONSHIP_CREATED_SUCCESS, relationship));
 		}
 		catch (Exception e) {
 			return ResponseEntity.badRequest().body(BaseResponse.error(e.getMessage()));
@@ -80,27 +83,26 @@ public class RelationshipController {
 		User user = userDetails.getUser();
 
 		try {
-			List<RelationshipResponse> relationships = switch (status.toLowerCase()) {
-				case "accepted" -> {
-					yield findAcceptedRelationshipsUseCase.execute(user.getId());
-				}
-				case "pending" -> {
-					if ("sent".equalsIgnoreCase(direction)) {
-						yield findPendingSentRelationshipsUseCase.execute(user.getId());
-					}
-					else if ("received".equalsIgnoreCase(direction)) {
-						yield findPendingReceivedRelationshipsUseCase.execute(user.getId());
-					}
-					else {
+			List<RelationshipResponse> relationships;
+			RelationshipStatus relStatus = RelationshipStatus.fromString(status);
+
+			switch (relStatus) {
+				case ACCEPTED -> relationships = findAcceptedRelationshipsUseCase.execute(user.getId());
+				case PENDING -> {
+					if (direction == null) {
 						throw new IllegalArgumentException(RelationshipMessages.INVALID_PENDING_DIRECTION);
 					}
+					RelationshipDirection relDir = RelationshipDirection.fromString(direction);
+					relationships = switch (relDir) {
+						case SENT -> findPendingSentRelationshipsUseCase.execute(user.getId());
+						case RECEIVED -> findPendingReceivedRelationshipsUseCase.execute(user.getId());
+					};
 				}
-				default -> {
-					throw new IllegalArgumentException(RelationshipMessages.INVALID_STATUS_PARAMETER);
-				}
-			};
+				default -> throw new IllegalArgumentException(RelationshipMessages.INVALID_STATUS_PARAMETER);
+			}
 
-			return ResponseEntity.ok(BaseResponse.success(RelationshipMessages.RELATIONSHIPS_RECEIVED_SUCCESS, relationships));
+			return ResponseEntity
+				.ok(BaseResponse.success(RelationshipMessages.RELATIONSHIPS_RECEIVED_SUCCESS, relationships));
 		}
 		catch (Exception e) {
 			return ResponseEntity.badRequest().body(BaseResponse.error(e.getMessage()));
@@ -116,24 +118,30 @@ public class RelationshipController {
 		try {
 			RelationshipResponse relationship = null;
 			String message;
-
-			switch (request.getStatus().toLowerCase()) {
-				case "accept" -> {
+			RelationshipStatus statusEnum = RelationshipStatus.fromString(request.getStatus());
+			switch (statusEnum) {
+				case ACCEPTED -> {
 					relationship = acceptRelationshipUseCase.execute(request, id, user);
 					message = RelationshipMessages.RELATIONSHIP_UPDATED_SUCCESS;
 					return ResponseEntity.ok(BaseResponse.success(message, relationship));
 				}
-				case "reject" -> {
-					rejectRelationshipUseCase.execute(request, id, user);
-					message = String.format(RelationshipMessages.RELATIONSHIP_REJECTED_SUCCESS, id);
-					return ResponseEntity.ok(BaseResponse.success(message, null));
+				case PENDING -> {
+					String reqStatus = request.getStatus().toLowerCase();
+					if ("reject".equals(reqStatus)) {
+						rejectRelationshipUseCase.execute(request, id, user);
+						message = String.format(RelationshipMessages.RELATIONSHIP_REJECTED_SUCCESS, id);
+						return ResponseEntity.ok(BaseResponse.success(message, null));
+					}
+					else if ("cancel".equals(reqStatus)) {
+						cancelRelationshipUseCase.execute(request, id, user);
+						message = String.format(RelationshipMessages.RELATIONSHIP_CANCELED_SUCCESS, id);
+						return ResponseEntity.ok(BaseResponse.success(message, null));
+					}
+					throw new IllegalArgumentException(
+							String.format(RelationshipMessages.INVALID_STATUS, request.getStatus()));
 				}
-				case "cancel" -> {
-					cancelRelationshipUseCase.execute(request, id, user);
-					message = String.format(RelationshipMessages.RELATIONSHIP_CANCELED_SUCCESS, id);
-					return ResponseEntity.ok(BaseResponse.success(message, null));
-				}
-				default -> throw new IllegalArgumentException(String.format(RelationshipMessages.INVALID_STATUS, request.getStatus()));
+				default -> throw new IllegalArgumentException(
+						String.format(RelationshipMessages.INVALID_STATUS, request.getStatus()));
 			}
 		}
 		catch (Exception e) {
