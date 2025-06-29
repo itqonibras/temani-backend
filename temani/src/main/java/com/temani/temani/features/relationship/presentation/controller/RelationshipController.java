@@ -110,39 +110,34 @@ public class RelationshipController {
 	}
 
 	@PatchMapping("/{id}")
-	public ResponseEntity<?> acceptRelationship(@PathVariable UUID id,
+	public ResponseEntity<?> updateRelationshipStatus(@PathVariable UUID id,
 			@RequestBody @Valid UpdateRelationshipStatusRequest request, Authentication auth) {
 		CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
 		User user = userDetails.getUser();
 
 		try {
-			RelationshipResponse relationship = null;
+			RelationshipResponse relationship;
 			String message;
-			RelationshipStatus statusEnum = RelationshipStatus.fromString(request.getStatus());
-			switch (statusEnum) {
-				case ACCEPTED -> {
+
+			switch (request.getStatus()) {
+				case ACCEPT -> {
 					relationship = acceptRelationshipUseCase.execute(request, id, user);
 					message = RelationshipMessages.RELATIONSHIP_UPDATED_SUCCESS;
 					return ResponseEntity.ok(BaseResponse.success(message, relationship));
 				}
-				case PENDING -> {
-					String reqStatus = request.getStatus().toLowerCase();
-					if ("reject".equals(reqStatus)) {
-						rejectRelationshipUseCase.execute(request, id, user);
-						message = String.format(RelationshipMessages.RELATIONSHIP_REJECTED_SUCCESS, id);
-						return ResponseEntity.ok(BaseResponse.success(message, null));
-					}
-					else if ("cancel".equals(reqStatus)) {
-						cancelRelationshipUseCase.execute(request, id, user);
-						message = String.format(RelationshipMessages.RELATIONSHIP_CANCELED_SUCCESS, id);
-						return ResponseEntity.ok(BaseResponse.success(message, null));
-					}
-					throw new IllegalArgumentException(
-							String.format(RelationshipMessages.INVALID_STATUS, request.getStatus()));
+				case REJECT -> {
+					rejectRelationshipUseCase.execute(request, id, user);
+					message = String.format(RelationshipMessages.RELATIONSHIP_REJECTED_SUCCESS, id);
+					return ResponseEntity.ok(BaseResponse.success(message, null));
 				}
-				default -> throw new IllegalArgumentException(
-						String.format(RelationshipMessages.INVALID_STATUS, request.getStatus()));
+				case CANCEL -> {
+					cancelRelationshipUseCase.execute(request, id, user);
+					message = String.format(RelationshipMessages.RELATIONSHIP_CANCELED_SUCCESS, id);
+					return ResponseEntity.ok(BaseResponse.success(message, null));
+				}
 			}
+
+			throw new IllegalArgumentException("Unhandled status");
 		}
 		catch (Exception e) {
 			return ResponseEntity.badRequest().body(BaseResponse.error(e.getMessage()));
