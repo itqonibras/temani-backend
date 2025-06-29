@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-TemaniApplication<temani>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.temani.temani.TemaniApplication",
+            "projectName": "temani",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

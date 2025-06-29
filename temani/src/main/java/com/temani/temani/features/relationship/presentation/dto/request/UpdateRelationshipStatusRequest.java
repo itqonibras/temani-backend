@@ -1,6 +1,8 @@
 package com.temani.temani.features.relationship.presentation.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
+import com.temani.temani.common.enums.RelationshipAction;
+
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UpdateRelationshipStatusRequest {
 
-	@NotBlank(message = "Status can't be empty!")
-	private String status;
+	@NotNull(message = "Status can't be empty!")
+	private RelationshipAction status;
 
 }
