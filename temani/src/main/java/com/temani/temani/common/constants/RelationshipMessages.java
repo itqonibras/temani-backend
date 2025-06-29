@@ -42,4 +42,6 @@ public class RelationshipMessages {
 
 	public static final String INVALID_STATUS_PARAMETER = "Status must be 'accepted' or 'pending'!";
 
+	public static final String INVALID_STATUS_REQUEST = "Status must be 'accept', 'cancel', or 'reject'!";
+
 }
