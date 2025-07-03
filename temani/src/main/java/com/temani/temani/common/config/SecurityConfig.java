@@ -41,6 +41,8 @@ public class SecurityConfig {
 				.permitAll()
 				.requestMatchers("/journals/**")
 				.hasAnyAuthority("ROLE_CLIENT")
+				.requestMatchers("/mood-logs/**")
+				.hasAnyAuthority("ROLE_CLIENT")
 				.requestMatchers("/relationships/**")
 				.hasAnyAuthority("ROLE_CLIENT", "ROLE_CAREGIVER")
 				.anyRequest()
