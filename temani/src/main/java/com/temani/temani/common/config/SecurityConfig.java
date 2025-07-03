@@ -34,27 +34,29 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http.cors(Customizer.withDefaults())
-			.csrf(AbstractHttpConfigurer::disable)
-			.authorizeHttpRequests(auth -> auth.requestMatchers("/", "/get-token")
-				.permitAll()
-				.requestMatchers("/auth/**")
-				.permitAll()
-				.requestMatchers("/journals/**")
-				.hasAnyAuthority("ROLE_CLIENT")
-				.requestMatchers("/mood-logs/**")
-				.hasAnyAuthority("ROLE_CLIENT")
-				.requestMatchers("/todo-lists/**")
-				.hasAnyAuthority("ROLE_CLIENT", "ROLE_CAREGIVER")
-				.requestMatchers("/todo-items/**")
-				.hasAnyAuthority("ROLE_CLIENT", "ROLE_CAREGIVER")
-				.requestMatchers("/relationships/**")
-				.hasAnyAuthority("ROLE_CLIENT", "ROLE_CAREGIVER")
-				.anyRequest()
-				.authenticated())
-			.sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-			.exceptionHandling(
-					ex -> ex.authenticationEntryPoint(authEntryPoint).accessDeniedHandler(accessDeniedHandler))
-			.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+				.csrf(AbstractHttpConfigurer::disable)
+				.authorizeHttpRequests(auth -> auth.requestMatchers("/", "/get-token")
+						.permitAll()
+						.requestMatchers("/auth/**")
+						.permitAll()
+						.requestMatchers("/chat/info/**", "/chat/**")
+						.permitAll()
+						.requestMatchers("/journals/**")
+						.hasAnyAuthority("ROLE_CLIENT")
+						.requestMatchers("/mood-logs/**")
+						.hasAnyAuthority("ROLE_CLIENT")
+						.requestMatchers("/todo-lists/**")
+						.hasAnyAuthority("ROLE_CLIENT", "ROLE_CAREGIVER")
+						.requestMatchers("/todo-items/**")
+						.hasAnyAuthority("ROLE_CLIENT", "ROLE_CAREGIVER")
+						.requestMatchers("/relationships/**")
+						.hasAnyAuthority("ROLE_CLIENT", "ROLE_CAREGIVER")
+						.anyRequest()
+						.authenticated())
+				.sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.exceptionHandling(
+						ex -> ex.authenticationEntryPoint(authEntryPoint).accessDeniedHandler(accessDeniedHandler))
+				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 		return http.build();
 	}
 
