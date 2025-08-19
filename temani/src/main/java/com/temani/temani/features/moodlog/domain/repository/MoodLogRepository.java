@@ -1,5 +1,6 @@
 package com.temani.temani.features.moodlog.domain.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -16,4 +17,6 @@ public interface MoodLogRepository {
 
 	List<MoodLog> findAllByUserId(UUID userId);
 
-} 
+	List<MoodLog> findAllByUserIdAndTimestampBetween(UUID userId, LocalDateTime start, LocalDateTime end);
+
+}

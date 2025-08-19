@@ -7,6 +7,7 @@ import com.temani.temani.common.constants.AuthMessages;
 import com.temani.temani.common.presentation.dto.response.BaseResponse;
 import com.temani.temani.features.authentication.presentation.dto.request.LoginRequest;
 import com.temani.temani.features.authentication.presentation.dto.request.RegisterRequest;
+import com.temani.temani.features.authentication.presentation.dto.response.LoginResponse;
 import com.temani.temani.features.authentication.usecase.LoginUseCase;
 import com.temani.temani.features.authentication.usecase.RegisterUseCase;
 import com.temani.temani.features.profile.presentation.dto.response.UserResponse;
@@ -30,10 +31,9 @@ public class AuthController {
 	@PostMapping("/login")
 	public ResponseEntity<?> userLogin(@RequestBody @Valid LoginRequest request) {
 		try {
-			String token = loginUseCase.execute(request);
-			return ResponseEntity.ok(BaseResponse.success(AuthMessages.LOGIN_SUCCESS, token));
-		}
-		catch (Exception e) {
+			LoginResponse loginResponse = loginUseCase.execute(request);
+			return ResponseEntity.ok(BaseResponse.success(AuthMessages.LOGIN_SUCCESS, loginResponse));
+		} catch (Exception e) {
 			return ResponseEntity.badRequest().body(BaseResponse.error(e.getMessage()));
 		}
 	}
@@ -43,8 +43,7 @@ public class AuthController {
 		try {
 			UserResponse registeredUser = registerUseCase.execute(request);
 			return ResponseEntity.ok(BaseResponse.success(AuthMessages.REGISTER_SUCCESS, registeredUser));
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			return ResponseEntity.badRequest().body(BaseResponse.error(e.getMessage()));
 		}
 	}

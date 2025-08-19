@@ -1,5 +1,6 @@
 package com.temani.temani.features.todo.infrastructure.persistence;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -40,6 +41,18 @@ public class ToDoItemRepositoryImpl implements ToDoItemRepository {
     @Override
     public List<ToDoItem> findAllByToDoListId(UUID toDoListId) {
         return jpaRepository.findAllByToDoListIdOrderByCreatedAtAsc(toDoListId)
-            .stream().map(mapper::toDomain).toList();
+                .stream().map(mapper::toDomain).toList();
     }
-} 
+
+    @Override
+    public List<ToDoItem> findAllByUserIdAndCreatedAtBetween(UUID userId, LocalDateTime start, LocalDateTime end) {
+        return jpaRepository
+                .findAllByToDoListUserIdAndCreatedAtBetweenOrderByCreatedAtAsc(userId, start, end)
+                .stream().map(mapper::toDomain).toList();
+    }
+
+    @Override
+    public long countByUserIdAndCreatedAtBetween(UUID userId, LocalDateTime start, LocalDateTime end) {
+        return jpaRepository.countByToDoListUserIdAndCreatedAtBetween(userId, start, end);
+    }
+}
