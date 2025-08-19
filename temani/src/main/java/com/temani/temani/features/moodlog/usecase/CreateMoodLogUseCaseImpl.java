@@ -13,6 +13,7 @@ import com.temani.temani.features.moodlog.infrastructure.persistence.MoodLogJpaR
 import com.temani.temani.features.profile.infrastructure.persistence.UserJpaRepository;
 import com.temani.temani.features.moodlog.presentation.dto.request.MoodLogRequest;
 import com.temani.temani.features.moodlog.presentation.dto.response.MoodLogResponse;
+import com.temani.temani.features.interactionlog.domain.service.InteractionLogService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,32 +25,46 @@ public class CreateMoodLogUseCaseImpl implements CreateMoodLogUseCase {
 	private final MoodLogDtoMapper mapper;
 	private final MoodLogJpaRepository moodLogJpaRepository;
 	private final UserJpaRepository userJpaRepository;
+	private final InteractionLogService interactionLogService;
 
 	@Override
 	public MoodLogResponse execute(MoodLogRequest request, UUID userId) {
 		// Get the user entity
 		var userEntity = userJpaRepository.findById(userId)
-			.orElseThrow(() -> new RuntimeException("User not found"));
-		
+				.orElseThrow(() -> new RuntimeException("User not found"));
+
 		// Create the mood log entity directly
 		MoodLogEntity moodLogEntity = new MoodLogEntity();
 		moodLogEntity.setUser(userEntity);
 		moodLogEntity.setMoodVisual(request.getMoodVisual());
 		moodLogEntity.setEmotionScale(request.getEmotionScale());
 		moodLogEntity.setTimestamp(LocalDateTime.now());
-		
+
 		MoodLogEntity savedEntity = moodLogJpaRepository.save(moodLogEntity);
-		
+
 		// Convert to domain model and then to DTO
 		MoodLog moodLog = new MoodLog(
-			savedEntity.getId(),
-			savedEntity.getUser().getId(),
-			savedEntity.getMoodVisual(),
-			savedEntity.getEmotionScale(),
-			savedEntity.getTimestamp()
-		);
-		
+				savedEntity.getId(),
+				savedEntity.getUser().getId(),
+				savedEntity.getMoodVisual(),
+				savedEntity.getEmotionScale(),
+				savedEntity.getTimestamp());
+
+		// Log the interaction
+		try {
+			interactionLogService.logInteraction(
+					userId,
+					"moodlog",
+					"create",
+					"moodlog",
+					savedEntity.getId(),
+					"Mengisi Mood Tracker",
+					"Mood: " + request.getMoodVisual());
+		} catch (Exception e) {
+			System.err.println("Failed to log moodlog interaction: " + e.getMessage());
+		}
+
 		return mapper.toDto(moodLog);
 	}
 
-} 
+}

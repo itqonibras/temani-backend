@@ -10,6 +10,7 @@ import com.temani.temani.features.todo.infrastructure.persistence.ToDoItemJpaRep
 import com.temani.temani.features.todo.infrastructure.persistence.ToDoListJpaRepository;
 import com.temani.temani.features.todo.infrastructure.mapper.ToDoItemDtoMapper;
 import com.temani.temani.features.todo.presentation.dto.response.ToDoItemResponse;
+import com.temani.temani.features.interactionlog.domain.service.InteractionLogService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -20,12 +21,13 @@ public class ToggleToDoItemCompleteUseCaseImpl implements ToggleToDoItemComplete
     private final ToDoItemJpaRepository toDoItemJpaRepository;
     private final ToDoListJpaRepository toDoListJpaRepository;
     private final ToDoItemDtoMapper mapper;
+    private final InteractionLogService interactionLogService;
 
     @Override
     public ToDoItemResponse execute(UUID itemId, UUID userId) {
         // Fetch the existing item entity
         ToDoItemEntity itemEntity = toDoItemJpaRepository.findById(itemId)
-            .orElseThrow(() -> new RuntimeException("ToDoItem not found"));
+                .orElseThrow(() -> new RuntimeException("ToDoItem not found"));
 
         // Check ownership
         if (!itemEntity.getToDoList().getUser().getId().equals(userId)) {
@@ -33,22 +35,37 @@ public class ToggleToDoItemCompleteUseCaseImpl implements ToggleToDoItemComplete
         }
 
         // Toggle the completion status
+        boolean wasComplete = itemEntity.getIsComplete();
         itemEntity.setIsComplete(!itemEntity.getIsComplete());
         itemEntity.setUpdatedAt(LocalDateTime.now());
 
         // Save
         ToDoItemEntity saved = toDoItemJpaRepository.save(itemEntity);
 
+        // Log interaction only when item is marked as complete
+        if (!wasComplete && saved.getIsComplete()) {
+            try {
+                interactionLogService.logInteraction(
+                        userId,
+                        "todo",
+                        "toggle",
+                        "todoitem",
+                        saved.getId(),
+                        "Tugas Selesai",
+                        saved.getDescription());
+            } catch (Exception e) {
+                System.err.println("Failed to log todo interaction: " + e.getMessage());
+            }
+        }
+
         // Map to DTO
-        com.temani.temani.features.todo.domain.model.ToDoItem toDoItem =
-            new com.temani.temani.features.todo.domain.model.ToDoItem(
+        com.temani.temani.features.todo.domain.model.ToDoItem toDoItem = new com.temani.temani.features.todo.domain.model.ToDoItem(
                 saved.getId(),
                 saved.getToDoList().getId(),
                 saved.getDescription(),
                 saved.getIsComplete(),
                 saved.getCreatedAt(),
-                saved.getUpdatedAt()
-            );
+                saved.getUpdatedAt());
         return mapper.toDto(toDoItem);
     }
-} 
+}
