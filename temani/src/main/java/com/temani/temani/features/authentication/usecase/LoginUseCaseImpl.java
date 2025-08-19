@@ -6,6 +6,7 @@ import com.temani.temani.common.constants.AuthMessages;
 import com.temani.temani.common.constants.CommonMessages;
 import com.temani.temani.common.security.JwtUtils;
 import com.temani.temani.features.authentication.presentation.dto.request.LoginRequest;
+import com.temani.temani.features.authentication.presentation.dto.response.LoginResponse;
 import com.temani.temani.features.profile.domain.model.User;
 import com.temani.temani.features.profile.domain.repository.UserRepository;
 
@@ -22,9 +23,9 @@ public class LoginUseCaseImpl implements LoginUseCase {
 	private final JwtUtils jwtUtils;
 
 	@Override
-	public String execute(LoginRequest request) {
+	public LoginResponse execute(LoginRequest request) {
 		User user = userRepository.findByEmailOrUsername(request.getEmailOrUsername())
-			.orElseThrow(() -> new IllegalArgumentException(CommonMessages.USER_NOT_FOUND));
+				.orElseThrow(() -> new IllegalArgumentException(CommonMessages.USER_NOT_FOUND));
 
 		if (!passwordEncoderUseCase.matches(request.getPassword(), user.getPassword())) {
 			throw new IllegalArgumentException(AuthMessages.INCORRECT_PASSWORD);
@@ -32,7 +33,7 @@ public class LoginUseCaseImpl implements LoginUseCase {
 
 		String token = jwtUtils.generateJwtToken(user.getUsername(), user.getId().toString(), user.getRoles());
 
-		return token;
+		return new LoginResponse(token, user.getId().toString(), user.getUsername());
 	}
 
 }

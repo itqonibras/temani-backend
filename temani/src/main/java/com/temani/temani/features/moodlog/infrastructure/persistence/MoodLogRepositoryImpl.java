@@ -1,5 +1,6 @@
 package com.temani.temani.features.moodlog.infrastructure.persistence;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -45,4 +46,11 @@ public class MoodLogRepositoryImpl implements MoodLogRepository {
 		return entities.stream().map(mapper::toDomain).toList();
 	}
 
-} 
+	@Override
+	public List<MoodLog> findAllByUserIdAndTimestampBetween(UUID userId, LocalDateTime start, LocalDateTime end) {
+		List<MoodLogEntity> entities = jpaRepository
+				.findAllByUserIdAndTimestampBetweenOrderByTimestampDesc(userId, start, end);
+		return entities.stream().map(mapper::toDomain).toList();
+	}
+
+}
