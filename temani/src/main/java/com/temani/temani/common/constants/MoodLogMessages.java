@@ -6,6 +6,8 @@ public class MoodLogMessages {
 
 	public static final String MOOD_LOGS_RECEIVED_SUCCESS = "Mood logs retrieved successfully";
 
+	public static final String MOOD_LOG_UPDATED_SUCCESS = "Mood log updated successfully";
+
 	public static final String MOOD_LOG_DELETED_SUCCESS = "Mood log with ID %s deleted successfully";
 
-} 
+}
