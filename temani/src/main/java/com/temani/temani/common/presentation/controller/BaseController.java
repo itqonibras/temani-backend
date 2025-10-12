@@ -36,26 +36,25 @@ public class BaseController {
 		if (auth == null) {
 			return ResponseEntity.ok(BaseResponse.error("No authentication found"));
 		}
-		
+
 		CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
 		User user = userDetails.getUser();
 		Collection<? extends GrantedAuthority> authorities = auth.getAuthorities();
-		
+
 		List<String> authorityNames = authorities.stream()
-			.map(GrantedAuthority::getAuthority)
-			.collect(Collectors.toList());
-		
-		return ResponseEntity.ok(BaseResponse.success("Auth Debug", 
-			Map.of(
-				"username", user.getUsername(),
-				"userId", user.getId(),
-				"userRoles", user.getRoles().stream().map(role -> role.getName()).collect(Collectors.toList()),
-				"authorities", authorityNames,
-				"authenticated", auth.isAuthenticated(),
-				"hasClientRole", authorityNames.contains("ROLE_CLIENT"),
-				"hasCaregiverRole", authorityNames.contains("ROLE_CAREGIVER")
-			)
-		));
+				.map(GrantedAuthority::getAuthority)
+				.collect(Collectors.toList());
+
+		return ResponseEntity.ok(BaseResponse.success("Auth Debug",
+				Map.of(
+						"username", user.getUsername(),
+						"userId", user.getId(),
+						"userRoles", user.getRoles().stream().map(role -> role.getName()).collect(Collectors.toList()),
+						"authorities", authorityNames,
+						"authenticated", auth.isAuthenticated(),
+						"hasClientRole", authorityNames.contains("ROLE_CLIENT"),
+						"hasCaregiverRole", authorityNames.contains("ROLE_CAREGIVER"),
+						"hasPeerRole", authorityNames.contains("ROLE_PEER"))));
 	}
 
 }

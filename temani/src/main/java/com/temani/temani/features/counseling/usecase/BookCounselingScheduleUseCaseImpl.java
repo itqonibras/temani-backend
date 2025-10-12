@@ -1,0 +1,63 @@
+package com.temani.temani.features.counseling.usecase;
+
+import java.util.UUID;
+
+import org.springframework.stereotype.Service;
+
+import com.temani.temani.features.counseling.domain.model.CounselingSchedule;
+import com.temani.temani.features.counseling.infrastructure.mapper.CounselingScheduleDtoMapper;
+import com.temani.temani.features.counseling.infrastructure.persistence.CounselingScheduleJpaRepository;
+import com.temani.temani.features.counseling.presentation.dto.CounselingScheduleResponse;
+import com.temani.temani.features.profile.infrastructure.persistence.UserJpaRepository;
+
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+public class BookCounselingScheduleUseCaseImpl implements BookCounselingScheduleUseCase {
+
+    private final CounselingScheduleDtoMapper mapper;
+    private final CounselingScheduleJpaRepository jpaRepository;
+    private final UserJpaRepository userJpaRepository;
+
+    @Override
+    public CounselingScheduleResponse execute(UUID scheduleId, UUID clientId) {
+        // Find the schedule
+        var scheduleEntity = jpaRepository.findById(scheduleId)
+                .orElseThrow(() -> new RuntimeException("Schedule not found"));
+
+        // Verify the schedule is available for booking
+        if (scheduleEntity.getStatus() != com.temani.temani.common.enums.CounselingScheduleStatus.AVAILABLE) {
+            throw new RuntimeException("Schedule is not available for booking");
+        }
+
+        // Check if already has a client
+        if (scheduleEntity.getClient() != null) {
+            throw new RuntimeException("Schedule is already booked");
+        }
+
+        // Find the client
+        var client = userJpaRepository.findById(clientId)
+                .orElseThrow(() -> new RuntimeException("Client not found"));
+
+        // Verify client has CLIENT role
+        boolean clientIsClient = client.getRoles().stream()
+                .anyMatch(r -> r.getName().equalsIgnoreCase("CLIENT"));
+        if (!clientIsClient) {
+            throw new RuntimeException("User must have CLIENT role to book schedules");
+        }
+
+        // Book the schedule - assign client but keep status as AVAILABLE until payment
+        scheduleEntity.setClient(client);
+        scheduleEntity.setStatus(com.temani.temani.common.enums.CounselingScheduleStatus.AVAILABLE);
+
+        var saved = jpaRepository.save(scheduleEntity);
+        var domain = new CounselingSchedule(saved.getId(),
+                saved.getClient().getId(),
+                saved.getCounselor().getId(),
+                saved.getCounselorName(),
+                saved.getScheduledAt(),
+                saved.getTitle(), saved.getDescription(), saved.getMeetingLink(), saved.getNotes(), saved.getStatus());
+        return mapper.toDto(domain);
+    }
+}

@@ -1,0 +1,174 @@
+package com.temani.temani.features.counseling.presentation;
+
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.temani.temani.common.constants.CounselingScheduleMessages;
+import com.temani.temani.common.presentation.dto.response.BaseResponse;
+import com.temani.temani.common.security.CustomUserDetails;
+import com.temani.temani.features.counseling.presentation.dto.CounselingScheduleRequest;
+import com.temani.temani.features.counseling.presentation.dto.CounselingScheduleResponse;
+import com.temani.temani.features.counseling.usecase.BookCounselingScheduleUseCase;
+import com.temani.temani.features.counseling.usecase.CreateCounselingScheduleUseCase;
+import com.temani.temani.features.counseling.usecase.DeleteCounselingScheduleUseCase;
+import com.temani.temani.features.counseling.usecase.GetAllCounselingSchedulesUseCase;
+import com.temani.temani.features.counseling.usecase.GetAvailableCounselingSchedulesUseCase;
+import com.temani.temani.features.counseling.usecase.GetCaregiverCounselingSchedulesUseCase;
+import com.temani.temani.features.counseling.usecase.GetClientCounselingSchedulesUseCase;
+import com.temani.temani.features.counseling.usecase.GetCounselingScheduleByIdUseCase;
+import com.temani.temani.features.counseling.usecase.UpdateCounselingScheduleUseCase;
+import com.temani.temani.features.profile.domain.model.User;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/counseling-schedules")
+public class CounselingScheduleController {
+
+    private final GetAllCounselingSchedulesUseCase getAllSchedules;
+    private final GetAvailableCounselingSchedulesUseCase getAvailableSchedules;
+    private final GetClientCounselingSchedulesUseCase getClientSchedules;
+    private final GetCaregiverCounselingSchedulesUseCase getCaregiverSchedules;
+    private final GetCounselingScheduleByIdUseCase getById;
+    private final CreateCounselingScheduleUseCase createSchedule;
+    private final BookCounselingScheduleUseCase bookSchedule;
+    private final UpdateCounselingScheduleUseCase updateSchedule;
+    private final DeleteCounselingScheduleUseCase deleteSchedule;
+
+    @GetMapping
+    public ResponseEntity<?> getAll(Authentication auth) {
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+        User user = userDetails.getUser();
+        try {
+            boolean isCaregiver = user.getRoles().stream().anyMatch(r -> r.getName().equalsIgnoreCase("CAREGIVER"));
+            List<CounselingScheduleResponse> schedules = getAllSchedules.execute(user.getId(), isCaregiver);
+            return ResponseEntity
+                    .ok(BaseResponse.success(CounselingScheduleMessages.SCHEDULES_RECEIVED_SUCCESS, schedules));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(BaseResponse.error(e.getMessage()));
+        }
+    }
+
+    @GetMapping("/client")
+    public ResponseEntity<?> getClient(Authentication auth) {
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+        User user = userDetails.getUser();
+        try {
+            List<CounselingScheduleResponse> schedules = getClientSchedules.execute(user.getId());
+            return ResponseEntity
+                    .ok(BaseResponse.success(CounselingScheduleMessages.CLIENT_SCHEDULES_RECEIVED_SUCCESS, schedules));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(BaseResponse.error(e.getMessage()));
+        }
+    }
+
+    @GetMapping("/caregiver")
+    public ResponseEntity<?> getCaregiver(Authentication auth) {
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+        User user = userDetails.getUser();
+        try {
+            List<CounselingScheduleResponse> schedules = getCaregiverSchedules.execute(user.getId());
+            return ResponseEntity.ok(
+                    BaseResponse.success(CounselingScheduleMessages.CAREGIVER_SCHEDULES_RECEIVED_SUCCESS, schedules));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(BaseResponse.error(e.getMessage()));
+        }
+    }
+
+    @GetMapping("/available")
+    public ResponseEntity<?> getAvailable(Authentication auth) {
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+        User user = userDetails.getUser();
+        try {
+            // Check if user has CLIENT role to view available schedules
+            boolean isClient = user.getRoles().stream().anyMatch(r -> r.getName().equalsIgnoreCase("CLIENT"));
+            if (!isClient) {
+                return ResponseEntity.badRequest()
+                        .body(BaseResponse.error("Only clients can view available schedules"));
+            }
+
+            List<CounselingScheduleResponse> schedules = getAvailableSchedules.execute();
+            return ResponseEntity.ok(BaseResponse.success("Available schedules retrieved successfully", schedules));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(BaseResponse.error(e.getMessage()));
+        }
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getById(@PathVariable UUID id, Authentication auth) {
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+        User user = userDetails.getUser();
+        try {
+            CounselingScheduleResponse schedule = getById.execute(id, user.getId());
+            return ResponseEntity
+                    .ok(BaseResponse.success(CounselingScheduleMessages.SCHEDULE_RECEIVED_SUCCESS, schedule));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(BaseResponse.error(e.getMessage()));
+        }
+    }
+
+    @PostMapping
+    public ResponseEntity<?> create(@RequestBody @Valid CounselingScheduleRequest request, Authentication auth) {
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+        User user = userDetails.getUser();
+        try {
+            CounselingScheduleResponse schedule = createSchedule.execute(user.getId(), request);
+            return ResponseEntity
+                    .ok(BaseResponse.success(CounselingScheduleMessages.SCHEDULE_CREATED_SUCCESS, schedule));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(BaseResponse.error(e.getMessage()));
+        }
+    }
+
+    @PostMapping("/{id}/book")
+    public ResponseEntity<?> book(@PathVariable UUID id, Authentication auth) {
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+        User user = userDetails.getUser();
+        try {
+            CounselingScheduleResponse schedule = bookSchedule.execute(id, user.getId());
+            return ResponseEntity.ok(BaseResponse.success("Schedule booked successfully", schedule));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(BaseResponse.error(e.getMessage()));
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(@PathVariable UUID id, @RequestBody @Valid CounselingScheduleRequest request,
+            Authentication auth) {
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+        User user = userDetails.getUser();
+        try {
+            CounselingScheduleResponse schedule = updateSchedule.execute(id, user.getId(), request);
+            return ResponseEntity
+                    .ok(BaseResponse.success(CounselingScheduleMessages.SCHEDULE_UPDATED_SUCCESS, schedule));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(BaseResponse.error(e.getMessage()));
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable UUID id, Authentication auth) {
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+        User user = userDetails.getUser();
+        try {
+            deleteSchedule.execute(id, user.getId());
+            return ResponseEntity
+                    .ok(BaseResponse.success(CounselingScheduleMessages.SCHEDULE_DELETED_SUCCESS));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(BaseResponse.error(e.getMessage()));
+        }
+    }
+}

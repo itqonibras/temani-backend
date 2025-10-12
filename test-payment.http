@@ -1,0 +1,111 @@
+### ============================================
+### STEP 1: AUTHENTICATION
+### ============================================
+
+### Login as CLIENT (required for payment creation)
+POST http://localhost:8080/auth/login
+Content-Type: application/json
+
+{
+  "emailOrUsername": "client@temani.com",
+  "password": "your-password"
+}
+
+### ============================================
+### STEP 2: GET AVAILABLE COUNSELING SCHEDULES
+### ============================================
+
+### Get available counseling schedules (CLIENT role required)
+GET http://localhost:8080/counseling-schedules/available
+Authorization: Bearer {{token}}
+
+### ============================================
+### STEP 3: NEW STATUS FLOW TESTING
+### ============================================
+
+### 1. Test Get Consultation Fee (No auth required)
+GET http://localhost:8080/payments/fee
+
+### 2. Test Payment Creation (Schedule stays AVAILABLE until payment success)
+POST http://localhost:8080/payments/create
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "scheduleId": "{{scheduleId}}",
+  "fee": 150000.00
+}
+
+### 3. Verify Schedule Status is still AVAILABLE (not PENDING)
+GET http://localhost:8080/counseling-schedules/{{scheduleId}}
+Authorization: Bearer {{token}}
+
+### 4. Get Payment Status
+GET http://localhost:8080/payments/status/{{orderId}}
+Authorization: Bearer {{token}}
+
+### ============================================
+### STEP 4: PAYMENT VERIFICATION (SUCCESS)
+### ============================================
+
+### 5. Test Payment Verification - SUCCESS (Schedule should change to SCHEDULED)
+POST http://localhost:8080/payments/verify
+Content-Type: application/x-www-form-urlencoded
+
+order_id={{orderId}}&transaction_status=settlement
+
+### 6. Verify Schedule Status changed to SCHEDULED
+GET http://localhost:8080/counseling-schedules/{{scheduleId}}
+Authorization: Bearer {{token}}
+
+### ============================================
+### STEP 5: PAYMENT VERIFICATION (FAILURE)
+### ============================================
+
+### Create another payment for testing failure scenario
+POST http://localhost:8080/payments/create
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "scheduleId": "{{scheduleId2}}",
+  "fee": 100000.00
+}
+
+### Test Payment Verification - FAILURE (Schedule should stay AVAILABLE)
+POST http://localhost:8080/payments/verify
+Content-Type: application/x-www-form-urlencoded
+
+order_id={{orderId2}}&transaction_status=failure
+
+### Verify Schedule Status remains AVAILABLE after failed payment
+GET http://localhost:8080/counseling-schedules/{{scheduleId2}}
+Authorization: Bearer {{token}}
+
+### ============================================
+### STEP 6: ADDITIONAL TESTS
+### ============================================
+
+### Test Get Payment History
+GET http://localhost:8080/payments/history
+Authorization: Bearer {{token}}
+
+### Test duplicate payment prevention
+POST http://localhost:8080/payments/create
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "scheduleId": "{{scheduleId}}",
+  "fee": 200000.00
+}
+
+### ============================================
+### VARIABLES (Update these values after each step)
+### ============================================
+
+@token = YOUR_JWT_TOKEN_FROM_LOGIN_RESPONSE
+@scheduleId = SCHEDULE_ID_FROM_AVAILABLE_SCHEDULES
+@scheduleId2 = ANOTHER_SCHEDULE_ID_FOR_FAILURE_TESTING
+@orderId = ORDER_ID_FROM_PAYMENT_CREATION_RESPONSE
+@orderId2 = ORDER_ID_FROM_SECOND_PAYMENT_CREATION_RESPONSE
