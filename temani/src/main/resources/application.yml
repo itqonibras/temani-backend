@@ -1,0 +1,29 @@
+server:
+  port: ${PORT:8080}
+
+spring:
+  main:
+    allow-circular-references: true
+  profiles:
+    active: 'dev'
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            "[non_contextual_creation]": true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+
+temani:
+  app:
+    jwtSecret: ${JWT_SECRET_KEY}
+    jwtExpirationMs: 86400000
+  payment:
+    consultationFee: 30000
+    midtrans:
+      serverKey: ${MIDTRANS_SERVER_KEY}
+      clientKey: ${MIDTRANS_CLIENT_KEY}
+      merchantId: ${MIDTRANS_MERCHANT_ID}
+      isProduction: false
