@@ -3,9 +3,10 @@ package com.temani.temani.features.counseling.usecase;
 import java.util.UUID;
 import java.util.List;
 
+import com.temani.temani.common.enums.CounselingScheduleStatus;
 import com.temani.temani.features.counseling.presentation.dto.CounselingScheduleResponse;
 
 public interface GetAllCounselingSchedulesUseCase {
 
-    List<CounselingScheduleResponse> execute(UUID userId, boolean isCaregiver);
+    List<CounselingScheduleResponse> execute(UUID userId, boolean isCaregiver, List<CounselingScheduleStatus> status);
 }

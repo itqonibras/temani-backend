@@ -12,9 +12,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.temani.temani.common.constants.CounselingScheduleMessages;
+import com.temani.temani.common.enums.CounselingScheduleStatus;
 import com.temani.temani.common.presentation.dto.response.BaseResponse;
 import com.temani.temani.common.security.CustomUserDetails;
 import com.temani.temani.features.counseling.presentation.dto.CounselingScheduleRequest;
@@ -49,12 +51,14 @@ public class CounselingScheduleController {
     private final DeleteCounselingScheduleUseCase deleteSchedule;
 
     @GetMapping
-    public ResponseEntity<?> getAll(Authentication auth) {
+    public ResponseEntity<?> getAll(
+            Authentication auth,
+            @RequestParam(required = false) List<CounselingScheduleStatus> status) {
         CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
         User user = userDetails.getUser();
         try {
             boolean isCaregiver = user.getRoles().stream().anyMatch(r -> r.getName().equalsIgnoreCase("CAREGIVER"));
-            List<CounselingScheduleResponse> schedules = getAllSchedules.execute(user.getId(), isCaregiver);
+            List<CounselingScheduleResponse> schedules = getAllSchedules.execute(user.getId(), isCaregiver, status);
             return ResponseEntity
                     .ok(BaseResponse.success(CounselingScheduleMessages.SCHEDULES_RECEIVED_SUCCESS, schedules));
         } catch (Exception e) {
@@ -63,11 +67,20 @@ public class CounselingScheduleController {
     }
 
     @GetMapping("/client")
-    public ResponseEntity<?> getClient(Authentication auth) {
+    public ResponseEntity<?> getClient(
+            Authentication auth,
+            @RequestParam(required = false) List<CounselingScheduleStatus> status) {
         CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
         User user = userDetails.getUser();
         try {
-            List<CounselingScheduleResponse> schedules = getClientSchedules.execute(user.getId());
+            // Check if user has CLIENT role
+            boolean isClient = user.getRoles().stream().anyMatch(r -> r.getName().equalsIgnoreCase("CLIENT"));
+            if (!isClient) {
+                return ResponseEntity.badRequest()
+                        .body(BaseResponse.error("Only clients can access client schedules"));
+            }
+
+            List<CounselingScheduleResponse> schedules = getAllSchedules.execute(user.getId(), false, status);
             return ResponseEntity
                     .ok(BaseResponse.success(CounselingScheduleMessages.CLIENT_SCHEDULES_RECEIVED_SUCCESS, schedules));
         } catch (Exception e) {
@@ -76,13 +89,44 @@ public class CounselingScheduleController {
     }
 
     @GetMapping("/caregiver")
-    public ResponseEntity<?> getCaregiver(Authentication auth) {
+    public ResponseEntity<?> getCaregiver(
+            Authentication auth,
+            @RequestParam(required = false) List<CounselingScheduleStatus> status) {
         CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
         User user = userDetails.getUser();
         try {
-            List<CounselingScheduleResponse> schedules = getCaregiverSchedules.execute(user.getId());
+            // Check if user has CAREGIVER role
+            boolean isCaregiver = user.getRoles().stream().anyMatch(r -> r.getName().equalsIgnoreCase("CAREGIVER"));
+            if (!isCaregiver) {
+                return ResponseEntity.badRequest()
+                        .body(BaseResponse.error("Only caregivers can access caregiver schedules"));
+            }
+
+            List<CounselingScheduleResponse> schedules = getAllSchedules.execute(user.getId(), true, status);
             return ResponseEntity.ok(
                     BaseResponse.success(CounselingScheduleMessages.CAREGIVER_SCHEDULES_RECEIVED_SUCCESS, schedules));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(BaseResponse.error(e.getMessage()));
+        }
+    }
+
+    @GetMapping("/peer")
+    public ResponseEntity<?> getPeer(
+            Authentication auth,
+            @RequestParam(required = false) List<CounselingScheduleStatus> status) {
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+        User user = userDetails.getUser();
+        try {
+            // Check if user has PEER role
+            boolean isPeer = user.getRoles().stream().anyMatch(r -> r.getName().equalsIgnoreCase("PEER"));
+            if (!isPeer) {
+                return ResponseEntity.badRequest()
+                        .body(BaseResponse.error("Only peers can access peer schedules"));
+            }
+
+            List<CounselingScheduleResponse> schedules = getAllSchedules.execute(user.getId(), true, status);
+            return ResponseEntity
+                    .ok(BaseResponse.success(CounselingScheduleMessages.PEER_SCHEDULES_RECEIVED_SUCCESS, schedules));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(BaseResponse.error(e.getMessage()));
         }

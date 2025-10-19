@@ -76,7 +76,7 @@ public class PaymentServiceImpl implements PaymentService {
             }
 
             // Generate unique order ID (Midtrans limit: 50 characters)
-            String orderId = "Temani-" + request.getScheduleId().toString().substring(0, 8) + "-" +
+            String orderId = "Temanmu-" + request.getScheduleId().toString().substring(0, 8) + "-" +
                     String.valueOf(System.currentTimeMillis()).substring(8);
 
             // Create transaction request for Midtrans Snap API
