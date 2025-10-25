@@ -13,8 +13,10 @@ import java.util.UUID;
 public class ChatMessageResponse {
     private UUID id;
     private String sessionId;
-    private String senderUsername;
-    private String receiverUsername;
+    private UUID senderId; // Changed from senderUsername to senderId
+    private String senderUsername; // Keep for display purposes
+    private UUID receiverId; // Changed from receiverUsername to receiverId
+    private String receiverUsername; // Keep for display purposes
     private String content;
     private LocalDateTime timestamp;
-} 
+}

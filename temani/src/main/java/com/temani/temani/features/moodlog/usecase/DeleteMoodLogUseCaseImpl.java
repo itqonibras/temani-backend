@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.temani.temani.features.moodlog.domain.model.MoodLog;
 import com.temani.temani.features.moodlog.domain.repository.MoodLogRepository;
 import com.temani.temani.features.moodlog.infrastructure.persistence.MoodLogJpaRepository;
+import com.temani.temani.features.interactionlog.domain.service.InteractionLogService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -16,17 +17,32 @@ public class DeleteMoodLogUseCaseImpl implements DeleteMoodLogUseCase {
 
 	private final MoodLogRepository moodLogRepository;
 	private final MoodLogJpaRepository moodLogJpaRepository;
+	private final InteractionLogService interactionLogService;
 
 	@Override
 	public void execute(UUID moodLogId, UUID userId) {
 		MoodLog moodLog = moodLogRepository.findById(moodLogId)
-			.orElseThrow(() -> new RuntimeException("Mood log not found"));
-		
+				.orElseThrow(() -> new RuntimeException("Mood log not found"));
+
 		if (!moodLog.getUserId().equals(userId)) {
 			throw new RuntimeException("You can only delete your own mood logs");
 		}
-		
+
+		// Log the interaction before deleting
+		try {
+			interactionLogService.logInteraction(
+					userId,
+					"moodlog",
+					"delete",
+					"moodlog",
+					moodLogId,
+					"Menghapus Mood Tracker",
+					"Menghapus mood: " + moodLog.getMoodVisual());
+		} catch (Exception e) {
+			System.err.println("Failed to log moodlog delete interaction: " + e.getMessage());
+		}
+
 		moodLogRepository.delete(moodLog);
 	}
 
-} 
+}

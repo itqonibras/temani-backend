@@ -12,6 +12,7 @@ import com.temani.temani.features.counseling.presentation.dto.CounselingSchedule
 import com.temani.temani.features.counseling.presentation.dto.CounselingScheduleResponse;
 import com.temani.temani.features.profile.infrastructure.persistence.UserEntity;
 import com.temani.temani.features.profile.infrastructure.persistence.UserJpaRepository;
+import com.temani.temani.features.interactionlog.domain.service.InteractionLogService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,6 +23,7 @@ public class CreateCounselingScheduleUseCaseImpl implements CreateCounselingSche
     private final CounselingScheduleDtoMapper mapper;
     private final CounselingScheduleJpaRepository jpaRepository;
     private final UserJpaRepository userJpaRepository;
+    private final InteractionLogService interactionLogService;
 
     @Override
     public CounselingScheduleResponse execute(UUID requesterId, CounselingScheduleRequest request) {
@@ -92,6 +94,34 @@ public class CreateCounselingScheduleUseCaseImpl implements CreateCounselingSche
                 counselor.getName(),
                 saved.getScheduledAt(),
                 saved.getTitle(), saved.getDescription(), saved.getMeetingLink(), saved.getNotes(), saved.getStatus());
+
+        // Log the interaction based on who created the schedule
+        try {
+            if (requesterIsPeer) {
+                // PEER creating an available schedule
+                interactionLogService.logInteraction(
+                        requesterId,
+                        "counseling",
+                        "create",
+                        "counselingschedule",
+                        saved.getId(),
+                        "Membuat Jadwal Konsultasi",
+                        "Membuat jadwal konsultasi: " + saved.getTitle());
+            } else {
+                // CLIENT booking a schedule directly
+                interactionLogService.logInteraction(
+                        requesterId,
+                        "counseling",
+                        "book",
+                        "counselingschedule",
+                        saved.getId(),
+                        "Mendaftar Konsultasi",
+                        "Mendaftar Konsultasi untuk " + saved.getTitle());
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to log counseling schedule interaction: " + e.getMessage());
+        }
+
         return mapper.toDto(domain);
     }
 }

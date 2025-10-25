@@ -15,6 +15,7 @@ import com.temani.temani.features.payment.domain.repository.PaymentRepository;
 import com.temani.temani.features.payment.infrastructure.mapper.PaymentDtoMapper;
 import com.temani.temani.features.payment.presentation.dto.PaymentRequest;
 import com.temani.temani.features.payment.presentation.dto.PaymentResponse;
+import com.temani.temani.features.interactionlog.domain.service.InteractionLogService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +30,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final CounselingScheduleJpaRepository scheduleRepository;
     private final UserJpaRepository userRepository;
     private final WebClient webClient;
+    private final InteractionLogService interactionLogService;
 
     @Value("${temani.payment.consultationFee}")
     private BigDecimal consultationFee;
@@ -174,6 +176,20 @@ public class PaymentServiceImpl implements PaymentService {
                 schedule.setStatus(com.temani.temani.common.enums.CounselingScheduleStatus.SCHEDULED);
                 scheduleRepository.save(schedule);
 
+                // Log the payment interaction
+                try {
+                    interactionLogService.logInteraction(
+                            payment.getUserId(),
+                            "counseling",
+                            "payment",
+                            "counselingschedule",
+                            payment.getScheduleId(),
+                            "Membayar Konsultasi",
+                            "Membayar Konsultasi untuk " + schedule.getTitle());
+                } catch (Exception e) {
+                    System.err.println("Failed to log payment interaction: " + e.getMessage());
+                }
+
             } else if (newStatus == PaymentStatus.DENY || newStatus == PaymentStatus.FAILURE) {
                 payment.setFailureReason("Payment failed: " + transactionStatus);
 
@@ -222,6 +238,20 @@ public class PaymentServiceImpl implements PaymentService {
                         .orElseThrow(() -> new RuntimeException("Schedule not found"));
                 schedule.setStatus(com.temani.temani.common.enums.CounselingScheduleStatus.SCHEDULED);
                 scheduleRepository.save(schedule);
+
+                // Log the payment interaction
+                try {
+                    interactionLogService.logInteraction(
+                            payment.getUserId(),
+                            "counseling",
+                            "payment",
+                            "counselingschedule",
+                            payment.getScheduleId(),
+                            "Membayar Konsultasi",
+                            "Membayar Konsultasi untuk " + schedule.getTitle());
+                } catch (Exception e) {
+                    System.err.println("Failed to log payment interaction: " + e.getMessage());
+                }
 
             } else if (newStatus == PaymentStatus.DENY || newStatus == PaymentStatus.FAILURE) {
                 payment.setFailureReason("Payment failed: " + transactionStatus);

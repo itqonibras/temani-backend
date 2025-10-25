@@ -10,6 +10,7 @@ import com.temani.temani.features.counseling.infrastructure.persistence.Counseli
 import com.temani.temani.features.counseling.presentation.dto.CounselingScheduleRequest;
 import com.temani.temani.features.counseling.presentation.dto.CounselingScheduleResponse;
 import com.temani.temani.features.profile.infrastructure.persistence.UserJpaRepository;
+import com.temani.temani.features.interactionlog.domain.service.InteractionLogService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -20,12 +21,18 @@ public class UpdateCounselingScheduleUseCaseImpl implements UpdateCounselingSche
     private final CounselingScheduleDtoMapper mapper;
     private final CounselingScheduleJpaRepository jpaRepository;
     private final UserJpaRepository userJpaRepository;
+    private final InteractionLogService interactionLogService;
 
     @Override
     public CounselingScheduleResponse execute(UUID scheduleId, UUID requesterId, CounselingScheduleRequest request) {
         var existing = jpaRepository.findById(scheduleId)
                 .orElseThrow(() -> new RuntimeException("Schedule not found"));
-        if (!existing.getClient().getId().equals(requesterId) && !existing.getCounselor().getId().equals(requesterId)) {
+
+        // Fix: Handle null client case for PEER-created schedules
+        boolean isClient = existing.getClient() != null && existing.getClient().getId().equals(requesterId);
+        boolean isCounselor = existing.getCounselor().getId().equals(requesterId);
+
+        if (!isClient && !isCounselor) {
             throw new RuntimeException("Access denied");
         }
 
@@ -36,6 +43,9 @@ public class UpdateCounselingScheduleUseCaseImpl implements UpdateCounselingSche
         if (!counselorIsPeer) {
             throw new RuntimeException("Counselor must have PEER role");
         }
+
+        // Store the old status to detect changes
+        var oldStatus = existing.getStatus();
 
         existing.setCounselor(counselor);
         existing.setCounselorName(counselor.getName());
@@ -49,8 +59,40 @@ public class UpdateCounselingScheduleUseCaseImpl implements UpdateCounselingSche
         }
 
         CounselingScheduleEntity saved = jpaRepository.save(existing);
+
+        // Fix: Handle null client case when creating domain object
+        UUID clientId = saved.getClient() != null ? saved.getClient().getId() : null;
+
+        // Log interaction if status changed to COMPLETED
+        if (oldStatus != com.temani.temani.common.enums.CounselingScheduleStatus.COMPLETED &&
+                saved.getStatus() == com.temani.temani.common.enums.CounselingScheduleStatus.COMPLETED) {
+            try {
+                // Log for both client and counselor
+                if (clientId != null) {
+                    interactionLogService.logInteraction(
+                            clientId,
+                            "counseling",
+                            "complete",
+                            "counselingschedule",
+                            saved.getId(),
+                            "Melaksanakan Konsultasi",
+                            "Melaksanakan Konsultasi untuk " + saved.getTitle());
+                }
+                interactionLogService.logInteraction(
+                        saved.getCounselor().getId(),
+                        "counseling",
+                        "complete",
+                        "counselingschedule",
+                        saved.getId(),
+                        "Melaksanakan Konsultasi",
+                        "Melaksanakan Konsultasi untuk " + saved.getTitle());
+            } catch (Exception e) {
+                System.err.println("Failed to log counseling completion interaction: " + e.getMessage());
+            }
+        }
+
         var domain = new com.temani.temani.features.counseling.domain.model.CounselingSchedule(
-                saved.getId(), saved.getClient().getId(), saved.getCounselor().getId(), counselor.getName(),
+                saved.getId(), clientId, saved.getCounselor().getId(), counselor.getName(),
                 saved.getScheduledAt(),
                 saved.getTitle(), saved.getDescription(), saved.getMeetingLink(), saved.getNotes(), saved.getStatus());
         return mapper.toDto(domain);

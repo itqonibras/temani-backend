@@ -39,6 +39,8 @@ public class SecurityConfig {
 						.permitAll()
 						.requestMatchers("/auth/**")
 						.permitAll()
+						.requestMatchers("/debug/**")
+						.authenticated()
 						.requestMatchers("/chat/info/**", "/chat/**")
 						.permitAll()
 						.requestMatchers("/payments/webhook/**")

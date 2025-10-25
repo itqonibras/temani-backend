@@ -9,6 +9,7 @@ import com.temani.temani.features.counseling.infrastructure.mapper.CounselingSch
 import com.temani.temani.features.counseling.infrastructure.persistence.CounselingScheduleJpaRepository;
 import com.temani.temani.features.counseling.presentation.dto.CounselingScheduleResponse;
 import com.temani.temani.features.profile.infrastructure.persistence.UserJpaRepository;
+import com.temani.temani.features.interactionlog.domain.service.InteractionLogService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -19,6 +20,7 @@ public class BookCounselingScheduleUseCaseImpl implements BookCounselingSchedule
     private final CounselingScheduleDtoMapper mapper;
     private final CounselingScheduleJpaRepository jpaRepository;
     private final UserJpaRepository userJpaRepository;
+    private final InteractionLogService interactionLogService;
 
     @Override
     public CounselingScheduleResponse execute(UUID scheduleId, UUID clientId) {
@@ -58,6 +60,21 @@ public class BookCounselingScheduleUseCaseImpl implements BookCounselingSchedule
                 saved.getCounselorName(),
                 saved.getScheduledAt(),
                 saved.getTitle(), saved.getDescription(), saved.getMeetingLink(), saved.getNotes(), saved.getStatus());
+
+        // Log the interaction
+        try {
+            interactionLogService.logInteraction(
+                    clientId,
+                    "counseling",
+                    "book",
+                    "counselingschedule",
+                    saved.getId(),
+                    "Mendaftar Konsultasi",
+                    "Mendaftar Konsultasi untuk " + saved.getTitle());
+        } catch (Exception e) {
+            System.err.println("Failed to log counseling booking interaction: " + e.getMessage());
+        }
+
         return mapper.toDto(domain);
     }
 }

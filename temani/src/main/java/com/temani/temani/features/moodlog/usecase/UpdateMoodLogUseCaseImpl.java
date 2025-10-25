@@ -11,6 +11,7 @@ import com.temani.temani.features.moodlog.infrastructure.persistence.MoodLogEnti
 import com.temani.temani.features.moodlog.infrastructure.persistence.MoodLogJpaRepository;
 import com.temani.temani.features.moodlog.presentation.dto.request.MoodLogRequest;
 import com.temani.temani.features.moodlog.presentation.dto.response.MoodLogResponse;
+import com.temani.temani.features.interactionlog.domain.service.InteractionLogService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -20,6 +21,7 @@ public class UpdateMoodLogUseCaseImpl implements UpdateMoodLogUseCase {
 
     private final MoodLogJpaRepository moodLogJpaRepository;
     private final MoodLogDtoMapper mapper;
+    private final InteractionLogService interactionLogService;
 
     @Override
     public MoodLogResponse execute(UUID id, MoodLogRequest request, UUID userId) {
@@ -47,6 +49,20 @@ public class UpdateMoodLogUseCaseImpl implements UpdateMoodLogUseCase {
                 saved.getMoodVisual(),
                 saved.getEmotionScale(),
                 saved.getTimestamp());
+
+        // Log the interaction
+        try {
+            interactionLogService.logInteraction(
+                    userId,
+                    "moodlog",
+                    "update",
+                    "moodlog",
+                    saved.getId(),
+                    "Mengupdate Mood Tracker",
+                    "Mengupdate mood: " + request.getMoodVisual());
+        } catch (Exception e) {
+            System.err.println("Failed to log moodlog update interaction: " + e.getMessage());
+        }
 
         // Map to DTO
         return mapper.toDto(moodLog);

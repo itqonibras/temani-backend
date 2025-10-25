@@ -1,5 +1,7 @@
 package com.temani.temani.features.moodlog.presentation.controller;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.temani.temani.common.constants.MoodLogMessages;
@@ -19,9 +22,11 @@ import com.temani.temani.common.presentation.dto.response.BaseResponse;
 import com.temani.temani.common.security.CustomUserDetails;
 import com.temani.temani.features.moodlog.presentation.dto.request.MoodLogRequest;
 import com.temani.temani.features.moodlog.presentation.dto.response.MoodLogResponse;
+import com.temani.temani.features.moodlog.presentation.dto.response.MoodSummaryResponse;
 import com.temani.temani.features.moodlog.usecase.CreateMoodLogUseCase;
 import com.temani.temani.features.moodlog.usecase.DeleteMoodLogUseCase;
 import com.temani.temani.features.moodlog.usecase.GetAllMoodLogsUseCase;
+import com.temani.temani.features.moodlog.usecase.GetMoodSummaryUseCase;
 import com.temani.temani.features.moodlog.usecase.UpdateMoodLogUseCase;
 import com.temani.temani.features.profile.domain.model.User;
 
@@ -37,6 +42,7 @@ public class MoodLogController {
 	private final CreateMoodLogUseCase createMoodLogUseCase;
 	private final UpdateMoodLogUseCase updateMoodLogUseCase;
 	private final DeleteMoodLogUseCase deleteMoodLogUseCase;
+	private final GetMoodSummaryUseCase getMoodSummaryUseCase;
 
 	@GetMapping
 	public ResponseEntity<?> getMoodLogs(Authentication auth) {
@@ -90,6 +96,28 @@ public class MoodLogController {
 		try {
 			deleteMoodLogUseCase.execute(id, user.getId());
 			return ResponseEntity.ok(BaseResponse.success(String.format(MoodLogMessages.MOOD_LOG_DELETED_SUCCESS, id)));
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body(BaseResponse.error(e.getMessage()));
+		}
+	}
+
+	@GetMapping("/summary")
+	public ResponseEntity<?> getMoodSummary(
+			@RequestParam(required = false) String weekStart,
+			Authentication auth) {
+		CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+		User user = userDetails.getUser();
+		try {
+			LocalDate startDate;
+			if (weekStart != null && !weekStart.isEmpty()) {
+				startDate = LocalDate.parse(weekStart);
+			} else {
+				// Default to current week (Monday of current week)
+				startDate = LocalDate.now().with(DayOfWeek.MONDAY);
+			}
+
+			MoodSummaryResponse summary = getMoodSummaryUseCase.execute(user.getId(), startDate);
+			return ResponseEntity.ok(BaseResponse.success("Mood summary retrieved successfully", summary));
 		} catch (Exception e) {
 			return ResponseEntity.badRequest().body(BaseResponse.error(e.getMessage()));
 		}

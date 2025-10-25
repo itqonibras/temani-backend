@@ -25,8 +25,14 @@ public class ChatMessageEntity {
     @Column(name = "session_id", nullable = false)
     private String sessionId;
 
+    @Column(name = "sender_id", nullable = false)
+    private UUID senderId;
+
     @Column(name = "sender_username", nullable = false)
     private String senderUsername;
+
+    @Column(name = "receiver_id", nullable = false)
+    private UUID receiverId;
 
     @Column(name = "receiver_username", nullable = false)
     private String receiverUsername;
@@ -36,4 +42,4 @@ public class ChatMessageEntity {
 
     @Column(name = "timestamp", nullable = false)
     private LocalDateTime timestamp;
-} 
+}
