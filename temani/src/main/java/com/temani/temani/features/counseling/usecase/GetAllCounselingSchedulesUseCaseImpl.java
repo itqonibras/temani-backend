@@ -1,5 +1,6 @@
 package com.temani.temani.features.counseling.usecase;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -25,6 +26,13 @@ public class GetAllCounselingSchedulesUseCaseImpl implements GetAllCounselingSch
             List<CounselingScheduleStatus> status) {
 
         var schedules = isCaregiver ? repository.findAllByCounselorId(userId) : repository.findAllByClientId(userId);
+
+        LocalDateTime now = LocalDateTime.now();
+
+        // Filter out past schedules (scheduledAt must be in the future or now)
+        schedules = schedules.stream()
+                .filter(schedule -> schedule.getScheduledAt() != null && !schedule.getScheduledAt().isBefore(now))
+                .collect(Collectors.toList());
 
         // Filter by status if provided
         if (status != null && !status.isEmpty()) {

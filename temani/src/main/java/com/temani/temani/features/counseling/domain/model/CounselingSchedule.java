@@ -9,6 +9,7 @@ public class CounselingSchedule {
 
     private UUID id;
     private UUID clientId;
+    private String clientName;
     private UUID counselorId;
     private String counselorName;
     private LocalDateTime scheduledAt;
@@ -18,11 +19,12 @@ public class CounselingSchedule {
     private String notes;
     private CounselingScheduleStatus status;
 
-    public CounselingSchedule(UUID id, UUID clientId, UUID counselorId, String counselorName, LocalDateTime scheduledAt,
+    public CounselingSchedule(UUID id, UUID clientId, String clientName, UUID counselorId, String counselorName, LocalDateTime scheduledAt,
             String title,
             String description, String meetingLink, String notes, CounselingScheduleStatus status) {
         this.id = id;
         this.clientId = clientId;
+        this.clientName = clientName;
         this.counselorId = counselorId;
         this.counselorName = counselorName;
         this.scheduledAt = scheduledAt;
@@ -39,6 +41,10 @@ public class CounselingSchedule {
 
     public UUID getClientId() {
         return clientId;
+    }
+
+    public String getClientName() {
+        return clientName;
     }
 
     public UUID getCounselorId() {

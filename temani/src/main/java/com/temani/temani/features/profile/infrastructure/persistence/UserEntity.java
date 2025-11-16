@@ -72,6 +72,9 @@ public class UserEntity {
 	@Column(name = "verified", nullable = false)
 	private boolean verified;
 
+	@Column(name = "profile_picture")
+	private String profilePicture;
+
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"),
 			inverseJoinColumns = @JoinColumn(name = "role_id"))

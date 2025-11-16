@@ -10,6 +10,7 @@ import com.temani.temani.features.counseling.infrastructure.persistence.Counseli
 public interface CounselingScheduleEntityMapper {
 
     @Mapping(source = "client.id", target = "clientId")
+    @Mapping(source = "client.name", target = "clientName")
     @Mapping(source = "counselor.id", target = "counselorId")
     @Mapping(source = "counselor.name", target = "counselorName")
     @Mapping(source = "status", target = "status")

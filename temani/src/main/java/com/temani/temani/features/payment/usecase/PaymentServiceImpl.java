@@ -60,13 +60,6 @@ public class PaymentServiceImpl implements PaymentService {
                 throw new RuntimeException("Schedule is not available for booking");
             }
 
-            // Check if payment already exists for this schedule from this user
-            var existingPayment = paymentRepository.findByScheduleIdAndUserId(request.getScheduleId(),
-                    request.getUserId());
-            if (existingPayment.isPresent() && existingPayment.get().getStatus() == PaymentStatus.PENDING) {
-                throw new RuntimeException("You already have a pending payment for this schedule");
-            }
-
             // Assign client to the schedule (if not already assigned)
             if (schedule.getClient() == null) {
                 var client = userRepository.findById(request.getUserId())

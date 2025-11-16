@@ -18,6 +18,7 @@ import com.temani.temani.features.interactionlog.usecase.GetAllInteractionLogsUs
 import com.temani.temani.features.interactionlog.usecase.GetInteractionLogsByFeatureUseCase;
 import com.temani.temani.features.interactionlog.domain.service.InteractionLogService;
 import com.temani.temani.features.profile.domain.model.User;
+import com.temani.temani.features.relationship.domain.repository.RelationshipRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,6 +30,7 @@ public class InteractionLogController {
     private final GetAllInteractionLogsUseCase getAllInteractionLogsUseCase;
     private final GetInteractionLogsByFeatureUseCase getInteractionLogsByFeatureUseCase;
     private final InteractionLogService interactionLogService;
+    private final RelationshipRepository relationshipRepository;
 
     @GetMapping
     public ResponseEntity<?> getInteractionLogs(Authentication auth) {
@@ -55,6 +57,38 @@ public class InteractionLogController {
                     feature);
             return ResponseEntity.ok(BaseResponse
                     .success("Interaction logs for feature " + feature + " retrieved successfully", interactionLogs));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(BaseResponse.error(e.getMessage()));
+        }
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<?> getInteractionLogsByUserId(@PathVariable UUID userId, Authentication auth) {
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+        User authenticatedUser = userDetails.getUser();
+        try {
+            // Check if user is requesting their own logs
+            if (authenticatedUser.getId().equals(userId)) {
+                List<InteractionLogResponse> interactionLogs = getAllInteractionLogsUseCase.execute(userId);
+                return ResponseEntity.ok(BaseResponse.success("Interaction logs retrieved successfully", interactionLogs));
+            }
+
+            // Check if authenticated user is a caregiver and has an accepted relationship with the requested user
+            boolean isCaregiver = authenticatedUser.getRoles().stream()
+                    .anyMatch(r -> r.getName().equalsIgnoreCase("CAREGIVER"));
+            
+            if (isCaregiver) {
+                // Check if there's an accepted relationship where the caregiver is the authenticated user
+                // and the client is the requested user
+                var relationship = relationshipRepository.findByClientIdAndCaregiverId(userId, authenticatedUser.getId());
+                if (relationship.isPresent() && relationship.get().isAccepted()) {
+                    List<InteractionLogResponse> interactionLogs = getAllInteractionLogsUseCase.execute(userId);
+                    return ResponseEntity.ok(BaseResponse.success("Interaction logs retrieved successfully", interactionLogs));
+                }
+            }
+
+            // Access denied - user doesn't have permission to view this user's logs
+            return ResponseEntity.status(403).body(BaseResponse.error("Access denied: You can only view your own interaction logs or logs of clients you have an accepted relationship with"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(BaseResponse.error(e.getMessage()));
         }

@@ -1,5 +1,6 @@
 package com.temani.temani.features.counseling.usecase;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,6 +21,10 @@ public class GetCaregiverCounselingSchedulesUseCaseImpl implements GetCaregiverC
 
     @Override
     public List<CounselingScheduleResponse> execute(UUID caregiverId) {
-        return repository.findAllByCounselorId(caregiverId).stream().map(mapper::toDto).toList();
+        LocalDateTime now = LocalDateTime.now();
+        return repository.findAllByCounselorId(caregiverId).stream()
+                .filter(schedule -> schedule.getScheduledAt() != null && !schedule.getScheduledAt().isBefore(now))
+                .map(mapper::toDto)
+                .toList();
     }
 }

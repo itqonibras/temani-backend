@@ -29,6 +29,7 @@ import com.temani.temani.features.moodlog.usecase.GetAllMoodLogsUseCase;
 import com.temani.temani.features.moodlog.usecase.GetMoodSummaryUseCase;
 import com.temani.temani.features.moodlog.usecase.UpdateMoodLogUseCase;
 import com.temani.temani.features.profile.domain.model.User;
+import com.temani.temani.features.relationship.domain.repository.RelationshipRepository;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +44,7 @@ public class MoodLogController {
 	private final UpdateMoodLogUseCase updateMoodLogUseCase;
 	private final DeleteMoodLogUseCase deleteMoodLogUseCase;
 	private final GetMoodSummaryUseCase getMoodSummaryUseCase;
+	private final RelationshipRepository relationshipRepository;
 
 	@GetMapping
 	public ResponseEntity<?> getMoodLogs(Authentication auth) {
@@ -118,6 +120,57 @@ public class MoodLogController {
 
 			MoodSummaryResponse summary = getMoodSummaryUseCase.execute(user.getId(), startDate);
 			return ResponseEntity.ok(BaseResponse.success("Mood summary retrieved successfully", summary));
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body(BaseResponse.error(e.getMessage()));
+		}
+	}
+
+	@GetMapping("/summary/user/{userId}")
+	public ResponseEntity<?> getMoodSummaryByUserId(
+			@PathVariable UUID userId,
+			@RequestParam(required = false) String weekStart,
+			Authentication auth) {
+		CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+		User authenticatedUser = userDetails.getUser();
+		try {
+			// Check if user is requesting their own summary
+			if (authenticatedUser.getId().equals(userId)) {
+				LocalDate startDate;
+				if (weekStart != null && !weekStart.isEmpty()) {
+					startDate = LocalDate.parse(weekStart);
+				} else {
+					// Default to current week (Monday of current week)
+					startDate = LocalDate.now().with(DayOfWeek.MONDAY);
+				}
+
+				MoodSummaryResponse summary = getMoodSummaryUseCase.execute(userId, startDate);
+				return ResponseEntity.ok(BaseResponse.success("Mood summary retrieved successfully", summary));
+			}
+
+			// Check if authenticated user is a caregiver and has an accepted relationship with the requested user
+			boolean isCaregiver = authenticatedUser.getRoles().stream()
+					.anyMatch(r -> r.getName().equalsIgnoreCase("CAREGIVER"));
+
+			if (isCaregiver) {
+				// Check if there's an accepted relationship where the caregiver is the authenticated user
+				// and the client is the requested user
+				var relationship = relationshipRepository.findByClientIdAndCaregiverId(userId, authenticatedUser.getId());
+				if (relationship.isPresent() && relationship.get().isAccepted()) {
+					LocalDate startDate;
+					if (weekStart != null && !weekStart.isEmpty()) {
+						startDate = LocalDate.parse(weekStart);
+					} else {
+						// Default to current week (Monday of current week)
+						startDate = LocalDate.now().with(DayOfWeek.MONDAY);
+					}
+
+					MoodSummaryResponse summary = getMoodSummaryUseCase.execute(userId, startDate);
+					return ResponseEntity.ok(BaseResponse.success("Mood summary retrieved successfully", summary));
+				}
+			}
+
+			// Access denied - user doesn't have permission to view this user's mood summary
+			return ResponseEntity.status(403).body(BaseResponse.error("Access denied: You can only view your own mood summary or summaries of clients you have an accepted relationship with"));
 		} catch (Exception e) {
 			return ResponseEntity.badRequest().body(BaseResponse.error(e.getMessage()));
 		}

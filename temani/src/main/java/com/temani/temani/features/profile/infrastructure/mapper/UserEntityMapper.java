@@ -9,7 +9,8 @@ import com.temani.temani.features.profile.domain.model.User;
 import com.temani.temani.features.profile.infrastructure.persistence.UserEntity;
 
 @Mapper(componentModel = "spring",
-		uses = { ClientProfileEntityMapper.class, CaregiverProfileEntityMapper.class, PeerProfileEntityMapper.class })
+		uses = { ClientProfileEntityMapper.class, CaregiverProfileEntityMapper.class, PeerProfileEntityMapper.class,
+				RoleEntityMapper.class })
 public interface UserEntityMapper {
 
 	@Mapping(source = "clientProfile", target = "clientProfileEntity")

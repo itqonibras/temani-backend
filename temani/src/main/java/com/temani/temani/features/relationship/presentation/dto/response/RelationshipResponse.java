@@ -16,7 +16,11 @@ public class RelationshipResponse {
 
 	private UUID clientId;
 
+	private String clientName;
+
 	private UUID caregiverId;
+
+	private String caregiverName;
 
 	private UUID initiatorId;
 

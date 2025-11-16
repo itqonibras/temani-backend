@@ -62,7 +62,7 @@ public class RelationshipController {
 	private final DeleteRelationshipUseCase deleteRelationshipUseCase;
 
 	@PostMapping
-	public ResponseEntity<?> createRelationship(@RequestBody RelationshipRequest request, Authentication auth) {
+	public ResponseEntity<?> createRelationship(@RequestBody @Valid RelationshipRequest request, Authentication auth) {
 		CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
 		User user = userDetails.getUser();
 		try {

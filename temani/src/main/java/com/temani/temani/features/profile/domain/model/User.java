@@ -27,6 +27,8 @@ public class User {
 
 	private boolean verified;
 
+	private String profilePicture;
+
 	private Set<Role> roles;
 
 	private ClientProfile clientProfile;
@@ -36,8 +38,8 @@ public class User {
 	private PeerProfile peerProfile;
 
 	public User(UUID id, String name, String username, LocalDate dateOfBirth, String email, String phone,
-			String password, LocalDateTime createdAt, LocalDateTime updatedAt, boolean verified, Set<Role> roles,
-			ClientProfile clientProfile, CaregiverProfile caregiverProfile, PeerProfile peerProfile) {
+			String password, LocalDateTime createdAt, LocalDateTime updatedAt, boolean verified, String profilePicture,
+			Set<Role> roles, ClientProfile clientProfile, CaregiverProfile caregiverProfile, PeerProfile peerProfile) {
 		this.id = id;
 		this.name = name;
 		this.username = username;
@@ -48,6 +50,7 @@ public class User {
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
 		this.verified = verified;
+		this.profilePicture = profilePicture;
 		this.roles = roles;
 		this.clientProfile = clientProfile;
 		this.caregiverProfile = caregiverProfile;
@@ -108,6 +111,34 @@ public class User {
 
 	public PeerProfile getPeerProfile() {
 		return peerProfile;
+	}
+
+	public String getProfilePicture() {
+		return profilePicture;
+	}
+
+	public void setProfilePicture(String profilePicture) {
+		this.profilePicture = profilePicture;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public void setDateOfBirth(LocalDate dateOfBirth) {
+		this.dateOfBirth = dateOfBirth;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
 	}
 
 }

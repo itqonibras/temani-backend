@@ -11,6 +11,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,7 +21,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "user_relationship")
+@Table(name = "user_relationship", uniqueConstraints = {
+		@UniqueConstraint(name = "uk_client_caregiver", columnNames = { "client_id", "caregiver_id" })
+})
 public class RelationshipEntity {
 
 	@Id
@@ -30,7 +33,7 @@ public class RelationshipEntity {
 	@Column(name = "client_id", nullable = false)
 	private UUID clientId;
 
-	@Column(name = "caregiver_id", nullable = false, unique = true)
+	@Column(name = "caregiver_id", nullable = false)
 	private UUID caregiverId;
 
 	@Column(name = "initiator_id", nullable = false)

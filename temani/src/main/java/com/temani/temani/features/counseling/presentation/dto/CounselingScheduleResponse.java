@@ -14,6 +14,7 @@ public class CounselingScheduleResponse {
 
     private UUID id;
     private UUID clientId;
+    private String clientName;
     private UUID counselorId;
     private String counselorName;
     private LocalDateTime scheduledAt;

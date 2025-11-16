@@ -62,7 +62,7 @@ public class RegisterUseCaseImpl implements RegisterUseCase {
 		PeerProfile peerProfile = RoleUtils.hasRole(roles, "PEER") ? new PeerProfile(null) : null;
 
 		User user = new User(null, request.getName(), request.getUsername(), dateOfBirth, request.getEmail(),
-				request.getPhone(), passwordEncoderUseCase.hash(request.getPassword()), null, null, false, roles,
+				request.getPhone(), passwordEncoderUseCase.hash(request.getPassword()), null, null, false, null, roles,
 				clientProfile, caregiverProfile, peerProfile);
 
 		User savedUser = userRepository.save(user);

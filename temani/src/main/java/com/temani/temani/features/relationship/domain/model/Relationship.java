@@ -9,7 +9,11 @@ public class Relationship {
 
 	private UUID clientId;
 
+	private String clientName;
+
 	private UUID caregiverId;
+
+	private String caregiverName;
 
 	private UUID initiatorId;
 
@@ -19,11 +23,13 @@ public class Relationship {
 
 	private LocalDateTime updatedAt;
 
-	public Relationship(UUID id, UUID clientId, UUID caregiverId, UUID initiatorId, boolean accepted,
-			LocalDateTime createdAt, LocalDateTime updatedAt) {
+	public Relationship(UUID id, UUID clientId, String clientName, UUID caregiverId, String caregiverName,
+			UUID initiatorId, boolean accepted, LocalDateTime createdAt, LocalDateTime updatedAt) {
 		this.id = id;
 		this.clientId = clientId;
+		this.clientName = clientName;
 		this.caregiverId = caregiverId;
+		this.caregiverName = caregiverName;
 		this.initiatorId = initiatorId;
 		this.accepted = accepted;
 		this.createdAt = createdAt;
@@ -38,8 +44,16 @@ public class Relationship {
 		return clientId;
 	}
 
+	public String getClientName() {
+		return clientName;
+	}
+
 	public UUID getCaregiverId() {
 		return caregiverId;
+	}
+
+	public String getCaregiverName() {
+		return caregiverName;
 	}
 
 	public UUID getInitiatorId() {

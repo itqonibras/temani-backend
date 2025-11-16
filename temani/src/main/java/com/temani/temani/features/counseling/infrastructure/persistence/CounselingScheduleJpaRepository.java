@@ -15,9 +15,11 @@ import com.temani.temani.common.enums.CounselingScheduleStatus;
 @Repository
 public interface CounselingScheduleJpaRepository extends JpaRepository<CounselingScheduleEntity, UUID> {
 
-    List<CounselingScheduleEntity> findAllByClientIdOrderByScheduledAtDesc(UUID clientId);
+    @Query("SELECT cs FROM CounselingScheduleEntity cs LEFT JOIN FETCH cs.client LEFT JOIN FETCH cs.counselor WHERE cs.client.id = :clientId ORDER BY cs.scheduledAt DESC")
+    List<CounselingScheduleEntity> findAllByClientIdOrderByScheduledAtDesc(@Param("clientId") UUID clientId);
 
-    List<CounselingScheduleEntity> findAllByCounselorIdOrderByScheduledAtDesc(UUID counselorId);
+    @Query("SELECT cs FROM CounselingScheduleEntity cs LEFT JOIN FETCH cs.client LEFT JOIN FETCH cs.counselor WHERE cs.counselor.id = :counselorId ORDER BY cs.scheduledAt DESC")
+    List<CounselingScheduleEntity> findAllByCounselorIdOrderByScheduledAtDesc(@Param("counselorId") UUID counselorId);
 
     // Check for existing schedule at the same time for the same counselor
     @Query("SELECT cs FROM CounselingScheduleEntity cs WHERE cs.counselor.id = :counselorId " +
@@ -27,9 +29,15 @@ public interface CounselingScheduleJpaRepository extends JpaRepository<Counselin
             @Param("scheduledAt") LocalDateTime scheduledAt);
 
     // Find available schedules (status = AVAILABLE)
-    List<CounselingScheduleEntity> findByStatusOrderByScheduledAtAsc(CounselingScheduleStatus status);
+    @Query("SELECT cs FROM CounselingScheduleEntity cs LEFT JOIN FETCH cs.client LEFT JOIN FETCH cs.counselor WHERE cs.status = :status ORDER BY cs.scheduledAt ASC")
+    List<CounselingScheduleEntity> findByStatusOrderByScheduledAtAsc(@Param("status") CounselingScheduleStatus status);
 
     // Find available schedules for a specific counselor
+    @Query("SELECT cs FROM CounselingScheduleEntity cs LEFT JOIN FETCH cs.client LEFT JOIN FETCH cs.counselor WHERE cs.counselor.id = :counselorId AND cs.status = :status ORDER BY cs.scheduledAt ASC")
     List<CounselingScheduleEntity> findByCounselorIdAndStatusOrderByScheduledAtAsc(
-            UUID counselorId, CounselingScheduleStatus status);
+            @Param("counselorId") UUID counselorId, @Param("status") CounselingScheduleStatus status);
+
+    // Find by ID with eager fetching of client and counselor
+    @Query("SELECT cs FROM CounselingScheduleEntity cs LEFT JOIN FETCH cs.client LEFT JOIN FETCH cs.counselor WHERE cs.id = :id")
+    Optional<CounselingScheduleEntity> findByIdWithRelations(@Param("id") UUID id);
 }

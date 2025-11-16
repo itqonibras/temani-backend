@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -21,6 +22,7 @@ import com.temani.temani.common.presentation.dto.response.BaseResponse;
 import com.temani.temani.common.security.CustomUserDetails;
 import com.temani.temani.features.counseling.presentation.dto.CounselingScheduleRequest;
 import com.temani.temani.features.counseling.presentation.dto.CounselingScheduleResponse;
+import com.temani.temani.features.counseling.presentation.dto.UpdateScheduleStatusRequest;
 import com.temani.temani.features.counseling.usecase.BookCounselingScheduleUseCase;
 import com.temani.temani.features.counseling.usecase.CreateCounselingScheduleUseCase;
 import com.temani.temani.features.counseling.usecase.DeleteCounselingScheduleUseCase;
@@ -30,6 +32,7 @@ import com.temani.temani.features.counseling.usecase.GetCaregiverCounselingSched
 import com.temani.temani.features.counseling.usecase.GetClientCounselingSchedulesUseCase;
 import com.temani.temani.features.counseling.usecase.GetCounselingScheduleByIdUseCase;
 import com.temani.temani.features.counseling.usecase.UpdateCounselingScheduleUseCase;
+import com.temani.temani.features.counseling.usecase.UpdateScheduleStatusUseCase;
 import com.temani.temani.features.profile.domain.model.User;
 
 import jakarta.validation.Valid;
@@ -48,6 +51,7 @@ public class CounselingScheduleController {
     private final CreateCounselingScheduleUseCase createSchedule;
     private final BookCounselingScheduleUseCase bookSchedule;
     private final UpdateCounselingScheduleUseCase updateSchedule;
+    private final UpdateScheduleStatusUseCase updateScheduleStatus;
     private final DeleteCounselingScheduleUseCase deleteSchedule;
 
     @GetMapping
@@ -198,6 +202,26 @@ public class CounselingScheduleController {
             CounselingScheduleResponse schedule = updateSchedule.execute(id, user.getId(), request);
             return ResponseEntity
                     .ok(BaseResponse.success(CounselingScheduleMessages.SCHEDULE_UPDATED_SUCCESS, schedule));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(BaseResponse.error(e.getMessage()));
+        }
+    }
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<?> updateStatus(@PathVariable UUID id,
+            @RequestBody @Valid UpdateScheduleStatusRequest request, Authentication auth) {
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+        User user = userDetails.getUser();
+        try {
+            // Check if user has PEER role
+            boolean isPeer = user.getRoles().stream().anyMatch(r -> r.getName().equalsIgnoreCase("PEER"));
+            if (!isPeer) {
+                return ResponseEntity.status(403)
+                        .body(BaseResponse.error("Only peers can update schedule status"));
+            }
+
+            CounselingScheduleResponse schedule = updateScheduleStatus.execute(id, user.getId(), request.getStatus());
+            return ResponseEntity.ok(BaseResponse.success("Schedule status updated successfully", schedule));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(BaseResponse.error(e.getMessage()));
         }

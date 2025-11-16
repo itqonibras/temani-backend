@@ -1,5 +1,8 @@
 package com.temani.temani.features.authentication.usecase;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 
 import com.temani.temani.common.constants.AuthMessages;
@@ -7,6 +10,7 @@ import com.temani.temani.common.constants.CommonMessages;
 import com.temani.temani.common.security.JwtUtils;
 import com.temani.temani.features.authentication.presentation.dto.request.LoginRequest;
 import com.temani.temani.features.authentication.presentation.dto.response.LoginResponse;
+import com.temani.temani.features.profile.domain.model.Role;
 import com.temani.temani.features.profile.domain.model.User;
 import com.temani.temani.features.profile.domain.repository.UserRepository;
 
@@ -33,7 +37,12 @@ public class LoginUseCaseImpl implements LoginUseCase {
 
 		String token = jwtUtils.generateJwtToken(user.getUsername(), user.getId().toString(), user.getRoles());
 
-		return new LoginResponse(token, user.getId().toString(), user.getUsername());
+		// Extract role names from user roles
+		List<String> roleNames = user.getRoles().stream()
+				.map(Role::getName)
+				.collect(Collectors.toList());
+
+		return new LoginResponse(token, user.getId().toString(), user.getUsername(), roleNames);
 	}
 
 }

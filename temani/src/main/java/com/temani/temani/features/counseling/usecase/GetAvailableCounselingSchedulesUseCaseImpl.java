@@ -1,12 +1,13 @@
 package com.temani.temani.features.counseling.usecase;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
 import com.temani.temani.common.enums.CounselingScheduleStatus;
-import com.temani.temani.features.counseling.domain.model.CounselingSchedule;
 import com.temani.temani.features.counseling.infrastructure.mapper.CounselingScheduleDtoMapper;
+import com.temani.temani.features.counseling.infrastructure.mapper.CounselingScheduleEntityMapper;
 import com.temani.temani.features.counseling.infrastructure.persistence.CounselingScheduleJpaRepository;
 import com.temani.temani.features.counseling.presentation.dto.CounselingScheduleResponse;
 
@@ -18,22 +19,21 @@ public class GetAvailableCounselingSchedulesUseCaseImpl implements GetAvailableC
 
     private final CounselingScheduleJpaRepository jpaRepository;
     private final CounselingScheduleDtoMapper mapper;
+    private final CounselingScheduleEntityMapper entityMapper;
 
     @Override
     public List<CounselingScheduleResponse> execute() {
         var availableSchedules = jpaRepository.findByStatusOrderByScheduledAtAsc(CounselingScheduleStatus.AVAILABLE);
 
+        LocalDateTime now = LocalDateTime.now();
+
         return availableSchedules.stream()
                 .map(entity -> {
-                    var domain = new CounselingSchedule(entity.getId(),
-                            entity.getClient() != null ? entity.getClient().getId() : null,
-                            entity.getCounselor().getId(),
-                            entity.getCounselorName(),
-                            entity.getScheduledAt(),
-                            entity.getTitle(), entity.getDescription(), entity.getMeetingLink(), entity.getNotes(),
-                            entity.getStatus());
+                    // Use the entity mapper to properly map client and counselor information
+                    var domain = entityMapper.toDomain(entity);
                     return mapper.toDto(domain);
                 })
+                .filter(dto -> dto.getScheduledAt() != null && !dto.getScheduledAt().isBefore(now))
                 .toList();
     }
 }

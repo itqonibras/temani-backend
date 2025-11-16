@@ -4,8 +4,8 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import com.temani.temani.features.counseling.domain.model.CounselingSchedule;
 import com.temani.temani.features.counseling.infrastructure.mapper.CounselingScheduleDtoMapper;
+import com.temani.temani.features.counseling.infrastructure.mapper.CounselingScheduleEntityMapper;
 import com.temani.temani.features.counseling.infrastructure.persistence.CounselingScheduleJpaRepository;
 import com.temani.temani.features.counseling.presentation.dto.CounselingScheduleResponse;
 import com.temani.temani.features.profile.infrastructure.persistence.UserJpaRepository;
@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 public class BookCounselingScheduleUseCaseImpl implements BookCounselingScheduleUseCase {
 
     private final CounselingScheduleDtoMapper mapper;
+    private final CounselingScheduleEntityMapper entityMapper;
     private final CounselingScheduleJpaRepository jpaRepository;
     private final UserJpaRepository userJpaRepository;
     private final InteractionLogService interactionLogService;
@@ -54,12 +55,8 @@ public class BookCounselingScheduleUseCaseImpl implements BookCounselingSchedule
         scheduleEntity.setStatus(com.temani.temani.common.enums.CounselingScheduleStatus.AVAILABLE);
 
         var saved = jpaRepository.save(scheduleEntity);
-        var domain = new CounselingSchedule(saved.getId(),
-                saved.getClient().getId(),
-                saved.getCounselor().getId(),
-                saved.getCounselorName(),
-                saved.getScheduledAt(),
-                saved.getTitle(), saved.getDescription(), saved.getMeetingLink(), saved.getNotes(), saved.getStatus());
+        // Use the entity mapper to properly map client and counselor information
+        var domain = entityMapper.toDomain(saved);
 
         // Log the interaction
         try {

@@ -36,17 +36,27 @@ public class CreateRelationshipUseCaseImpl implements CreateRelationshipUseCase 
 		Relationship savedRelationship = null;
 
 		if (RoleUtils.hasRole(roles, "CLIENT")) {
-			if (relationshipRepository.existsByCaregiverId(targetUser.getId())) {
-				throw new IllegalStateException(RelationshipMessages.CAREGIVER_ALREADY_HAS_CLIENT);
+			// Check if client already has a caregiver
+			if (relationshipRepository.existsByClientId(userId)) {
+				throw new IllegalStateException(RelationshipMessages.CLIENT_ALREADY_HAS_CAREGIVER);
 			}
-			Relationship relationship = new Relationship(null, userId, targetUser.getId(), userId, false, null, null);
+			// Check if relationship already exists between this client and caregiver
+			if (relationshipRepository.findByClientIdAndCaregiverId(userId, targetUser.getId()).isPresent()) {
+				throw new IllegalStateException(RelationshipMessages.RELATIONSHIP_ALREADY_EXISTS);
+			}
+			Relationship relationship = new Relationship(null, userId, null, targetUser.getId(), null, userId, false, null, null);
 			savedRelationship = relationshipRepository.save(relationship);
 		}
 		else if (RoleUtils.hasRole(roles, "CAREGIVER")) {
-			if (relationshipRepository.existsByCaregiverId(userId)) {
-				throw new IllegalStateException(RelationshipMessages.CAREGIVER_ALREADY_HAS_CLIENT);
+			// Check if target client already has a caregiver
+			if (relationshipRepository.existsByClientId(targetUser.getId())) {
+				throw new IllegalStateException(RelationshipMessages.CLIENT_ALREADY_HAS_CAREGIVER);
 			}
-			Relationship relationship = new Relationship(null, targetUser.getId(), userId, userId, false, null, null);
+			// Check if relationship already exists between this caregiver and client
+			if (relationshipRepository.findByClientIdAndCaregiverId(targetUser.getId(), userId).isPresent()) {
+				throw new IllegalStateException(RelationshipMessages.RELATIONSHIP_ALREADY_EXISTS);
+			}
+			Relationship relationship = new Relationship(null, targetUser.getId(), null, userId, null, userId, false, null, null);
 			savedRelationship = relationshipRepository.save(relationship);
 		}
 

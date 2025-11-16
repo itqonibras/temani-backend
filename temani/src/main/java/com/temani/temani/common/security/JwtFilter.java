@@ -25,13 +25,26 @@ public class JwtFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
+		// Skip filter for OPTIONS requests (CORS preflight)
+		if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+			filterChain.doFilter(request, response);
+			return;
+		}
+
 		String token = jwtUtils.resolveToken(request);
 		if (token != null && jwtUtils.validateToken(token)) {
-			String username = jwtUtils.getUsername(token);
-			UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-			UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userDetails, null,
-					userDetails.getAuthorities());
-			SecurityContextHolder.getContext().setAuthentication(auth);
+			try {
+				String username = jwtUtils.getUsername(token);
+				UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+				UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userDetails, null,
+						userDetails.getAuthorities());
+				SecurityContextHolder.getContext().setAuthentication(auth);
+			}
+			catch (Exception e) {
+				// Log error but continue filter chain
+				// Spring Security will handle authentication failure
+				System.err.println("Error processing JWT token: " + e.getMessage());
+			}
 		}
 		filterChain.doFilter(request, response);
 	}

@@ -34,7 +34,8 @@ public class CounselingScheduleRepositoryImpl implements CounselingScheduleRepos
 
     @Override
     public Optional<CounselingSchedule> findById(UUID id) {
-        return jpaRepository.findById(id).map(mapper::toDomain);
+        // Use custom query to eagerly fetch client and counselor relationships
+        return jpaRepository.findByIdWithRelations(id).map(mapper::toDomain);
     }
 
     @Override

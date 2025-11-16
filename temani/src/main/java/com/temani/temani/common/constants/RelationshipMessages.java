@@ -30,6 +30,10 @@ public class RelationshipMessages {
 
 	public static final String CAREGIVER_ALREADY_HAS_CLIENT = "This caregiver already had client!";
 
+	public static final String CLIENT_ALREADY_HAS_CAREGIVER = "This client already has a caregiver!";
+
+	public static final String RELATIONSHIP_ALREADY_EXISTS = "Relationship already exists between these users!";
+
 	public static final String NOT_ALLOWED_DELETE = "You are not allowed to delete this relationship!";
 
 	public static final String NOT_ALLOWED_REJECT_ACCEPTED = "You are not allowed to reject accepted relationship!";

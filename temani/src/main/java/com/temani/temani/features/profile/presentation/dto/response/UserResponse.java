@@ -34,6 +34,8 @@ public class UserResponse {
 
 	private boolean verified;
 
+	private String profilePicture;
+
 	private Set<Role> roles;
 
 	private ClientProfileResponse clientProfile;

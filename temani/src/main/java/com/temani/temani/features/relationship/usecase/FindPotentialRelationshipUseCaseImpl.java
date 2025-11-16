@@ -68,8 +68,17 @@ public class FindPotentialRelationshipUseCaseImpl implements FindPotentialRelati
 	private boolean isConnectedToOther(User target, UUID currentUserId) {
 		UUID targetId = target.getId();
 
-		if (RoleUtils.hasRole(target.getRoles(), "CAREGIVER")) {
-			return relationshipRepository.existsByCaregiverIdAndClientIdNot(targetId, currentUserId);
+		// Check if target client already has a caregiver (not the current user)
+		if (RoleUtils.hasRole(target.getRoles(), "CLIENT")) {
+			// Get all accepted relationships for this client
+			List<Relationship> acceptedRelationships = relationshipRepository.findAcceptedByUserId(targetId);
+			// Check if there's an accepted relationship where the client is the target
+			// and the caregiver is NOT the current user
+			for (Relationship rel : acceptedRelationships) {
+				if (rel.getClientId().equals(targetId) && !rel.getCaregiverId().equals(currentUserId)) {
+					return true;
+				}
+			}
 		}
 
 		return false;
