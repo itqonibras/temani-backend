@@ -1,7 +1,5 @@
 package com.temani.temani.features.interactionlog.infrastructure.mapper;
 
-import java.util.UUID;
-
 import org.springframework.stereotype.Component;
 
 import com.temani.temani.features.interactionlog.domain.model.InteractionLog;

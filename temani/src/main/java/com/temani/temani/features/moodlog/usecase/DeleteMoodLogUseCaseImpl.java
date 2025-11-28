@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 
 import com.temani.temani.features.moodlog.domain.model.MoodLog;
 import com.temani.temani.features.moodlog.domain.repository.MoodLogRepository;
-import com.temani.temani.features.moodlog.infrastructure.persistence.MoodLogJpaRepository;
 import com.temani.temani.features.interactionlog.domain.service.InteractionLogService;
 
 import lombok.RequiredArgsConstructor;
@@ -16,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 public class DeleteMoodLogUseCaseImpl implements DeleteMoodLogUseCase {
 
 	private final MoodLogRepository moodLogRepository;
-	private final MoodLogJpaRepository moodLogJpaRepository;
 	private final InteractionLogService interactionLogService;
 
 	@Override

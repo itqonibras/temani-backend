@@ -1,9 +1,7 @@
 package com.temani.temani.features.payment.usecase;
 
 import java.math.BigDecimal;
-import java.util.UUID;
 
-import com.temani.temani.features.payment.domain.model.Payment;
 import com.temani.temani.features.payment.presentation.dto.PaymentRequest;
 import com.temani.temani.features.payment.presentation.dto.PaymentResponse;
 

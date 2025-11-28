@@ -2,7 +2,6 @@ package com.temani.temani.features.todo.presentation.controller;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -91,4 +90,4 @@ public class ToDoListController {
             return ResponseEntity.badRequest().body(BaseResponse.error(e.getMessage()));
         }
     }
-} 
+}

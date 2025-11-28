@@ -6,7 +6,6 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import com.temani.temani.features.todo.domain.model.ToDoList;
-import com.temani.temani.features.todo.domain.repository.ToDoListRepository;
 import com.temani.temani.features.todo.infrastructure.mapper.ToDoListDtoMapper;
 import com.temani.temani.features.todo.infrastructure.persistence.ToDoListEntity;
 import com.temani.temani.features.todo.infrastructure.persistence.ToDoListJpaRepository;
@@ -20,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CreateToDoListUseCaseImpl implements CreateToDoListUseCase {
 
-    private final ToDoListRepository toDoListRepository;
     private final ToDoListDtoMapper mapper;
     private final ToDoListJpaRepository toDoListJpaRepository;
     private final UserJpaRepository userJpaRepository;
@@ -30,7 +28,7 @@ public class CreateToDoListUseCaseImpl implements CreateToDoListUseCase {
         // Get the user entity
         var userEntity = userJpaRepository.findById(userId)
             .orElseThrow(() -> new RuntimeException("User not found"));
-        
+
         // Create the todo list entity directly
         ToDoListEntity toDoListEntity = new ToDoListEntity();
         toDoListEntity.setUser(userEntity);
@@ -38,9 +36,9 @@ public class CreateToDoListUseCaseImpl implements CreateToDoListUseCase {
         toDoListEntity.setIsShared(request.getIsShared());
         toDoListEntity.setCreatedAt(LocalDateTime.now());
         toDoListEntity.setUpdatedAt(LocalDateTime.now());
-        
+
         ToDoListEntity savedEntity = toDoListJpaRepository.save(toDoListEntity);
-        
+
         // Convert to domain model and then to DTO
         ToDoList toDoList = new ToDoList(
             savedEntity.getId(),
@@ -51,7 +49,7 @@ public class CreateToDoListUseCaseImpl implements CreateToDoListUseCase {
             savedEntity.getUpdatedAt(),
             java.util.Collections.emptyList()
         );
-        
+
         return mapper.toDto(toDoList);
     }
-} 
+}

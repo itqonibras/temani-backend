@@ -28,8 +28,6 @@ import com.temani.temani.features.counseling.usecase.CreateCounselingScheduleUse
 import com.temani.temani.features.counseling.usecase.DeleteCounselingScheduleUseCase;
 import com.temani.temani.features.counseling.usecase.GetAllCounselingSchedulesUseCase;
 import com.temani.temani.features.counseling.usecase.GetAvailableCounselingSchedulesUseCase;
-import com.temani.temani.features.counseling.usecase.GetCaregiverCounselingSchedulesUseCase;
-import com.temani.temani.features.counseling.usecase.GetClientCounselingSchedulesUseCase;
 import com.temani.temani.features.counseling.usecase.GetCounselingScheduleByIdUseCase;
 import com.temani.temani.features.counseling.usecase.UpdateCounselingScheduleUseCase;
 import com.temani.temani.features.counseling.usecase.UpdateScheduleStatusUseCase;
@@ -45,8 +43,6 @@ public class CounselingScheduleController {
 
     private final GetAllCounselingSchedulesUseCase getAllSchedules;
     private final GetAvailableCounselingSchedulesUseCase getAvailableSchedules;
-    private final GetClientCounselingSchedulesUseCase getClientSchedules;
-    private final GetCaregiverCounselingSchedulesUseCase getCaregiverSchedules;
     private final GetCounselingScheduleByIdUseCase getById;
     private final CreateCounselingScheduleUseCase createSchedule;
     private final BookCounselingScheduleUseCase bookSchedule;

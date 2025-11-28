@@ -6,7 +6,6 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import com.temani.temani.features.moodlog.domain.model.MoodLog;
-import com.temani.temani.features.moodlog.domain.repository.MoodLogRepository;
 import com.temani.temani.features.moodlog.infrastructure.mapper.MoodLogDtoMapper;
 import com.temani.temani.features.moodlog.infrastructure.persistence.MoodLogEntity;
 import com.temani.temani.features.moodlog.infrastructure.persistence.MoodLogJpaRepository;
@@ -21,7 +20,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CreateMoodLogUseCaseImpl implements CreateMoodLogUseCase {
 
-	private final MoodLogRepository moodLogRepository;
 	private final MoodLogDtoMapper mapper;
 	private final MoodLogJpaRepository moodLogJpaRepository;
 	private final UserJpaRepository userJpaRepository;

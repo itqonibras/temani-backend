@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 
 import com.temani.temani.features.todo.infrastructure.persistence.ToDoItemEntity;
 import com.temani.temani.features.todo.infrastructure.persistence.ToDoItemJpaRepository;
-import com.temani.temani.features.todo.infrastructure.persistence.ToDoListJpaRepository;
 import com.temani.temani.features.todo.infrastructure.mapper.ToDoItemDtoMapper;
 import com.temani.temani.features.todo.presentation.dto.response.ToDoItemResponse;
 import com.temani.temani.features.interactionlog.domain.service.InteractionLogService;
@@ -19,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 public class ToggleToDoItemCompleteUseCaseImpl implements ToggleToDoItemCompleteUseCase {
 
     private final ToDoItemJpaRepository toDoItemJpaRepository;
-    private final ToDoListJpaRepository toDoListJpaRepository;
     private final ToDoItemDtoMapper mapper;
     private final InteractionLogService interactionLogService;
 
