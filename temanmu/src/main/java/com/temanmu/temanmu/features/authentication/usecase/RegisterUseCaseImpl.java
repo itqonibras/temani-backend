@@ -1,0 +1,73 @@
+package com.temanmu.temanmu.features.authentication.usecase;
+
+import java.time.LocalDate;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+
+import com.temanmu.temanmu.common.constants.AuthMessages;
+import com.temanmu.temanmu.common.util.RoleUtils;
+import com.temanmu.temanmu.features.authentication.presentation.dto.request.RegisterRequest;
+import com.temanmu.temanmu.features.profile.domain.model.CaregiverProfile;
+import com.temanmu.temanmu.features.profile.domain.model.ClientProfile;
+import com.temanmu.temanmu.features.profile.domain.model.PeerProfile;
+import com.temanmu.temanmu.features.profile.domain.model.Role;
+import com.temanmu.temanmu.features.profile.domain.model.User;
+import com.temanmu.temanmu.features.profile.domain.repository.RoleRepository;
+import com.temanmu.temanmu.features.profile.domain.repository.UserRepository;
+import com.temanmu.temanmu.features.profile.infrastructure.mapper.UserDtoMapper;
+import com.temanmu.temanmu.features.profile.presentation.dto.response.UserResponse;
+
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+public class RegisterUseCaseImpl implements RegisterUseCase {
+
+	private final PasswordEncoderUseCase passwordEncoderUseCase;
+
+	private final RoleRepository roleRepository;
+
+	private final UserRepository userRepository;
+
+	private final UserDtoMapper userMapper;
+
+	@Transactional
+	@Override
+	public UserResponse execute(RegisterRequest request) {
+		if (userRepository.existsByEmail(request.getEmail())) {
+			throw new IllegalArgumentException(AuthMessages.EMAIL_ALREADY_REGISTERED);
+		}
+
+		if (userRepository.existsByUsername(request.getUsername())) {
+			throw new IllegalArgumentException(AuthMessages.USERNAME_ALREADY_TAKEN);
+		}
+
+		if (userRepository.existsByPhone(request.getPhone())) {
+			throw new IllegalArgumentException(AuthMessages.PHONE_ALREADY_REGISTERED);
+		}
+
+		LocalDate dateOfBirth = LocalDate.parse(request.getDateOfBirth());
+
+		Set<Role> roles = request.getRoles()
+			.stream()
+			.map(roleName -> roleRepository.findByName(roleName)
+				.orElseThrow(() -> new IllegalArgumentException(AuthMessages.PHONE_ALREADY_REGISTERED)))
+			.collect(Collectors.toSet());
+
+		ClientProfile clientProfile = RoleUtils.hasRole(roles, "CLIENT") ? new ClientProfile(null, null, null) : null;
+		CaregiverProfile caregiverProfile = RoleUtils.hasRole(roles, "CAREGIVER") ? new CaregiverProfile(null) : null;
+		PeerProfile peerProfile = RoleUtils.hasRole(roles, "PEER") ? new PeerProfile(null) : null;
+
+		User user = new User(null, request.getName(), request.getUsername(), dateOfBirth, request.getEmail(),
+				request.getPhone(), passwordEncoderUseCase.hash(request.getPassword()), null, null, false, null, roles,
+				clientProfile, caregiverProfile, peerProfile);
+
+		User savedUser = userRepository.save(user);
+
+		return userMapper.toDto(savedUser);
+	}
+
+}

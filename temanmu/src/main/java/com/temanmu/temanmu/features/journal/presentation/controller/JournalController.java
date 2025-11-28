@@ -1,0 +1,98 @@
+package com.temanmu.temanmu.features.journal.presentation.controller;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.temanmu.temanmu.common.constants.JournalMessages;
+import com.temanmu.temanmu.common.presentation.dto.response.BaseResponse;
+import com.temanmu.temanmu.common.security.CustomUserDetails;
+import com.temanmu.temanmu.features.journal.presentation.dto.request.JournalRequest;
+import com.temanmu.temanmu.features.journal.presentation.dto.response.JournalResponse;
+import com.temanmu.temanmu.features.journal.usecase.CreateJournalUseCase;
+import com.temanmu.temanmu.features.journal.usecase.DeleteJournalUseCase;
+import com.temanmu.temanmu.features.journal.usecase.GetAllJournalsUseCase;
+import com.temanmu.temanmu.features.journal.usecase.UpdateJournalUseCase;
+import com.temanmu.temanmu.features.profile.domain.model.User;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/journals")
+public class JournalController {
+
+	private final GetAllJournalsUseCase getAllJournalsUseCase;
+
+	private final CreateJournalUseCase createJournalUseCase;
+
+	private final UpdateJournalUseCase updateJournalUseCase;
+
+	private final DeleteJournalUseCase deleteJournalUseCase;
+
+	@GetMapping
+	public ResponseEntity<?> getJournals(Authentication auth) {
+		CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+		User user = userDetails.getUser();
+		try {
+			List<JournalResponse> journals = getAllJournalsUseCase.execute(user.getId());
+			return ResponseEntity.ok(BaseResponse.success(JournalMessages.JOURNALS_RECEIVED_SUCCESS, journals));
+		}
+		catch (Exception e) {
+			return ResponseEntity.badRequest().body(BaseResponse.error(e.getMessage()));
+		}
+	}
+
+	@PostMapping
+	public ResponseEntity<?> createJournal(@RequestBody @Valid JournalRequest request, Authentication auth) {
+		CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+		User user = userDetails.getUser();
+		try {
+			JournalResponse journal = createJournalUseCase.execute(request, user.getId());
+			return ResponseEntity.ok(BaseResponse.success(JournalMessages.JOURNAL_CREATED_SUCCESS, journal));
+		}
+		catch (Exception e) {
+			return ResponseEntity.badRequest().body(BaseResponse.error(e.getMessage()));
+		}
+	}
+
+	@PutMapping("/{id}")
+	public ResponseEntity<?> updateJournal(@PathVariable UUID id, @RequestBody @Valid JournalRequest request,
+			Authentication auth) {
+		CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+		User user = userDetails.getUser();
+		try {
+			JournalResponse journal = updateJournalUseCase.execute(request, id, user.getId());
+			return ResponseEntity.ok(BaseResponse.success(JournalMessages.JOURNAL_UPDATED_SUCCESS, journal));
+		}
+		catch (Exception e) {
+			return ResponseEntity.badRequest().body(BaseResponse.error(e.getMessage()));
+		}
+	}
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity<?> deleteJournal(@PathVariable UUID id, Authentication auth) {
+		CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+		User user = userDetails.getUser();
+		try {
+			deleteJournalUseCase.execute(id, user.getId());
+			return ResponseEntity.ok(BaseResponse.success(String.format(JournalMessages.JOURNAL_DELETED_SUCCESS, id)));
+		}
+		catch (Exception e) {
+			return ResponseEntity.badRequest().body(BaseResponse.error(e.getMessage()));
+		}
+	}
+
+}

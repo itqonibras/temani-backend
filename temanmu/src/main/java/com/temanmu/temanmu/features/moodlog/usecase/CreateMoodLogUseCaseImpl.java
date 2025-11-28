@@ -1,0 +1,68 @@
+package com.temanmu.temanmu.features.moodlog.usecase;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+import org.springframework.stereotype.Service;
+
+import com.temanmu.temanmu.features.interactionlog.domain.service.InteractionLogService;
+import com.temanmu.temanmu.features.moodlog.domain.model.MoodLog;
+import com.temanmu.temanmu.features.moodlog.infrastructure.mapper.MoodLogDtoMapper;
+import com.temanmu.temanmu.features.moodlog.infrastructure.persistence.MoodLogEntity;
+import com.temanmu.temanmu.features.moodlog.infrastructure.persistence.MoodLogJpaRepository;
+import com.temanmu.temanmu.features.moodlog.presentation.dto.request.MoodLogRequest;
+import com.temanmu.temanmu.features.moodlog.presentation.dto.response.MoodLogResponse;
+import com.temanmu.temanmu.features.profile.infrastructure.persistence.UserJpaRepository;
+
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+public class CreateMoodLogUseCaseImpl implements CreateMoodLogUseCase {
+
+	private final MoodLogDtoMapper mapper;
+	private final MoodLogJpaRepository moodLogJpaRepository;
+	private final UserJpaRepository userJpaRepository;
+	private final InteractionLogService interactionLogService;
+
+	@Override
+	public MoodLogResponse execute(MoodLogRequest request, UUID userId) {
+		// Get the user entity
+		var userEntity = userJpaRepository.findById(userId)
+				.orElseThrow(() -> new RuntimeException("User not found"));
+
+		// Create the mood log entity directly
+		MoodLogEntity moodLogEntity = new MoodLogEntity();
+		moodLogEntity.setUser(userEntity);
+		moodLogEntity.setMoodVisual(request.getMoodVisual());
+		moodLogEntity.setEmotionScale(request.getEmotionScale());
+		moodLogEntity.setTimestamp(LocalDateTime.now());
+
+		MoodLogEntity savedEntity = moodLogJpaRepository.save(moodLogEntity);
+
+		// Convert to domain model and then to DTO
+		MoodLog moodLog = new MoodLog(
+				savedEntity.getId(),
+				savedEntity.getUser().getId(),
+				savedEntity.getMoodVisual(),
+				savedEntity.getEmotionScale(),
+				savedEntity.getTimestamp());
+
+		// Log the interaction
+		try {
+			interactionLogService.logInteraction(
+					userId,
+					"moodlog",
+					"create",
+					"moodlog",
+					savedEntity.getId(),
+					"Mengisi Mood Tracker",
+					"Mood: " + request.getMoodVisual());
+		} catch (Exception e) {
+			System.err.println("Failed to log moodlog interaction: " + e.getMessage());
+		}
+
+		return mapper.toDto(moodLog);
+	}
+
+}

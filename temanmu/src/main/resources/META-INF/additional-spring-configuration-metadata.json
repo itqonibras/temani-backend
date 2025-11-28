@@ -1,0 +1,62 @@
+{"properties": [
+  {
+    "name": "temanmu.app.jwt-secret",
+    "type": "java.lang.String",
+    "description": "A description for 'temanmu.app.jwt-secret'"
+  },
+  {
+    "name": "temanmu.app.jwtExpirationMs",
+    "type": "java.lang.String",
+    "description": "A description for 'temanmu.app.jwtExpirationMs'"
+  },
+  {
+    "name": "temanmu.payment.consultation-fee",
+    "type": "java.lang.String",
+    "description": "A description for 'temanmu.payment.consultation-fee'"
+  },
+  {
+    "name": "temanmu.supabase.url",
+    "type": "java.lang.String",
+    "description": "A description for 'temanmu.supabase.url'"
+  },
+  {
+    "name": "temanmu.payment.midtrans.server-key",
+    "type": "java.lang.String",
+    "description": "A description for 'temanmu.payment.midtrans.server-key'"
+  },
+  {
+    "name": "temanmu.supabase.anonKey",
+    "type": "java.lang.String",
+    "description": "A description for 'temanmu.supabase.anonKey'"
+  },
+  {
+    "name": "temanmu.payment.midtrans.clientKey",
+    "type": "java.lang.String",
+    "description": "A description for 'temanmu.payment.midtrans.clientKey'"
+  },
+  {
+    "name": "temanmu.payment.midtrans.clientKey",
+    "type": "java.lang.String",
+    "description": "A description for 'temanmu.payment.midtrans.clientKey'"
+  },
+  {
+    "name": "temanmu.payment.midtrans.merchantId",
+    "type": "java.lang.String",
+    "description": "A description for 'temanmu.payment.midtrans.merchantId'"
+  },
+  {
+    "name": "temanmu.supabase.serviceRoleKey",
+    "type": "java.lang.String",
+    "description": "A description for 'temanmu.supabase.serviceRoleKey'"
+  },
+  {
+    "name": "temanmu.supabase.storage.bucket",
+    "type": "java.lang.String",
+    "description": "A description for 'temanmu.supabase.storage.bucket'"
+  },
+  {
+    "name": "temanmu.payment.midtrans.isProduction",
+    "type": "java.lang.String",
+    "description": "A description for 'temanmu.payment.midtrans.isProduction'"
+  }
+]}
