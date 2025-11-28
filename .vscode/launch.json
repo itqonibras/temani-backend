@@ -9,6 +9,16 @@
             "projectName": "temani",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-TemanMuApplication<temanmu>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.temanmu.temanmu.TemanMuApplication",
+            "projectName": "temanmu",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
         }
     ]
 }

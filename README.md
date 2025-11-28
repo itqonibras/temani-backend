@@ -1,4 +1,4 @@
-# 📌 Temani Backend Service
+# 📌 TemanMu Backend Service
 
 ## ⚡️ How to Run
 
