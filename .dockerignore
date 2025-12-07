@@ -1,0 +1,8 @@
+temanmu/target/
+temanmu/.mvn/
+temanmu/mvnw
+temanmu/mvnw.cmd
+.git/
+.gitignore
+.env
+*.md
