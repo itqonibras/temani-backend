@@ -10,11 +10,17 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("*") // Allow all origins for now, change to specific URLs in production
+                .allowedOrigins(
+                    "https://temanmu-bersama.web.app",
+                    "https://temanmu-bersama.firebaseapp.com",
+                    "http://localhost:3000",
+                    "http://localhost:8080",
+                    "http://localhost:5000"
+                )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
                 .allowedHeaders("*")
                 .exposedHeaders("Authorization")
-                .allowCredentials(false)
+                .allowCredentials(true)
                 .maxAge(3600);
     }
 }
