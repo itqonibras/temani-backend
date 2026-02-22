@@ -83,21 +83,33 @@ public class RelationshipRepositoryImpl implements RelationshipRepository {
 	private Relationship mapToDomainWithNames(RelationshipEntity entity) {
 		Relationship domain = mapper.toDomain(entity);
 
-		// Fetch user names
-		String clientName = userJpaRepository.findById(entity.getClientId())
-				.map(user -> user.getName())
-				.orElse(null);
-		String caregiverName = userJpaRepository.findById(entity.getCaregiverId())
-				.map(user -> user.getName())
-				.orElse(null);
+		// Fetch user names and profile pictures
+		String clientName = null;
+		String clientProfilePicture = null;
+		String caregiverName = null;
+		String caregiverProfilePicture = null;
 
-		// Create new Relationship with names
+		var clientOpt = userJpaRepository.findById(entity.getClientId());
+		if (clientOpt.isPresent()) {
+			clientName = clientOpt.get().getName();
+			clientProfilePicture = clientOpt.get().getProfilePicture();
+		}
+
+		var caregiverOpt = userJpaRepository.findById(entity.getCaregiverId());
+		if (caregiverOpt.isPresent()) {
+			caregiverName = caregiverOpt.get().getName();
+			caregiverProfilePicture = caregiverOpt.get().getProfilePicture();
+		}
+
+		// Create new Relationship with names and profile pictures
 		return new Relationship(
 				domain.getId(),
 				domain.getClientId(),
 				clientName,
+				clientProfilePicture,
 				domain.getCaregiverId(),
 				caregiverName,
+				caregiverProfilePicture,
 				domain.getInitiatorId(),
 				domain.isAccepted(),
 				domain.getCreatedAt(),
@@ -116,24 +128,35 @@ public class RelationshipRepositoryImpl implements RelationshipRepository {
 				.collect(Collectors.toSet());
 
 		// Batch fetch all users
-		Map<UUID, String> userNamesMap = userJpaRepository.findAllById(userIds).stream()
+		var allUsers = userJpaRepository.findAllById(userIds);
+		Map<UUID, String> userNamesMap = allUsers.stream()
 				.collect(Collectors.toMap(
 						user -> user.getId(),
 						user -> user.getName()
 				));
+		Map<UUID, String> userProfilePicturesMap = allUsers.stream()
+				.filter(user -> user.getProfilePicture() != null)
+				.collect(Collectors.toMap(
+						user -> user.getId(),
+						user -> user.getProfilePicture()
+				));
 
-		// Map entities to domain objects with names
+		// Map entities to domain objects with names and profile pictures
 		return entities.stream()
 				.map(entity -> {
 					Relationship domain = mapper.toDomain(entity);
 					String clientName = userNamesMap.get(entity.getClientId());
+					String clientProfilePicture = userProfilePicturesMap.get(entity.getClientId());
 					String caregiverName = userNamesMap.get(entity.getCaregiverId());
+					String caregiverProfilePicture = userProfilePicturesMap.get(entity.getCaregiverId());
 					return new Relationship(
 							domain.getId(),
 							domain.getClientId(),
 							clientName,
+							clientProfilePicture,
 							domain.getCaregiverId(),
 							caregiverName,
+							caregiverProfilePicture,
 							domain.getInitiatorId(),
 							domain.isAccepted(),
 							domain.getCreatedAt(),

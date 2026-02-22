@@ -43,7 +43,9 @@ public class AcceptRelationshipUseCaseImpl implements AcceptRelationshipUseCase 
 
 		Relationship updatedRelationship = new Relationship(existingRelationship.getId(),
 				existingRelationship.getClientId(), existingRelationship.getClientName(),
+				existingRelationship.getClientProfilePicture(),
 				existingRelationship.getCaregiverId(), existingRelationship.getCaregiverName(),
+				existingRelationship.getCaregiverProfilePicture(),
 				existingRelationship.getInitiatorId(), true, existingRelationship.getCreatedAt(),
 				existingRelationship.getUpdatedAt());
 

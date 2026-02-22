@@ -10,7 +10,9 @@ import com.temanmu.temanmu.features.relationship.infrastructure.persistence.Rela
 public interface RelationshipEntityMapper {
 
 	@Mapping(target = "clientName", ignore = true)
+	@Mapping(target = "clientProfilePicture", ignore = true)
 	@Mapping(target = "caregiverName", ignore = true)
+	@Mapping(target = "caregiverProfilePicture", ignore = true)
 	Relationship toDomain(RelationshipEntity entity);
 
 	RelationshipEntity toEntity(Relationship domain);

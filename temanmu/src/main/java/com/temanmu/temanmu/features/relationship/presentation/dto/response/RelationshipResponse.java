@@ -18,9 +18,13 @@ public class RelationshipResponse {
 
 	private String clientName;
 
+	private String clientProfilePicture;
+
 	private UUID caregiverId;
 
 	private String caregiverName;
+
+	private String caregiverProfilePicture;
 
 	private UUID initiatorId;
 

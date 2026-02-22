@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+
 import org.springframework.stereotype.Service;
 
 import com.temanmu.temanmu.common.util.RoleUtils;
@@ -59,7 +60,7 @@ public class FindPotentialRelationshipUseCaseImpl implements FindPotentialRelati
 			}
 
 			potentialRelationships.add(new PotentialRelationshipResponse(target.getId(), target.getName(),
-					target.getUsername(), target.getRoles(), status));
+					target.getUsername(), target.getProfilePicture(), target.getRoles(), status));
 		}
 
 		return potentialRelationships;
@@ -70,14 +71,14 @@ public class FindPotentialRelationshipUseCaseImpl implements FindPotentialRelati
 
 		// Check if target client already has a caregiver (not the current user)
 		if (RoleUtils.hasRole(target.getRoles(), "CLIENT")) {
-			// Get all accepted relationships for this client
-			List<Relationship> acceptedRelationships = relationshipRepository.findAcceptedByUserId(targetId);
-			// Check if there's an accepted relationship where the client is the target
-			// and the caregiver is NOT the current user
-			for (Relationship rel : acceptedRelationships) {
-				if (rel.getClientId().equals(targetId) && !rel.getCaregiverId().equals(currentUserId)) {
-					return true;
-				}
+			// Check if client has ANY relationship (pending or accepted) with another caregiver.
+			// This mirrors the existsByClientId guard in CreateRelationshipUseCaseImpl so that
+			// the search result status accurately reflects whether a new request would be blocked.
+			if (relationshipRepository.existsByClientId(targetId)) {
+				// If the only existing relationship is with the current user, it is NOT "other"
+				Optional<Relationship> withCurrentUser =
+						relationshipRepository.findByClientIdAndCaregiverId(targetId, currentUserId);
+				return withCurrentUser.isEmpty();
 			}
 		}
 

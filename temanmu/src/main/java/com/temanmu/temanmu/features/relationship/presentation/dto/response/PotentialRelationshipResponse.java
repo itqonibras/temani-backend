@@ -20,6 +20,8 @@ public class PotentialRelationshipResponse {
 
 	private String username;
 
+	private String profilePicture;
+
 	private Set<Role> roles;
 
 	private String relationshipStatus;

@@ -11,9 +11,13 @@ public class Relationship {
 
 	private String clientName;
 
+	private String clientProfilePicture;
+
 	private UUID caregiverId;
 
 	private String caregiverName;
+
+	private String caregiverProfilePicture;
 
 	private UUID initiatorId;
 
@@ -23,13 +27,16 @@ public class Relationship {
 
 	private LocalDateTime updatedAt;
 
-	public Relationship(UUID id, UUID clientId, String clientName, UUID caregiverId, String caregiverName,
+	public Relationship(UUID id, UUID clientId, String clientName, String clientProfilePicture,
+			UUID caregiverId, String caregiverName, String caregiverProfilePicture,
 			UUID initiatorId, boolean accepted, LocalDateTime createdAt, LocalDateTime updatedAt) {
 		this.id = id;
 		this.clientId = clientId;
 		this.clientName = clientName;
+		this.clientProfilePicture = clientProfilePicture;
 		this.caregiverId = caregiverId;
 		this.caregiverName = caregiverName;
+		this.caregiverProfilePicture = caregiverProfilePicture;
 		this.initiatorId = initiatorId;
 		this.accepted = accepted;
 		this.createdAt = createdAt;
@@ -48,12 +55,20 @@ public class Relationship {
 		return clientName;
 	}
 
+	public String getClientProfilePicture() {
+		return clientProfilePicture;
+	}
+
 	public UUID getCaregiverId() {
 		return caregiverId;
 	}
 
 	public String getCaregiverName() {
 		return caregiverName;
+	}
+
+	public String getCaregiverProfilePicture() {
+		return caregiverProfilePicture;
 	}
 
 	public UUID getInitiatorId() {

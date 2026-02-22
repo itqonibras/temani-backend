@@ -44,7 +44,7 @@ public class CreateRelationshipUseCaseImpl implements CreateRelationshipUseCase 
 			if (relationshipRepository.findByClientIdAndCaregiverId(userId, targetUser.getId()).isPresent()) {
 				throw new IllegalStateException(RelationshipMessages.RELATIONSHIP_ALREADY_EXISTS);
 			}
-			Relationship relationship = new Relationship(null, userId, null, targetUser.getId(), null, userId, false, null, null);
+			Relationship relationship = new Relationship(null, userId, null, null, targetUser.getId(), null, null, userId, false, null, null);
 			savedRelationship = relationshipRepository.save(relationship);
 		}
 		else if (RoleUtils.hasRole(roles, "CAREGIVER")) {
@@ -56,7 +56,7 @@ public class CreateRelationshipUseCaseImpl implements CreateRelationshipUseCase 
 			if (relationshipRepository.findByClientIdAndCaregiverId(targetUser.getId(), userId).isPresent()) {
 				throw new IllegalStateException(RelationshipMessages.RELATIONSHIP_ALREADY_EXISTS);
 			}
-			Relationship relationship = new Relationship(null, targetUser.getId(), null, userId, null, userId, false, null, null);
+			Relationship relationship = new Relationship(null, targetUser.getId(), null, null, userId, null, null, userId, false, null, null);
 			savedRelationship = relationshipRepository.save(relationship);
 		}
 
