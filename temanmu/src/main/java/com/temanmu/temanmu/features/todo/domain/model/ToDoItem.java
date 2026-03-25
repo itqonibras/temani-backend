@@ -15,17 +15,20 @@ public class ToDoItem {
 
 	private Boolean isComplete;
 
+	private LocalDateTime scheduledAt;
+
 	private LocalDateTime createdAt;
 
 	private LocalDateTime updatedAt;
 
 	public ToDoItem(UUID id, UUID toDoListId, String description, String priority, Boolean isComplete,
-			LocalDateTime createdAt, LocalDateTime updatedAt) {
+			LocalDateTime scheduledAt, LocalDateTime createdAt, LocalDateTime updatedAt) {
 		this.id = id;
 		this.toDoListId = toDoListId;
 		this.description = description;
 		this.priority = priority;
 		this.isComplete = isComplete;
+		this.scheduledAt = scheduledAt;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
 	}
@@ -48,6 +51,10 @@ public class ToDoItem {
 
 	public Boolean getIsComplete() {
 		return isComplete;
+	}
+
+	public LocalDateTime getScheduledAt() {
+		return scheduledAt;
 	}
 
 	public LocalDateTime getCreatedAt() {

@@ -41,6 +41,7 @@ public class CreateToDoItemUseCaseImpl implements CreateToDoItemUseCase {
         itemEntity.setToDoList(toDoListEntity);
         itemEntity.setDescription(request.getDescription());
         itemEntity.setPriority(normalizePriority(request.getPriority()));
+        itemEntity.setScheduledAt(request.getScheduledAt());
         itemEntity.setIsComplete(false);
         itemEntity.setCreatedAt(LocalDateTime.now());
         itemEntity.setUpdatedAt(LocalDateTime.now());
@@ -56,6 +57,7 @@ public class CreateToDoItemUseCaseImpl implements CreateToDoItemUseCase {
                 saved.getDescription(),
                 saved.getPriority(),
                 saved.getIsComplete(),
+                saved.getScheduledAt(),
                 saved.getCreatedAt(),
                 saved.getUpdatedAt()
             );

@@ -63,6 +63,7 @@ public class ToggleToDoItemCompleteUseCaseImpl implements ToggleToDoItemComplete
                 saved.getDescription(),
                 saved.getPriority(),
                 saved.getIsComplete(),
+                saved.getScheduledAt(),
                 saved.getCreatedAt(),
                 saved.getUpdatedAt());
         return mapper.toDto(toDoItem);

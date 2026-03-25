@@ -42,6 +42,9 @@ public class ToDoItemEntity {
 	@Column(name = "is_complete", nullable = false)
 	private Boolean isComplete;
 
+	@Column(name = "scheduled_at")
+	private LocalDateTime scheduledAt;
+
 	@CreationTimestamp
 	@Column(name = "created_at", updatable = false, nullable = false)
 	private LocalDateTime createdAt;

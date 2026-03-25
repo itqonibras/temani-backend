@@ -1,5 +1,7 @@
 package com.temanmu.temanmu.features.todo.presentation.dto.request;
 
+import java.time.LocalDateTime;
+
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,5 +16,7 @@ public class ToDoItemRequest {
 	private String description;
 
 	private String priority;
+
+	private LocalDateTime scheduledAt;
 
 }

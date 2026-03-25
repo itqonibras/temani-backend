@@ -22,6 +22,8 @@ public class ToDoItemResponse {
 
 	private Boolean isComplete;
 
+	private LocalDateTime scheduledAt;
+
 	private LocalDateTime createdAt;
 
 	private LocalDateTime updatedAt;

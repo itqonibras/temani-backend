@@ -36,6 +36,7 @@ public class UpdateToDoItemUseCaseImpl implements UpdateToDoItemUseCase {
         // Update fields
         itemEntity.setDescription(request.getDescription());
         itemEntity.setPriority(normalizePriority(request.getPriority(), itemEntity.getPriority()));
+        itemEntity.setScheduledAt(request.getScheduledAt());
         itemEntity.setUpdatedAt(LocalDateTime.now());
 
         // Save
@@ -49,6 +50,7 @@ public class UpdateToDoItemUseCaseImpl implements UpdateToDoItemUseCase {
                 saved.getDescription(),
                 saved.getPriority(),
                 saved.getIsComplete(),
+                saved.getScheduledAt(),
                 saved.getCreatedAt(),
                 saved.getUpdatedAt()
             );
