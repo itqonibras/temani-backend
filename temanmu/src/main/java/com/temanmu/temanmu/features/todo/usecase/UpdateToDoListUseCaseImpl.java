@@ -16,6 +16,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UpdateToDoListUseCaseImpl implements UpdateToDoListUseCase {
 
+    private static final String FALLBACK_COLOR = "#51A2FF";
+    private static final String FALLBACK_ICON = "clipboard";
+
     private final ToDoListJpaRepository toDoListJpaRepository;
     private final ToDoListDtoMapper mapper;
 
@@ -33,6 +36,8 @@ public class UpdateToDoListUseCaseImpl implements UpdateToDoListUseCase {
         // Update fields
         entity.setTitle(request.getTitle());
         entity.setIsShared(request.getIsShared());
+        entity.setColorHex(normalizeColor(request.getColorHex(), entity.getColorHex()));
+        entity.setIconName(normalizeIcon(request.getIconName(), entity.getIconName()));
         entity.setUpdatedAt(java.time.LocalDateTime.now());
 
         // Save
@@ -44,10 +49,34 @@ public class UpdateToDoListUseCaseImpl implements UpdateToDoListUseCase {
             saved.getUser().getId(),
             saved.getTitle(),
             saved.getIsShared(),
+            saved.getColorHex(),
+            saved.getIconName(),
+            saved.getIsDefault(),
+            saved.getSortOrder(),
             saved.getCreatedAt(),
             saved.getUpdatedAt(),
             java.util.Collections.emptyList()
         );
         return mapper.toDto(toDoList);
+    }
+
+    private String normalizeColor(String newColor, String currentColor) {
+        if (newColor != null && !newColor.isBlank()) {
+            return newColor.trim();
+        }
+        if (currentColor != null && !currentColor.isBlank()) {
+            return currentColor;
+        }
+        return FALLBACK_COLOR;
+    }
+
+    private String normalizeIcon(String newIcon, String currentIcon) {
+        if (newIcon != null && !newIcon.isBlank()) {
+            return newIcon.trim().toLowerCase();
+        }
+        if (currentIcon != null && !currentIcon.isBlank()) {
+            return currentIcon;
+        }
+        return FALLBACK_ICON;
     }
 }

@@ -19,6 +19,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CreateToDoListUseCaseImpl implements CreateToDoListUseCase {
 
+    private static final String FALLBACK_COLOR = "#51A2FF";
+    private static final String FALLBACK_ICON = "clipboard";
+
     private final ToDoListDtoMapper mapper;
     private final ToDoListJpaRepository toDoListJpaRepository;
     private final UserJpaRepository userJpaRepository;
@@ -34,6 +37,10 @@ public class CreateToDoListUseCaseImpl implements CreateToDoListUseCase {
         toDoListEntity.setUser(userEntity);
         toDoListEntity.setTitle(request.getTitle());
         toDoListEntity.setIsShared(request.getIsShared());
+        toDoListEntity.setColorHex(normalizeColor(request.getColorHex()));
+        toDoListEntity.setIconName(normalizeIcon(request.getIconName()));
+        toDoListEntity.setIsDefault(false);
+        toDoListEntity.setSortOrder(1000);
         toDoListEntity.setCreatedAt(LocalDateTime.now());
         toDoListEntity.setUpdatedAt(LocalDateTime.now());
 
@@ -45,11 +52,29 @@ public class CreateToDoListUseCaseImpl implements CreateToDoListUseCase {
             savedEntity.getUser().getId(),
             savedEntity.getTitle(),
             savedEntity.getIsShared(),
+            savedEntity.getColorHex(),
+            savedEntity.getIconName(),
+            savedEntity.getIsDefault(),
+            savedEntity.getSortOrder(),
             savedEntity.getCreatedAt(),
             savedEntity.getUpdatedAt(),
             java.util.Collections.emptyList()
         );
 
         return mapper.toDto(toDoList);
+    }
+
+    private String normalizeColor(String colorHex) {
+        if (colorHex == null || colorHex.isBlank()) {
+            return FALLBACK_COLOR;
+        }
+        return colorHex.trim();
+    }
+
+    private String normalizeIcon(String iconName) {
+        if (iconName == null || iconName.isBlank()) {
+            return FALLBACK_ICON;
+        }
+        return iconName.trim().toLowerCase();
     }
 }

@@ -18,6 +18,8 @@ public class ToDoItemResponse {
 
 	private String description;
 
+	private String priority;
+
 	private Boolean isComplete;
 
 	private LocalDateTime createdAt;

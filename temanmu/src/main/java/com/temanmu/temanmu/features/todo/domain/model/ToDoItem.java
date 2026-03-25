@@ -11,17 +11,20 @@ public class ToDoItem {
 
 	private String description;
 
+	private String priority;
+
 	private Boolean isComplete;
 
 	private LocalDateTime createdAt;
 
 	private LocalDateTime updatedAt;
 
-	public ToDoItem(UUID id, UUID toDoListId, String description, Boolean isComplete, LocalDateTime createdAt,
-			LocalDateTime updatedAt) {
+	public ToDoItem(UUID id, UUID toDoListId, String description, String priority, Boolean isComplete,
+			LocalDateTime createdAt, LocalDateTime updatedAt) {
 		this.id = id;
 		this.toDoListId = toDoListId;
 		this.description = description;
+		this.priority = priority;
 		this.isComplete = isComplete;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
@@ -37,6 +40,10 @@ public class ToDoItem {
 
 	public String getDescription() {
 		return description;
+	}
+
+	public String getPriority() {
+		return priority;
 	}
 
 	public Boolean getIsComplete() {

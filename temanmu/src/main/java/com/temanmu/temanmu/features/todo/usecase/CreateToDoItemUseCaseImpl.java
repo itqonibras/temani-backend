@@ -19,6 +19,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CreateToDoItemUseCaseImpl implements CreateToDoItemUseCase {
 
+    private static final String DEFAULT_PRIORITY = "MEDIUM";
+
     private final ToDoItemJpaRepository toDoItemJpaRepository;
     private final ToDoListJpaRepository toDoListJpaRepository;
     private final ToDoItemDtoMapper mapper;
@@ -38,6 +40,7 @@ public class CreateToDoItemUseCaseImpl implements CreateToDoItemUseCase {
         ToDoItemEntity itemEntity = new ToDoItemEntity();
         itemEntity.setToDoList(toDoListEntity);
         itemEntity.setDescription(request.getDescription());
+        itemEntity.setPriority(normalizePriority(request.getPriority()));
         itemEntity.setIsComplete(false);
         itemEntity.setCreatedAt(LocalDateTime.now());
         itemEntity.setUpdatedAt(LocalDateTime.now());
@@ -51,10 +54,23 @@ public class CreateToDoItemUseCaseImpl implements CreateToDoItemUseCase {
                 saved.getId(),
                 saved.getToDoList().getId(),
                 saved.getDescription(),
+                saved.getPriority(),
                 saved.getIsComplete(),
                 saved.getCreatedAt(),
                 saved.getUpdatedAt()
             );
         return mapper.toDto(toDoItem);
+    }
+
+    private String normalizePriority(String priority) {
+        if (priority == null || priority.isBlank()) {
+            return DEFAULT_PRIORITY;
+        }
+
+        String normalized = priority.trim().toUpperCase();
+        if (normalized.equals("HIGH") || normalized.equals("MEDIUM") || normalized.equals("LOW")) {
+            return normalized;
+        }
+        return DEFAULT_PRIORITY;
     }
 }

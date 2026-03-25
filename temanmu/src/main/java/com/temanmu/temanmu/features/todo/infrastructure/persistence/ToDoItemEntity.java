@@ -36,6 +36,9 @@ public class ToDoItemEntity {
 	@Column(name = "description", nullable = false)
 	private String description;
 
+	@Column(name = "priority")
+	private String priority;
+
 	@Column(name = "is_complete", nullable = false)
 	private Boolean isComplete;
 

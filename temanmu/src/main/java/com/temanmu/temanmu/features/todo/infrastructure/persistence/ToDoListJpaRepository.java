@@ -9,6 +9,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ToDoListJpaRepository extends JpaRepository<ToDoListEntity, UUID> {
 
-	List<ToDoListEntity> findAllByUserIdOrderByCreatedAtDesc(UUID userId);
+	List<ToDoListEntity> findAllByUserIdOrderBySortOrderAscCreatedAtDesc(UUID userId);
 
 }

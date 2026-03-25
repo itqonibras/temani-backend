@@ -21,6 +21,14 @@ public class ToDoListResponse {
 
 	private Boolean isShared;
 
+	private String colorHex;
+
+	private String iconName;
+
+	private Boolean isDefault;
+
+	private Integer sortOrder;
+
 	private LocalDateTime createdAt;
 
 	private LocalDateTime updatedAt;

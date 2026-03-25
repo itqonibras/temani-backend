@@ -17,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UpdateToDoItemUseCaseImpl implements UpdateToDoItemUseCase {
 
+    private static final String DEFAULT_PRIORITY = "MEDIUM";
+
     private final ToDoItemJpaRepository toDoItemJpaRepository;
     private final ToDoItemDtoMapper mapper;
 
@@ -33,6 +35,7 @@ public class UpdateToDoItemUseCaseImpl implements UpdateToDoItemUseCase {
 
         // Update fields
         itemEntity.setDescription(request.getDescription());
+        itemEntity.setPriority(normalizePriority(request.getPriority(), itemEntity.getPriority()));
         itemEntity.setUpdatedAt(LocalDateTime.now());
 
         // Save
@@ -44,10 +47,26 @@ public class UpdateToDoItemUseCaseImpl implements UpdateToDoItemUseCase {
                 saved.getId(),
                 saved.getToDoList().getId(),
                 saved.getDescription(),
+                saved.getPriority(),
                 saved.getIsComplete(),
                 saved.getCreatedAt(),
                 saved.getUpdatedAt()
             );
         return mapper.toDto(toDoItem);
+    }
+
+    private String normalizePriority(String newPriority, String currentPriority) {
+        if (newPriority != null && !newPriority.isBlank()) {
+            String normalized = newPriority.trim().toUpperCase();
+            if (normalized.equals("HIGH") || normalized.equals("MEDIUM") || normalized.equals("LOW")) {
+                return normalized;
+            }
+        }
+
+        if (currentPriority != null && !currentPriority.isBlank()) {
+            return currentPriority;
+        }
+
+        return DEFAULT_PRIORITY;
     }
 }

@@ -13,4 +13,6 @@ public class ToDoItemRequest {
 	@NotBlank(message = "Description can't be empty!")
 	private String description;
 
+	private String priority;
+
 }

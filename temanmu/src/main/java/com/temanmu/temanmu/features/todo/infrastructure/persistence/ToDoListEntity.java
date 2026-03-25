@@ -43,6 +43,18 @@ public class ToDoListEntity {
 	@Column(name = "is_shared", nullable = false)
 	private Boolean isShared;
 
+	@Column(name = "color_hex")
+	private String colorHex;
+
+	@Column(name = "icon_name")
+	private String iconName;
+
+	@Column(name = "is_default")
+	private Boolean isDefault;
+
+	@Column(name = "sort_order")
+	private Integer sortOrder;
+
 	@CreationTimestamp
 	@Column(name = "created_at", updatable = false, nullable = false)
 	private LocalDateTime createdAt;

@@ -39,7 +39,7 @@ public class ToDoListRepositoryImpl implements ToDoListRepository {
 
 	@Override
 	public List<ToDoList> findAllByUserId(UUID userId) {
-		List<ToDoListEntity> entities = jpaRepository.findAllByUserIdOrderByCreatedAtDesc(userId);
+		List<ToDoListEntity> entities = jpaRepository.findAllByUserIdOrderBySortOrderAscCreatedAtDesc(userId);
 		return entities.stream().map(mapper::toDomain).toList();
 	}
 

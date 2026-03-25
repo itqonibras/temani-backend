@@ -17,4 +17,8 @@ public class ToDoListRequest {
 	@NotNull(message = "Is shared can't be null!")
 	private Boolean isShared;
 
+	private String colorHex;
+
+	private String iconName;
+
 }
